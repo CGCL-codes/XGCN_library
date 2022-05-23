@@ -1,0 +1,4 @@
+topk: 100
+num_walks: 1000
+walk_length: 30
+alpha: 0.3
