@@ -18,7 +18,7 @@ def init_emb_table(config, num_nodes=None):
         emb_table = torch.FloatTensor(size=(num_nodes, config['emb_dim']))
         torch.nn.init.normal_(emb_table, mean=0.0, std=config['emb_init_std'])
     
-    emb_table = emb_table.to(config['device'])
+    emb_table = emb_table.to(config['emb_table_device'])
     
     if not ('freeze_emb' in config and config['freeze_emb']):
         emb_table.requires_grad = True

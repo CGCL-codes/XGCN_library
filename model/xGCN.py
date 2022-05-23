@@ -277,13 +277,13 @@ class xGCN(BaseEmbeddingModel):
         src, pos, neg = batch_data
         
         if self.config['use_two_dnn']:
-            src_emb = self.user_dnn(self.emb_table[src])
-            pos_emb = self.item_dnn(self.emb_table[pos])
-            neg_emb = self.item_dnn(self.emb_table[neg])
+            src_emb = self.user_dnn(self.emb_table[src].to(self.device))
+            pos_emb = self.item_dnn(self.emb_table[pos].to(self.device))
+            neg_emb = self.item_dnn(self.emb_table[neg].to(self.device))
         else:
-            src_emb = self.dnn(self.emb_table[src])
-            pos_emb = self.dnn(self.emb_table[pos])
-            neg_emb = self.dnn(self.emb_table[neg])
+            src_emb = self.dnn(self.emb_table[src].to(self.device))
+            pos_emb = self.dnn(self.emb_table[pos].to(self.device))
+            neg_emb = self.dnn(self.emb_table[neg].to(self.device))
         
         loss_fn_type = self.config['loss_fn']
         if loss_fn_type == 'bpr_loss':

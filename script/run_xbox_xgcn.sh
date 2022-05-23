@@ -25,7 +25,7 @@ LOG_FILE=$RESULTS_ROOT'/log.txt'
 echo "[begin at $(date)]" > $LOG_FILE
 echo "results dir: "$RESULTS_ROOT
 
-if the memory is enough, set --use_numba_csr_mult 0
+# if the memory is enough, set --use_numba_csr_mult 0
 
 python $PROJECT_ROOT'/'main/main.py $PROJECT_ROOT \
     --model 'xgcn' \
