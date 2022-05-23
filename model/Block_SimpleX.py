@@ -65,9 +65,6 @@ class Block_SimpleX(BaseEmbeddingModel):
 
         theta = self.config['theta']
         src_emb = theta * src_self_emb + (1 - theta) * src_aggr_emb
-
-        pos_score = dot_product(src_emb, pos_emb)
-        neg_score = dot_product(src_emb, neg_emb)
         
         loss = cosine_contrastive_loss(src_emb, pos_emb, neg_emb, 
                                        self.config['margin'], self.config['neg_weight'])
