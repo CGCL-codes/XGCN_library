@@ -1,0 +1,9 @@
+dgl==0.7.2
+numba==0.54.1
+numpy==1.20.3
+scipy==1.7.3
+setproctitle==1.2.2
+torch==1.8.2
+torch_geometric==2.0.1
+tqdm==4.62.3
+pyyaml==6.0
