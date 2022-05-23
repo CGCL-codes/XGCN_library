@@ -12,15 +12,8 @@ from data.csr_graph_helper import numba_csr_mult_dense
 
 class MyDNN(torch.nn.Module):
     
-    def __init__(self, dnn_arch):
+    def __init__(self, dnn_arch, scale_net_arch):
         super(MyDNN, self).__init__()
-        self.scale_net = torch.nn.Sequential(
-            torch.nn.Linear(64, 32),
-            torch.nn.Tanh(),
-            torch.nn.Linear(32, 1),
-            torch.nn.Sigmoid()
-        )
-        
         self.dnn = torch.nn.Sequential(*eval(dnn_arch))
         # self.dnn = torch.nn.Sequential(
         #     torch.nn.Linear(64, 1024), 
@@ -28,6 +21,14 @@ class MyDNN(torch.nn.Module):
         #     torch.nn.Linear(1024, 1024), 
         #     torch.nn.Tanh(), 
         #     torch.nn.Linear(1024, 64)
+        # )
+        
+        self.scale_net = torch.nn.Sequential(*eval(scale_net_arch))
+        # self.scale_net = torch.nn.Sequential(
+        #     torch.nn.Linear(64, 32),
+        #     torch.nn.Tanh(),
+        #     torch.nn.Linear(32, 1),
+        #     torch.nn.Sigmoid()
         # )
     
     def forward(self, X):
@@ -176,7 +177,7 @@ class xGCN(BaseEmbeddingModel):
     def _build_dnn(self):
         if 'use_special_dnn' in self.config and self.config['use_special_dnn']:
             print("## using scale-dnn")
-            dnn = MyDNN(self.config['dnn_arch']).to(self.device)
+            dnn = MyDNN(self.config['dnn_arch'], self.config['scale_net_arch']).to(self.device)
         else:
             dnn = torch.nn.Sequential(*eval(self.config['dnn_arch'])).to(self.device)
         

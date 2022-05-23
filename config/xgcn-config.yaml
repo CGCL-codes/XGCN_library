@@ -21,13 +21,14 @@ mask_nei_when_test: 1
 file_test: ''
 
 emb_dim: 64
-emb_init_std: 0.1
+emb_init_std: 1.0
 freeze_emb: 1
 from_pretrained: 0
 file_pretrained_emb: ''
 l2_reg_weight: 0.0
 
 dnn_arch: '[torch.nn.Linear(64, 1024), torch.nn.Tanh(), torch.nn.Linear(1024, 64)]'
+scale_net_arch: '[torch.nn.Linear(64, 32), torch.nn.Tanh(), torch.nn.Linear(32, 1), torch.nn.Sigmoid()]'
 use_two_dnn: 0
 dnn_lr: 0.001
 dnn_l2_reg_weight: 0.0

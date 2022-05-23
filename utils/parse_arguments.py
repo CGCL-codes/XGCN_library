@@ -9,6 +9,7 @@ def _parse_arguments():
     parser.add_argument("--config_file", type=str)
     parser.add_argument("--file_input", type=str)
     parser.add_argument("--file_output", type=str)
+    parser.add_argument("--file_output_2", type=str)
     
     parser.add_argument("--dataset_name", type=str)
     parser.add_argument("--dataset_type", type=str)
@@ -16,6 +17,7 @@ def _parse_arguments():
     parser.add_argument("--results_root", type=str)
     
     parser.add_argument("--seed", type=int)
+    parser.add_argument("--num_sample", type=int)
     
     parser.add_argument("--validation_method", type=str)
     parser.add_argument("--test_method", type=str)
@@ -59,6 +61,7 @@ def _parse_arguments():
     parser.add_argument("--use_numba_csr_mult", type=int)
 
     parser.add_argument("--dnn_arch", type=str)
+    parser.add_argument("--scale_net_arch", type=str)
     parser.add_argument("--use_two_dnn", type=int)
     parser.add_argument("--use_identical_dnn", type=int)
     parser.add_argument("--use_special_dnn", type=int)
