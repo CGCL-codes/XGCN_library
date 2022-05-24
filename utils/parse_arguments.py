@@ -25,6 +25,8 @@ def _parse_arguments():
     parser.add_argument("--file_test", type=str)
     parser.add_argument("--mask_nei_when_validation", type=int)
     parser.add_argument("--mask_nei_when_test", type=int)
+    parser.add_argument("--val_batch_size", type=int)
+    parser.add_argument("--test_batch_size", type=int)
     
     parser.add_argument("--not_eval", type=int)
     parser.add_argument("--epochs_need_save", type=str)
