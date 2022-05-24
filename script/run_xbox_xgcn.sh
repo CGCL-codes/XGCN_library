@@ -1,15 +1,16 @@
 PROJECT_ROOT='/media/xreco/jianxun/xgcn'
 ALL_DATA_ROOT='/media/xreco/jianxun/xgcn_data'
+# ALL_DATA_ROOT='/media/xreco/DEV/xiran/data/social_and_user_item'
 
 CONFIG_ROOT=$PROJECT_ROOT'/config'
 ALL_DATASETS_ROOT=$ALL_DATA_ROOT'/datasets'
 ALL_RESULTS_ROOT=$ALL_DATA_ROOT'/model_outputs'
 
-DEVICE='cpu'
+DEVICE='cuda:0'
 EMB_TABLE_DEVICE='cpu'
 
 #########################################
-DATASET='xbox-1m'
+DATASET='xbox-100m'
 SEED=2022
 T=2
 K=10
@@ -37,9 +38,11 @@ python $PROJECT_ROOT'/'main/main.py $PROJECT_ROOT \
     --emb_table_device $EMB_TABLE_DEVICE \
     --validation_method 'one_pos_whole_graph' \
     --mask_nei_when_validation 1 \
+    --val_batch_size 32 \
     --file_validation $DATA_ROOT'/test-pos_edges-1000.pkl' \
     --test_method 'one_pos_whole_graph' \
     --mask_nei_when_test 1 \
+    --test_batch_size 32 \
     --file_test $DATA_ROOT'/test-pos_edges-1000.pkl' \
     --prop_type 'lightgcn' --num_gcn_layers 1 --use_numba_csr_mult 1 \
     --use_special_dnn 1 \
