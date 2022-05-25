@@ -10,7 +10,7 @@ The Python version is 3.8.12, other dependencies are listed in `requirements.txt
 
 * The .sh scripts to process datasets and run models are in the `script` directory.
 * You are expected to specify two paths: (1) `PROJECT_ROOT`, which is the root of this project (e.g. `/home/xxx/code/xgcn`); (2) `ALL_DATA_ROOT`, which is going to hold all the data including datasets and models' outputs (e.g. `/home/xxx/data/xgcn`).
-* The processed Pokec and LiveJournal datasets are available in an anonymous google drive: https://drive.google.com/file/d/18Hy-aXC761-k6nSWSghuIIlwT_rB4m7s/view?usp=sharing. The original datasets are from http://snap.stanford.edu/data/index.html.
+* The processed Pokec and LiveJournal datasets are available in an anonymous google drive: https://drive.google.com/drive/folders/10CJ0z4SqkHVQLARbie0EZwoUoqJVdqEG?usp=sharing. The original datasets are from http://snap.stanford.edu/data/index.html.
 * The data (.txt files) should be placed in the directory `$ALL_DATA_ROOT'/datasets/instance_[DATASET_NAME]'` as follows (e.g. the pokec dataset):
 
 ```
