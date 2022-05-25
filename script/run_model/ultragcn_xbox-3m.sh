@@ -10,7 +10,13 @@ ALL_RESULTS_ROOT=$ALL_DATA_ROOT'/model_outputs'
 DATASET='xbox-3m'
 
 DATA_ROOT=$ALL_DATASETS_ROOT'/instance_'$DATASET
-PPR_DATA_ROOT=$ALL_RESULTS_ROOT'/gnn_'$DATASET'/new_ppr/undirected-top100'
+
+#### prepare_ultragcn_data 
+RESULTS_DIR='ultragcn/data'
+python $PROJECT_ROOT'/'model/UltraGCN/prepare_ultragcn_data.py $PROJECT_ROOT \
+    --data_root $ALL_DATASETS_ROOT'/instance_'$DATASET \
+    --results_root $ALL_RESULTS_ROOT'/gnn_'$DATASET'/'$RESULTS_DIR \
+    --topk 32 \
 
 ################
 SEED=1
@@ -19,13 +25,13 @@ RESULTS_DIR='ultragcn/[best'$SEED']'
 RESULTS_ROOT=$ALL_RESULTS_ROOT'/gnn_'$DATASET'/'$RESULTS_DIR
 
 python $PROJECT_ROOT'/'main/main.py $PROJECT_ROOT \
-    --config_file $CONFIG_ROOT'/ultragcn/ultragcn-config.yaml' \
+    --config_file $CONFIG_ROOT'/ultragcn-config.yaml' \
     --data_root $DATA_ROOT \
     --results_root $RESULTS_ROOT \
     --seed $SEED \
-    --file_ultra_constrain_mat $RESULTS_ROOT'/data/constrain_mat.pkl' \
-    --file_ii_topk_neighbors $RESULTS_ROOT'/data/beta_score_topk/ii_topk_neighbors.np.pkl' \
-    --file_ii_topk_similarity_scores $RESULTS_ROOT'/data/beta_score_topk/ii_topk_similarity_scores.np.pkl' \
+    --file_ultra_constrain_mat $RESULTS_ROOT'/../data/constrain_mat.pkl' \
+    --file_ii_topk_neighbors $RESULTS_ROOT'/../data/beta_score_topk/ii_topk_neighbors.np.pkl' \
+    --file_ii_topk_similarity_scores $RESULTS_ROOT'/../data/beta_score_topk/ii_topk_similarity_scores.np.pkl' \
     --device $DEVICE \
     --loss_fn 'bce_loss' \
     --emb_lr 0.005 \
