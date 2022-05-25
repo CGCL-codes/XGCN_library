@@ -23,8 +23,9 @@ python $PROJECT_ROOT'/'main/main.py $PROJECT_ROOT \
     --data_root $DATA_ROOT \
     --results_root $RESULTS_ROOT \
     --seed $SEED \
-    --file_ultra_constrain_mat $RESULTS_ROOT'/$PROJECT_ROOT'/'data/constrain_mat.pkl' \
-    --ppr_data_root $PPR_DATA_ROOT \
+    --file_ultra_constrain_mat $RESULTS_ROOT'/data/constrain_mat.pkl' \
+    --file_ii_topk_neighbors $RESULTS_ROOT'/data/beta_score_topk/ii_topk_neighbors.np.pkl' \
+    --file_ii_topk_similarity_scores $RESULTS_ROOT'/data/beta_score_topk/ii_topk_similarity_scores.np.pkl' \
     --device $DEVICE \
     --loss_fn 'bce_loss' \
     --emb_lr 0.005 \
