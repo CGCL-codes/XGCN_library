@@ -4,7 +4,7 @@ To run xGCN and other baselines:
 
 # 1. Install dependencies
 
-Install the dependencies listed in `requirements.txt`.
+The Python version is 3.8.12, other dependencies are listed in `requirements.txt`.
 
 # 2. Prepare the data
 
@@ -47,4 +47,4 @@ instance_pokec
 # 3. Run models
 
 * All the training settings and hyper-parameter configurations are in `config` and `script/run_model` (The cmd arguments in .sh files will overwrite those in .yaml config files).
-* To run a model, modfiy `PROJECT_ROOT`, `ALL_DATA_ROOT`, `DEVICE`, `DATASET` and `MODEL` in `script/run_model.sh`. `cd script` and `bash run_model.sh`. The outputs will be saved in `$ALL_DATA_ROOT'/model_outputs/gnn_'$DATASET'/'$MODEL`.
+* To run a model, modfiy `PROJECT_ROOT`, `ALL_DATA_ROOT`, `DEVICE`, `DATASET` and `MODEL` in `script/run_model.sh`. `cd script` and `bash run_model.sh`. The outputs (including training log, test results, ...) will be saved in `$ALL_DATA_ROOT'/model_outputs/gnn_'$DATASET'/'$MODEL`.
