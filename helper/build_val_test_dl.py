@@ -21,7 +21,7 @@ def build_val_test_dl(config, data):
     assert test_method in all_eval_method
     
     val_batch_size = config['val_batch_size'] if 'val_batch_size' in config else 100
-    test_batch_size = config['val_batch_size'] if 'test_batch_size' in config else 100
+    test_batch_size = config['test_batch_size'] if 'test_batch_size' in config else 100
     
     val_dl = build_eval_dl(validation_method, 
                            config['file_validation'], 

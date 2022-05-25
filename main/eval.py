@@ -31,10 +31,13 @@ def main():
     
     data['model'] = model
     
+    test_batch_size = config['test_batch_size'] if 'test_batch_size' in config else 100
+    
     test_dl = build_eval_dl(
         eval_method=config['test_method'],
         file_eval=config['file_test'],
         mask_nei=config['mask_nei_when_test'],
+        batch_size=test_batch_size,
         data=data
     )
     
