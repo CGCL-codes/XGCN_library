@@ -1,5 +1,5 @@
-PROJECT_ROOT='/home/sxr/code/xgcn'
-ALL_DATA_ROOT='/home/sxr/data/social_and_user_item'
+PROJECT_ROOT='/home/xxx/code/xgcn'
+ALL_DATA_ROOT='/home/xxx/data/xgcn_data'
 
 cd process_data
 
