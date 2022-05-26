@@ -1,5 +1,6 @@
 import numpy as np
 import torch
+import dgl
 import os.path as osp
 from copy import deepcopy
 
@@ -108,6 +109,13 @@ class xGCN(BaseEmbeddingModel):
             
         else:
             assert self.prop_type == 'lightgcn'
+            
+            if 'use_item2item_graph_for_item_prop' in self.config and \
+                self.config['use_item2item_graph_for_item_prop']:
+                topk = self.config['topk']
+                ii_topk_neighbors = io.load_pickle(config['file_ii_topk_neighbors'])
+                self.ii_topk_neighbors = torch.LongTensor(ii_topk_neighbors[:, :topk])
+                
             E_src = io.load_pickle(osp.join(data_root, 'train_undi_csr_src_indices.pkl'))
             E_dst = io.load_pickle(osp.join(data_root, 'train_undi_csr_indices.pkl'))
             indptr = io.load_pickle(osp.join(data_root, 'train_undi_csr_indptr.pkl'))
@@ -195,6 +203,11 @@ class xGCN(BaseEmbeddingModel):
         out_embs = torch.matmul(top_weights.unsqueeze(-2), top_embs)
         return out_embs.squeeze()
     
+    def _calc_item2item_emb(self, item_nids):
+        top_nids = self.ii_topk_neighbors[item_nids]
+        import pdb; pdb.set_trace()
+        return self.emb_table[top_nids + self.num_users].mean(dim=-2)
+    
     def _do_propagation(self):
         if 'cancel_prop' in self.config and self.config['cancel_prop']:
             # do nothing
@@ -212,21 +225,45 @@ class xGCN(BaseEmbeddingModel):
                 self.emb_table = _emb_table
                 
             else:  # self.prop_type == 'lightgcn'
-                if self.config['use_numba_csr_mult']:
-                    print("- use_numba_csr_mult, do not stack")
-                    X_in = self.emb_table.cpu().numpy()
-                    X_out = np.empty(X_in.shape, dtype=np.float32)
-                    numba_csr_mult_dense(
-                        self.indptr, self.indices, self.edge_weights,
-                        X_in, X_out
+                
+                if 'use_item2item_graph_for_item_prop' in self.config and \
+                    self.config['use_item2item_graph_for_item_prop']:
+                    print("## use_item2item_graph_for_item_prop")
+                    
+                    self.emb_table = self.emb_table.cpu()
+                    _emb_table = torch.empty(self.emb_table.shape, dtype=torch.float32)
+                    
+                    dl = torch.utils.data.DataLoader(
+                        dataset=torch.arange(self.info['num_items']), 
+                        batch_size=8192
                     )
-                    self.emb_table = torch.FloatTensor(X_out).to(self.emb_table_device)
-                    del X_in
-                else:
-                    self.emb_table = get_lightgcn_out_emb(
-                        self.A, self.emb_table.cpu(), self.config['num_gcn_layers'],
+                    for item_nids in dl:
+                        _emb_table[item_nids + self.num_users] = self._calc_item2item_emb(item_nids)
+                    
+                    X = get_lightgcn_out_emb(
+                        self.A, self.emb_table, self.config['num_gcn_layers'],
                         stack_layers=self.config['stack_layers']
-                    ).to(self.emb_table_device)
+                    )
+                    _emb_table[:self.num_users] = X[:self.num_users]
+                    
+                    self.emb_table = _emb_table.to(self.emb_table_device)
+                    
+                else:
+                    if self.config['use_numba_csr_mult']:
+                        print("- use_numba_csr_mult, do not stack")
+                        X_in = self.emb_table.cpu().numpy()
+                        X_out = np.empty(X_in.shape, dtype=np.float32)
+                        numba_csr_mult_dense(
+                            self.indptr, self.indices, self.edge_weights,
+                            X_in, X_out
+                        )
+                        self.emb_table = torch.FloatTensor(X_out).to(self.emb_table_device)
+                        del X_in
+                    else:
+                        self.emb_table = get_lightgcn_out_emb(
+                            self.A, self.emb_table.cpu(), self.config['num_gcn_layers'],
+                            stack_layers=self.config['stack_layers']
+                        ).to(self.emb_table_device)
     
     def _infer_dnn_output_emb(self, dnn, input_table, output_table):
         with torch.no_grad():
