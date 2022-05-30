@@ -45,6 +45,14 @@ def _mask_neighbor_score(csr_graph_indptr, csr_graph_indices,
         all_target_score[i][nei_target_id] = -999999
 
 
+@numba.jit(nopython=True)
+def _mask_neighbor_score_user_item(csr_graph_indptr, csr_graph_indices,
+                         src, all_target_score, num_users):
+    for i, u in enumerate(src):
+        nei_target_id = neighbors(csr_graph_indptr, csr_graph_indices, u)
+        all_target_score[i][nei_target_id - num_users] = -999999
+
+
 class BaseEmbeddingModel:
     
     def __init__(self, config, data):
@@ -99,8 +107,16 @@ class BaseEmbeddingModel:
             if self.mask_nei:
                 if self.train_csr_indptr is None:
                     self.prepare_csr_graph()
-                _mask_neighbor_score(self.train_csr_indptr, self.train_csr_indices,
-                                     src, all_target_score)
+                if self.dataset_type == 'user-item':
+                    _mask_neighbor_score_user_item(
+                        self.train_csr_indptr, self.train_csr_indices,
+                        src, all_target_score, self.num_users
+                    )
+                else:
+                    _mask_neighbor_score(
+                        self.train_csr_indptr, self.train_csr_indices,
+                        src, all_target_score
+                    )
             
             if self.one_pos:
                 pos_emb = self.target_emb_table[pos]

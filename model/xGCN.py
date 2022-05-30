@@ -205,7 +205,6 @@ class xGCN(BaseEmbeddingModel):
     
     def _calc_item2item_emb(self, item_nids):
         top_nids = self.ii_topk_neighbors[item_nids]
-        import pdb; pdb.set_trace()
         return self.emb_table[top_nids + self.num_users].mean(dim=-2)
     
     def _do_propagation(self):
