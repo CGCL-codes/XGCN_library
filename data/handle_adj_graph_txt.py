@@ -18,12 +18,18 @@ def load_adj_as_edge_list(filename):
     dst_list = []
     with open(filename, 'r') as f:
         for _ in tqdm(range(num_lines)):
-            line = f.readline()  # src \t dst01,dst02,... 
-            src, dst = line.split()
+            # line = f.readline()  # src \t dst01,dst02,... 
+            # src, dst = line.split()
             
-            dst = np.array(list(map(lambda x:int(x), dst.split(','))),
-                           dtype=np.int32)
-            src = np.full(len(dst), int(src), dtype=np.int32)
+            # dst = np.array(list(map(lambda x:int(x), dst.split(','))),
+            #                dtype=np.int32)
+            # src = np.full(len(dst), int(src), dtype=np.int32)
+            
+            line = np.loadtxt(f, dtype=np.int32, max_rows=1)
+            if len(line) < 2:
+                continue
+            dst = line[1:]
+            src = np.full(len(dst), line[0], dtype=np.int32)
             
             src_list.append(src)
             dst_list.append(dst)
