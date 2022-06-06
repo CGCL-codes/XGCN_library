@@ -193,6 +193,13 @@ class xGCN(BaseEmbeddingModel):
             dnn = train_identical_mapping_dnn(dnn, self.emb_table)
         return dnn
     
+    def _print_emb_info(self, table, name):
+        emb_abs = table.abs()
+        print("[{} info]:".format(name))
+        print("    .abs().max():", emb_abs.max())
+        print("    .abs().mean():", emb_abs.mean())
+        print("    .std():", table.std())
+    
     def _calc_pprgo_out_emb(self, nids):
         top_nids = self.nei[nids]
         top_weights = self.wei[nids]
@@ -263,6 +270,7 @@ class xGCN(BaseEmbeddingModel):
                             self.A, self.emb_table.cpu(), self.config['num_gcn_layers'],
                             stack_layers=self.config['stack_layers']
                         ).to(self.emb_table_device)
+            self._print_emb_info(self.emb_table, 'emb_table')
     
     def _infer_dnn_output_emb(self, dnn, input_table, output_table):
         with torch.no_grad():
@@ -305,6 +313,7 @@ class xGCN(BaseEmbeddingModel):
                         input_table=self.emb_table,
                         output_table=self.emb_table
                     )
+            self._print_emb_info(self.emb_table, 'emb_table')
     
     def __call__(self, batch_data):
         return self.forward(batch_data)
@@ -391,6 +400,7 @@ class xGCN(BaseEmbeddingModel):
                 input_table=self.emb_table,
                 output_table=self.out_emb_table
             )
+        self._print_emb_info(self.out_emb_table, 'out_emb_table')
         
         if self.dataset_type == 'user-item':
             self.target_emb_table = self.out_emb_table[self.num_users:]
