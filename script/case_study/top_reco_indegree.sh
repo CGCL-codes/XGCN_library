@@ -9,6 +9,7 @@ DEVICE='cuda:0'
 DATASET='pokec'
 DATA_ROOT=$ALL_DATASETS_ROOT'/instance_'$DATASET
 
+# node2vec
 RESULTS_DIR='n2v_best'
 RESULTS_ROOT=$ALL_RESULTS_ROOT'/gnn_'$DATASET'/'$RESULTS_DIR
 
@@ -17,8 +18,8 @@ python $PROJECT_ROOT'/'case_study/top_reco_indegree.py $PROJECT_ROOT \
     --results_root $RESULTS_ROOT \
     --device $DEVICE \
 
-
-RESULTS_DIR='plot/dnn-lightgcn-final_version/[gcn1layer][scale][3layer][freq3][K10][endure3]'
+# pprgo
+RESULTS_DIR='plot/pprgo/[best][bpr][reg0]'
 RESULTS_ROOT=$ALL_RESULTS_ROOT'/gnn_'$DATASET'/'$RESULTS_DIR
 
 python $PROJECT_ROOT'/'case_study/top_reco_indegree.py $PROJECT_ROOT \
@@ -26,7 +27,8 @@ python $PROJECT_ROOT'/'case_study/top_reco_indegree.py $PROJECT_ROOT \
     --results_root $RESULTS_ROOT \
     --device $DEVICE \
 
-RESULTS_DIR='plot/pprgo/[best][bpr][reg0]'
+# xgcn
+RESULTS_DIR='plot/dnn-lightgcn-final_version/[gcn1layer][scale][3layer][freq3][K10][endure3]'
 RESULTS_ROOT=$ALL_RESULTS_ROOT'/gnn_'$DATASET'/'$RESULTS_DIR
 
 python $PROJECT_ROOT'/'case_study/top_reco_indegree.py $PROJECT_ROOT \
