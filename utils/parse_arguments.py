@@ -19,6 +19,9 @@ def _parse_arguments():
     parser.add_argument("--seed", type=int)
     parser.add_argument("--num_sample", type=int)
     
+    parser.add_argument("--num_part", type=int)
+    parser.add_argument("--part_method", type=str)
+    
     parser.add_argument("--validation_method", type=str)
     parser.add_argument("--test_method", type=str)
     parser.add_argument("--file_validation", type=str)
