@@ -27,7 +27,7 @@ python $PROJECT_ROOT'/'main/main.py $PROJECT_ROOT \
     --device $DEVICE \
     --validation_method 'one_pos_whole_graph' \
     --mask_nei_when_validation 1 \
-    --file_validation $DATA_ROOT'/validation.pkl' \
+    --file_validation $DATA_ROOT'/val_edges-1000.pkl' \
     --key_score_metric 'r100' \
     --convergence_threshold 20 \
     --epochs 200 \
