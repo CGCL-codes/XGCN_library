@@ -28,8 +28,14 @@ def main():
     g = dgl.graph((E_src, E_dst))
     in_degrees = g.in_degrees()
     
-    val_edges = io.load_pickle(osp.join(data_root, 'val_edges-1000.pkl'))
-    src = val_edges[:,0]
+    # val_edges = io.load_pickle(osp.join(data_root, 'val_edges-1000.pkl'))
+    # src = val_edges[:,0]
+    
+    all_nids = np.arange(g.num_nodes())
+    np.random.seed(2022)
+    np.random.shuffle(all_nids)
+    src = all_nids[:1000]
+    
     k = 100
     top_reco_indegrees = np.empty((len(src), k), dtype=np.int32)
     
