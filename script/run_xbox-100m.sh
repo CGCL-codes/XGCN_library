@@ -36,14 +36,12 @@ python $PROJECT_ROOT'/'main/main.py $PROJECT_ROOT \
     --seed $SEED \
     --device $DEVICE \
     --emb_table_device $EMB_TABLE_DEVICE \
-    --validation_method 'one_pos_whole_graph' \
-    --mask_nei_when_validation 1 \
-    --val_batch_size 32 \
-    --file_validation $DATA_ROOT'/test_edges-1000.pkl' \
-    --test_method 'one_pos_whole_graph' \
-    --mask_nei_when_test 1 \
-    --test_batch_size 32 \
-    --file_test $DATA_ROOT'/test_edges-1000.pkl' \
+    --validation_method 'one_pos_k_neg' \
+    --mask_nei_when_validation 0 \
+    --file_validation $DATA_ROOT'/test-1-99.pkl' \
+    --test_method 'one_pos_k_neg' \
+    --mask_nei_when_test 0 \
+    --file_test $DATA_ROOT'/test-1-99.pkl' \
     --prop_type 'lightgcn' --num_gcn_layers 1 --use_numba_csr_mult 1 \
     --use_special_dnn 1 \
     --dnn_arch '[torch.nn.Linear(32, 1024), torch.nn.Tanh(), torch.nn.Linear(1024, 1024), torch.nn.Tanh(), torch.nn.Linear(1024, 32)]' \
@@ -54,6 +52,22 @@ python $PROJECT_ROOT'/'main/main.py $PROJECT_ROOT \
     --epochs 120 --convergence_threshold 4 \
     --edge_sample_ratio 0.01 \
     # >> $LOG_FILE
+
+#   --validation_method 'one_pos_k_neg' \
+#   --mask_nei_when_validation 0 \
+#   --file_validation $DATA_ROOT'/test-1-99.pkl' \
+#   --test_method 'one_pos_k_neg' \
+#   --mask_nei_when_test 0 \
+#   --file_test $DATA_ROOT'/test-1-99.pkl' \
+
+# --validation_method 'one_pos_whole_graph' \
+# --mask_nei_when_validation 1 \
+# --val_batch_size 32 \
+# --file_validation $DATA_ROOT'/test_edges-1000.pkl' \
+# --test_method 'one_pos_whole_graph' \
+# --mask_nei_when_test 1 \
+# --test_batch_size 32 \
+# --file_test $DATA_ROOT'/test_edges-1000.pkl' \
 
 echo "[end at $(date)]" >> $LOG_FILE
 
