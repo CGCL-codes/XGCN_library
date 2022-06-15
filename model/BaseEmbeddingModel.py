@@ -135,7 +135,7 @@ class BaseEmbeddingModel:
             
             src_emb = self.out_emb_table[src]
             pos_emb = self.target_emb_table[pos]
-            neg_emb = self.target_emb_table[neg]
+            neg_emb = self.target_emb_table[torch.LongTensor(neg)]
             
             pos_score = dot_product(src_emb, pos_emb)
             neg_score = dot_product(src_emb, neg_emb)
