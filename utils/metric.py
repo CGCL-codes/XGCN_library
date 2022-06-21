@@ -40,6 +40,10 @@ def get_rank(A):
 def all_metrics(S):
     num_samples = S.shape[0]
     num_scores = S.shape[1]
+    
+    # add small noises
+    S += np.random.uniform(low=-1e-6, high=1e-6, size=S.shape)
+    
     rank = get_rank(S)
     
     # top1 = rank == 0
@@ -97,6 +101,8 @@ def _multi_pos_all_metrics(num_users, pos: list, all_item_score):
         for _ in range(len(pos))
     ]
     
+    all_item_score += np.random.uniform(low=-1e-6, high=1e-6, size=all_item_score.shape)
+    
     for i in numba.prange(len(pos)):
         _pos = pos[i] - num_users
         all_score = all_item_score[i]
@@ -151,6 +157,8 @@ def _new_multi_pos_all_metrics(pos_list, all_target_score):
         Dict.empty(key_type=types.unicode_type, value_type=types.float32)
         for _ in range(len(pos_list))
     ]
+    
+    all_target_score += np.random.uniform(low=-1e-6, high=1e-6, size=all_target_score.shape)
     
     topk_list = [20, 50, 100, 300]
     max_k = topk_list[-1]
