@@ -1,7 +1,7 @@
 from utils import io
 from utils.metric import all_metrics, multi_pos_all_metrics#, new_multi_pos_all_metrics
 from model.module import dot_product
-from data.csr_graph_helper import neighbors
+from data.csr_graph_helper import get_neighbors
 
 import numpy as np
 import numba
@@ -33,7 +33,7 @@ def init_emb_table(config, num_nodes=None):
 def mask_neighbor_score(csr_graph_indptr, csr_graph_indices,
                         src, all_item_score, num_user):
     for i, u in enumerate(src):
-        nei_item_id = neighbors(csr_graph_indptr, csr_graph_indices, u) - num_user
+        nei_item_id = get_neighbors(csr_graph_indptr, csr_graph_indices, u) - num_user
         all_item_score[i][nei_item_id] = -999999
 
 
@@ -41,7 +41,7 @@ def mask_neighbor_score(csr_graph_indptr, csr_graph_indices,
 def _mask_neighbor_score(csr_graph_indptr, csr_graph_indices,
                          src, all_target_score):
     for i, u in enumerate(src):
-        nei_target_id = neighbors(csr_graph_indptr, csr_graph_indices, u)
+        nei_target_id = get_neighbors(csr_graph_indptr, csr_graph_indices, u)
         all_target_score[i][nei_target_id] = -999999
 
 
@@ -49,7 +49,7 @@ def _mask_neighbor_score(csr_graph_indptr, csr_graph_indices,
 def _mask_neighbor_score_user_item(csr_graph_indptr, csr_graph_indices,
                          src, all_target_score, num_users):
     for i, u in enumerate(src):
-        nei_target_id = neighbors(csr_graph_indptr, csr_graph_indices, u)
+        nei_target_id = get_neighbors(csr_graph_indptr, csr_graph_indices, u)
         all_target_score[i][nei_target_id - num_users] = -999999
 
 

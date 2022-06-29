@@ -5,7 +5,7 @@ import torch
 
 
 @numba.jit(nopython=True)
-def neighbors(indptr, indices, u):
+def get_neighbors(indptr, indices, u):
     return indices[indptr[u] : indptr[u + 1]]
 
 
