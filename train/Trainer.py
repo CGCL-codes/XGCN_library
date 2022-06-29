@@ -1,7 +1,8 @@
 from .TrainTracer import TrainTracer
 from utils import io
 from utils.Timer import Timer
-from utils.utils import combine_dict_list_and_calc_mean, get_formatted_results
+from utils.utils import get_formatted_results
+from helper.eval_helper import eval_model
 
 import numpy as np
 import torch
@@ -74,15 +75,8 @@ class Trainer:
                         print("epoch {} val...".format(epoch))
                         self.model.prepare_for_eval()
                         
-                        batch_results_list = []
-                        batch_results_weights = []
-                        num_samples = self.val_dl.num_samples()
-                        for batch_data in tqdm(self.val_dl, desc="val"):
-                            batch_results, num_batch_samples = self.model.eval_a_batch(batch_data)
-                            batch_results_list.append(batch_results)
-                            batch_results_weights.append(num_batch_samples / num_samples)
+                        results = eval_model(self.model, self.val_dl, desc='val')
                         
-                        results = combine_dict_list_and_calc_mean(batch_results_list, batch_results_weights)
                         key_score = results[self.key_score_metric]
                         print("val:", results)
                         results.update({"loss": np.nan if epoch == 0 else epoch_loss})
@@ -141,18 +135,10 @@ class Trainer:
             print("test...")
             self.timer.start("test")
             with torch.no_grad():
-                # self.model.prepare_for_eval()
                 self.load_best_model()
                 
-                batch_results_list = []
-                batch_results_weights = []
-                num_samples = self.test_dl.num_samples()
-                for batch_data in tqdm(self.test_dl, desc="test"):
-                    batch_results, num_batch_samples = self.model.eval_a_batch(batch_data)
-                    batch_results_list.append(batch_results)
-                    batch_results_weights.append(num_batch_samples / num_samples)
+                results = eval_model(self.model, self.val_dl, desc='test')
                 
-                results = combine_dict_list_and_calc_mean(batch_results_list, batch_results_weights)
                 results['formatted'] = get_formatted_results(results)
                 print("test:", results)
                 io.save_json(osp.join(self.results_root, "test_results.json"), results)
