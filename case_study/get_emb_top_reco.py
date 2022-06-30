@@ -4,7 +4,7 @@ sys.path.append(PROJECT_ROOT)
 
 from utils import io
 from utils.parse_arguments import parse_arguments
-from utils.utils import print_dict
+from utils.utils import print_dict, ensure_dir
 from model.BaseEmbeddingModel import BaseEmbeddingModel
 from helper.build_val_test_dl import build_eval_dl
 
@@ -21,6 +21,9 @@ def main():
     config = parse_arguments()
     print_dict(config)
     data_root = config['data_root']
+    results_root = config['results_root']  # Note: the root to save top-reco data, not the out_emb_table root
+    ensure_dir(results_root)
+    io.save_yaml(osp.join(results_root, 'config.yaml'), config)
     
     data = {}
     model = BaseEmbeddingModel(config, data)
@@ -34,6 +37,9 @@ def main():
     np.random.seed(2022)
     np.random.shuffle(all_nids)
     case_study_nids = all_nids[:config['num_sample']]
+    
+    io.save_pickle(osp.join(results_root, 'case_study_source_nodes.pkl'), case_study_nids)
+    
     dl = torch.utils.data.DataLoader(case_study_nids, batch_size=128)
     
     topk = config['topk']
@@ -48,7 +54,7 @@ def main():
         R[st : st + len(batch_R)] = batch_R.numpy()
         st += len(batch_R)
     
-    io.save_pickle(config['file_output'], R)
+    io.save_pickle(osp.join(results_root, 'top_reco_nodes.pkl'), R)
     
     # eval_dl = build_eval_dl(
     #     eval_method=config['test_method'],
