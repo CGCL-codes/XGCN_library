@@ -91,7 +91,7 @@ def main():
         st += len(batch_H)
     
     io.save_pickle(config['file_output'], H)
-    import pdb; pdb.set_trace()
+
 
 if __name__ == "__main__":
     
