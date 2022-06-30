@@ -38,7 +38,7 @@ def ppr_for_one_node_on_whole_graph(indptr, indices, source, num_walks, walk_len
     return all_target_score
 
 
-@numba.jit(nopython=True)
+@numba.jit(nopython=True, parallel=True)
 def ppr_for_batch_nodes_on_whole_graph(indptr, indices, nids, num_walks, walk_length, alpha):
     num_nodes = len(indptr) - 1
     batch_size = len(nids)
