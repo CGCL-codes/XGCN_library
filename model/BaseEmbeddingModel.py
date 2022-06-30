@@ -100,28 +100,36 @@ class BaseEmbeddingModel:
             self.target_emb_table = self.out_emb_table[self.num_users:]
         else:  # 'social'
             self.target_emb_table = self.out_emb_table
+    
+    def mask_neighbors_scores(self, src, all_target_score):
+        if self.train_csr_indptr is None:
+            self.prepare_csr_graph()
+        if self.dataset_type == 'user-item':
+            _mask_neighbor_score_user_item(
+                self.train_csr_indptr, self.train_csr_indices,
+                src, all_target_score, self.num_users
+            )
+        else:
+            _mask_neighbor_score(
+                self.train_csr_indptr, self.train_csr_indices,
+                src, all_target_score
+            )
+        
+    def infer_whole_graph(self, src, mask_nei=False):        
+        src_emb = self.out_emb_table[src]
+        all_target_score = (src_emb @ self.target_emb_table.t()).cpu().numpy()
+        
+        if mask_nei:
+            self.mask_neighbors_scores(src, all_target_score)
+        
+        return all_target_score
         
     def eval_a_batch(self, batch_data, only_return_all_target_score=False):
         if self.eval_on_whole_graph:
             src, pos = batch_data
             num_batch_samples = len(src)
             
-            src_emb = self.out_emb_table[src]
-            all_target_score = (src_emb @ self.target_emb_table.t()).cpu().numpy()
-            
-            if self.mask_nei:
-                if self.train_csr_indptr is None:
-                    self.prepare_csr_graph()
-                if self.dataset_type == 'user-item':
-                    _mask_neighbor_score_user_item(
-                        self.train_csr_indptr, self.train_csr_indices,
-                        src, all_target_score, self.num_users
-                    )
-                else:
-                    _mask_neighbor_score(
-                        self.train_csr_indptr, self.train_csr_indices,
-                        src, all_target_score
-                    )
+            all_target_score = self.infer_whole_graph(src, mask_nei=self.mask_nei)
             
             if only_return_all_target_score:
                 return all_target_score
