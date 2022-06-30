@@ -37,6 +37,9 @@ def main():
     np.random.seed(2022)
     np.random.shuffle(all_nids)
     case_study_nids = all_nids[:config['num_sample']]
+    
+    io.save_pickle(osp.join(results_root, 'case_study_source_nodes.pkl'), case_study_nids)
+
     dl = torch.utils.data.DataLoader(case_study_nids, batch_size=128)
     
     topk = config['topk']
@@ -58,9 +61,8 @@ def main():
         
         R[st : st + len(batch_R)] = batch_R.numpy()
         st += len(batch_R)
-
-    import pdb; pdb.set_trace()
-    io.save_pickle(osp.join(results_root, 'top-reco.pkl'), R)
+    
+    io.save_pickle(osp.join(results_root, 'top_reco_nodes.pkl'), R)
 
 
 if __name__ == "__main__":
