@@ -90,13 +90,18 @@ class BaseEmbeddingModel:
             self.train_csr_indices = io.load_pickle(osp.join(data_root, 'train_csr_indices.pkl'))
     
     def load(self, root):
-        self.out_emb_table = torch.load(osp.join(root, "out_emb_table.pt"))
+        self.load_file(
+            osp.join(root, "out_emb_table.pt")
+        )
+    
+    def load_file(self, file):
+        self.out_emb_table = torch.load(file)
         if self.dataset_type == 'user-item':
             self.target_emb_table = self.out_emb_table[self.num_users:]
         else:  # 'social'
             self.target_emb_table = self.out_emb_table
         
-    def eval_a_batch(self, batch_data):
+    def eval_a_batch(self, batch_data, only_return_all_target_score=False):
         if self.eval_on_whole_graph:
             src, pos = batch_data
             num_batch_samples = len(src)
@@ -117,6 +122,9 @@ class BaseEmbeddingModel:
                         self.train_csr_indptr, self.train_csr_indices,
                         src, all_target_score
                     )
+            
+            if only_return_all_target_score:
+                return all_target_score
             
             if self.one_pos:
                 pos_emb = self.target_emb_table[pos]
@@ -141,6 +149,10 @@ class BaseEmbeddingModel:
             neg_score = dot_product(src_emb, neg_emb)
             
             pos_neg_score = torch.cat((pos_score.view(-1, 1), neg_score), dim=-1).cpu().numpy()
+            
+            if only_return_all_target_score:
+                return pos_neg_score
+            
             batch_results = all_metrics(pos_neg_score)
         
         return batch_results, num_batch_samples
