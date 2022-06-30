@@ -38,8 +38,6 @@ def main():
     np.random.shuffle(all_nids)
     case_study_nids = all_nids[:config['num_sample']]
     
-    io.save_pickle(osp.join(results_root, 'case_study_source_nodes.pkl'), case_study_nids)
-    
     dl = torch.utils.data.DataLoader(case_study_nids, batch_size=128)
     
     topk = config['topk']
@@ -54,7 +52,15 @@ def main():
         R[st : st + len(batch_R)] = batch_R.numpy()
         st += len(batch_R)
     
-    io.save_pickle(osp.join(results_root, 'top_reco_nodes.pkl'), R)
+    X = np.concatenate([case_study_nids.reshape(-1, 1), R], axis=-1)
+    '''
+    X: numpy array, top-k reco
+    [[src0, dst1, dst2, ..., dst_k],
+     [src1, ..., ],
+     ...
+    ]
+    '''
+    io.save_pickle(osp.join(results_root, 'top_reco.pkl'), X)
     
     # eval_dl = build_eval_dl(
     #     eval_method=config['test_method'],
