@@ -135,6 +135,7 @@ class BaseEmbeddingModel:
                 return all_target_score
             
             if self.one_pos:
+                src_emb = self.out_emb_table[src]
                 pos_emb = self.target_emb_table[pos]
                 pos_score = dot_product(src_emb, pos_emb)
                 pos_neg_score = np.concatenate((pos_score.view(-1, 1).cpu().numpy(), all_target_score), axis=-1)
