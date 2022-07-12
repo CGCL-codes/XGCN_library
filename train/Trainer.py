@@ -137,7 +137,7 @@ class Trainer:
             with torch.no_grad():
                 self.load_best_model()
                 
-                results = eval_model(self.model, self.val_dl, desc='test')
+                results = eval_model(self.model, self.test_dl, desc='test')
                 
                 results['formatted'] = get_formatted_results(results)
                 print("test:", results)
