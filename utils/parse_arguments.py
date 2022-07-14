@@ -13,6 +13,7 @@ def _parse_arguments():
     
     parser.add_argument("--dataset_name", type=str)
     parser.add_argument("--dataset_type", type=str)
+    parser.add_argument("--raw_data_root", type=str)
     parser.add_argument("--data_root", type=str)
     parser.add_argument("--results_root", type=str)
     
