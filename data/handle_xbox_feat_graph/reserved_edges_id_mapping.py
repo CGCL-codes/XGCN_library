@@ -17,7 +17,7 @@ def process_edges_file(file_old, dict_old2new, file_new):
     edges = []
     n = wc_count(file_old)
     with open(file_old, 'r') as f:
-        for _ in range(n):
+        for _ in tqdm(range(n)):
             line = f.readline()
             x = line.split()
             if x[2] == '1':
