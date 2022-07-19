@@ -1,5 +1,5 @@
 from model.BaseEmbeddingModel import BaseEmbeddingModel, init_emb_table
-from model.module import dot_product, bpr_loss, bce_loss, cosine_contrastive_loss
+from model.module import dot_product, bpr_loss
 
 import torch
 from tqdm import tqdm
@@ -15,14 +15,14 @@ class BaseGNNModel(BaseEmbeddingModel):
         self.dataset_type = self.info['dataset_type']
         if self.dataset_type == 'user-item':
             self.num_users = self.info['num_users']
-        self.num_nodes = self.info['num_nodes']
 
-        self.emb_table = init_emb_table(config, self.num_nodes)
+        self.base_emb_table = init_emb_table(config, self.info['num_nodes'])
         
         self.param_list = []
-        if not ('freeze_emb' in config and config['freeze_emb']):
-            self.param_list.append({'params': self.emb_table, 'lr': config['emb_lr']})
-    
+        if not self.config['freeze_emb']:
+            self.param_list.append({'params': list(self.base_emb_table.parameters()),
+                                    'lr': config['emb_lr']})
+        
     def __call__(self, batch_data):
         return self.forward(batch_data)
 
@@ -32,10 +32,10 @@ class BaseGNNModel(BaseEmbeddingModel):
         blocks = [block.to(self.device) for block in blocks]
         
         output_embs = self.gnn(
-            blocks, self.emb_table[input_nids]
+            blocks, self.base_emb_table(input_nids.to(self.device))
         )
         
-        output_embs = output_embs[local_idx].view(3, -1, self.emb_table.shape[-1])
+        output_embs = output_embs[local_idx].view(3, -1, self.base_emb_table.weight.shape[-1])
         
         src_emb = output_embs[0, :, :]
         pos_emb = output_embs[1, :, :]
@@ -58,15 +58,15 @@ class BaseGNNModel(BaseEmbeddingModel):
     
     def prepare_for_eval(self):
         node_collator = self.data['node_collator']
-        self.out_emb_table = torch.empty(self.emb_table.shape, dtype=torch.float32).to(self.device)
-        dl = torch.utils.data.DataLoader(dataset=torch.arange(len(self.emb_table)), 
+        self.out_emb_table = torch.empty(self.base_emb_table.weight.shape, dtype=torch.float32).to(self.device)
+        dl = torch.utils.data.DataLoader(dataset=torch.arange(self.info['num_nodes']), 
                                          batch_size=8192,
                                          collate_fn=node_collator.collate)
         
         for input_nids, output_nids, blocks in tqdm(dl, desc="get all gnn output embs"):
             blocks = [block.to(self.device) for block in blocks]
             output_embs = self.gnn(
-                blocks, self.emb_table[input_nids]
+                blocks, self.base_emb_table(input_nids.to(self.device))
             )
             self.out_emb_table[output_nids] = output_embs
         
@@ -78,4 +78,4 @@ class BaseGNNModel(BaseEmbeddingModel):
     def save(self, root):
         torch.save(self.out_emb_table, osp.join(root, "out_emb_table.pt"))
         torch.save(self.gnn.state_dict(), osp.join(root, "gnn.pt"))
-        torch.save(self.emb_table, osp.join(root, "emb_table.pt"))
+        # torch.save(self.base_emb_table.weight, osp.join(root, "base_emb_table.pt"))

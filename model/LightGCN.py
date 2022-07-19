@@ -66,8 +66,9 @@ class BaseLightGCN(BaseEmbeddingModel):
         
         self.param_list = []
         if not self.config['freeze_emb']:
-            self.param_list.append({'params': self.base_emb_table, 'lr': config['emb_lr']})
-        
+            self.param_list.append({'params': list(self.base_emb_table.parameters()),
+                                    'lr': config['emb_lr']})
+                
         self.build_gcn(config, data)
 
     @abstractclassmethod

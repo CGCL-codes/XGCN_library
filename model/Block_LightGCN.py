@@ -2,9 +2,10 @@ from model.BaseGNNModel import BaseGNNModel
 
 import torch
 import dgl
+import os.path as osp
 
 
-class LightGCN_Module(torch.nn.Module):
+class Block_LightGCNConv(torch.nn.Module):
     
     def __init__(self):
         super().__init__()
@@ -24,7 +25,7 @@ class Block_LightGCN(BaseGNNModel):
     
     def __init__(self, config, data):
         super().__init__(config, data)        
-        self.gnn = LightGCN_Module()
+        self.gnn = Block_LightGCNConv()
         
         # add edge_weights to the graph
         g = data['node_collate_graph']  # undirected
@@ -34,3 +35,6 @@ class Block_LightGCN(BaseGNNModel):
         d2 = degrees[dst]
         edge_weights = (1 / (d1 * d2)).sqrt()
         g.edata['ew'] = edge_weights
+    
+    def save(self, root):
+        torch.save(self.out_emb_table, osp.join(root, "out_emb_table.pt"))
