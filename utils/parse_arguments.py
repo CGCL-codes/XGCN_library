@@ -60,6 +60,8 @@ def _parse_arguments():
     parser.add_argument("--loss_fn", type=str)
     parser.add_argument("--margin", type=float)
     
+    parser.add_argument("--use_sparse", type=int)
+    
     parser.add_argument("--device", type=str)
     parser.add_argument("--emb_table_device", type=str)
     parser.add_argument("--num_workers", type=int)
