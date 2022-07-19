@@ -17,7 +17,7 @@ import time
 
 
 def calc_beta_from_degree(di, dj):
-    beta_i = np.sqrt(di + 1) / di
+    beta_i = np.sqrt(di + 1) / (di + 1e8)
     beta_j = 1 / np.sqrt(dj + 1)
     return beta_i, beta_j
 
