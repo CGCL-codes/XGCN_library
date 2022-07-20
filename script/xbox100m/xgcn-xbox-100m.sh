@@ -71,10 +71,10 @@ python $PROJECT_ROOT'/'main/main.py $PROJECT_ROOT \
 
 echo "[end at $(date)]" >> $LOG_FILE
 
-#########################################
-# save as .npy
-FILE_INPUT=$RESULTS_ROOT'/out_emb_table.pt'
-FILE_OUTPUT=$RESULTS_ROOT'/out_emb_table.npy'
-python $PROJECT_ROOT'/'data/save_pt_as_npy.py $PROJECT_ROOT \
-    --file_input $FILE_INPUT \
-    --file_output $FILE_OUTPUT \
+# #########################################
+# # save as .npy
+# FILE_INPUT=$RESULTS_ROOT'/out_emb_table.pt'
+# FILE_OUTPUT=$RESULTS_ROOT'/out_emb_table.npy'
+# python $PROJECT_ROOT'/'data/save_pt_as_npy.py $PROJECT_ROOT \
+#     --file_input $FILE_INPUT \
+#     --file_output $FILE_OUTPUT \
