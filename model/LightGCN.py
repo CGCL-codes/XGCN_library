@@ -156,7 +156,7 @@ class BaseLightGCN(BaseEmbeddingModel):
         return loss
 
 
-class LightGCN_DGL(BaseLightGCN):
+class LightGCN(BaseLightGCN):
     
     def __init__(self, config, data):
         super().__init__(config, data)
@@ -182,26 +182,3 @@ class LightGCN_DGL(BaseLightGCN):
     
     def get_out_emb(self):
         return self.gcn(self.undi_g, self.base_emb_table)
-
-
-class LightGCN_Torch(BaseLightGCN):
-    
-    def __init__(self, config, data):
-        super().__init__(config, data)
-            
-    def build_gcn(self, config, data):
-        self.Asp = io.load_pickle(osp.join(config['data_root'], 'train_csr_undi_graph.sp.pkl'))
-        data['csr_graph'] = self.Asp
-        # self.A = csr_helper.from_scipy_to_torch(self.Asp)
-        # self.A = deepcopy(self.A).to(config['device'])
-        
-        undi_g = io.load_pickle(osp.join(config['data_root'], 'train_undi_graph.dgl.pkl'))
-        E = undi_g.edges()
-        idx = torch.stack(E)
-        num_nodes = undi_g.num_nodes()
-        self.A = torch.sparse_coo_tensor(
-            idx, undi_g.edata['ew'], (num_nodes, num_nodes)
-        ).to(config['device'])
-    
-    def get_out_emb(self):
-        return get_lightgcn_out_emb(self.A, self.base_emb_table, self.config['num_gcn_layers'])

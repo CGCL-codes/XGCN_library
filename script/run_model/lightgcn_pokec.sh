@@ -18,7 +18,7 @@ RESULTS_DIR='lightgcn/[best'$SEED']'
 RESULTS_ROOT=$ALL_RESULTS_ROOT'/gnn_'$DATASET'/'$RESULTS_DIR
 
 python $PROJECT_ROOT'/'main/main.py $PROJECT_ROOT \
-    --model 'lightgcn_dgl' \
+    --model 'lightgcn' \
     --config_file $CONFIG_ROOT'/lightgcn-config.yaml' \
     --data_root $DATA_ROOT \
     --seed $SEED \

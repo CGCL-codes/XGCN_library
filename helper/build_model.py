@@ -1,5 +1,5 @@
 from model.Node2vecWrapper import Node2vecWrapper
-from model.LightGCN import LightGCN_DGL, LightGCN_Torch
+from model.LightGCN import LightGCN
 from model.xGCN import xGCN
 from model.UltraGCN.UltraGCN import UltraGCN
 from model.SimpleX import SimpleX
@@ -14,9 +14,8 @@ from model.Block_SimpleX import Block_SimpleX
 def build_model(config, data):
     model = {
         'node2vec': Node2vecWrapper,
-        'lightgcn_dgl': LightGCN_DGL,
-        # 'lightgcn_torch': LightGCN_Torch,
-        'lightgcn_dgl_block': Block_LightGCN,
+        'lightgcn': LightGCN,
+        'block_lightgcn': Block_LightGCN,
         'block_simplex': Block_SimpleX,
         'xgcn': xGCN,
         'ultragcn': UltraGCN,

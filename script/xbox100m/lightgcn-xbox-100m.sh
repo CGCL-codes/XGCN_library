@@ -18,7 +18,7 @@ RESULTS_DIR='lightgcn/[0]'
 RESULTS_ROOT=$ALL_RESULTS_ROOT'/gnn_'$DATASET'/'$RESULTS_DIR
 
 python $PROJECT_ROOT'/'main/main.py $PROJECT_ROOT \
-    --model 'lightgcn_dgl_block' --train_dl 'EdgeBased_Sampling_Block_TrainDataLoader' \
+    --model 'block_lightgcn' --train_dl 'EdgeBased_Sampling_Block_TrainDataLoader' \
     --config_file $CONFIG_ROOT'/lightgcn-config.yaml' \
     --data_root $DATA_ROOT \
     --results_root $RESULTS_ROOT \

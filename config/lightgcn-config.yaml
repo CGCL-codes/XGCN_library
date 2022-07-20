@@ -1,4 +1,4 @@
-model: lightgcn_dgl
+model: lightgcn
 train_dl: EdgeBased_Sampling_TrainDataLoader
 
 device: 'cuda:0'
