@@ -26,7 +26,7 @@ python $PROJECT_ROOT'/'main/main.py $PROJECT_ROOT \
     --device $DEVICE \
     --validation_method 'one_pos_k_neg' \
     --mask_nei_when_validation 0 \
-    --file_validation $DATA_ROOT'/test-1-99.pkl' \
+    --file_validation $DATA_ROOT'/test-1-99.pkl' --key_score_metric 'n20'  \
     --test_method 'one_pos_whole_graph' \
     --mask_nei_when_test 1 \
     --file_test $DATA_ROOT'/test_edges-5000.pkl' \
@@ -34,7 +34,7 @@ python $PROJECT_ROOT'/'main/main.py $PROJECT_ROOT \
     --emb_dim 32 \
     --epochs 120 --convergence_threshold 2 \
     --edge_sample_ratio 0.01 \
-    --num_gcn_layers 1 --num_layer_sample '[]' --num_workers 5 \
+    --num_gcn_layers 1 --num_layer_sample '[32,]' --num_workers 4 \
     --l2_reg_weight 0 \
     --loss_fn 'bpr_loss' --num_neg 1 \
     --use_sparse 1 \

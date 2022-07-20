@@ -46,7 +46,7 @@ python $PROJECT_ROOT'/'main/main.py $PROJECT_ROOT \
     --loss_fn 'bpr_loss' \
     --validation_method 'one_pos_k_neg' \
     --mask_nei_when_validation 0 \
-    --file_validation $DATA_ROOT'/test-1-99.pkl' \
+    --file_validation $DATA_ROOT'/test-1-99.pkl' --key_score_metric 'n20'  \
     --test_method 'one_pos_whole_graph' \
     --mask_nei_when_test 1 \
     --file_test $DATA_ROOT'/test_edges-5000.pkl' \

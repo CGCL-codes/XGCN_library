@@ -6,7 +6,7 @@ CONFIG_ROOT=$PROJECT_ROOT'/config'
 ALL_DATASETS_ROOT=$ALL_DATA_ROOT'/datasets'
 ALL_RESULTS_ROOT=$ALL_DATA_ROOT'/model_outputs'
 
-DEVICE='cuda:0'
+DEVICE='cpu'
 EMB_TABLE_DEVICE='cpu'
 
 #########################################
@@ -38,10 +38,10 @@ python $PROJECT_ROOT'/'main/main.py $PROJECT_ROOT \
     --emb_table_device $EMB_TABLE_DEVICE \
     --validation_method 'one_pos_k_neg' \
     --mask_nei_when_validation 0 \
-    --file_validation $DATA_ROOT'/test-1-99.pkl' \
-    --test_method 'one_pos_k_neg' \
-    --mask_nei_when_test 0 \
-    --file_test $DATA_ROOT'/test-1-99.pkl' \
+    --file_validation $DATA_ROOT'/test-1-99.pkl' --key_score_metric 'n20' \
+    --test_method 'one_pos_whole_graph' \
+    --mask_nei_when_test 1 \
+    --file_test $DATA_ROOT'/test_edges-5000.pkl' \
     --prop_type 'lightgcn' --num_gcn_layers 1 --use_numba_csr_mult 1 \
     --use_special_dnn 1 \
     --dnn_arch '[torch.nn.Linear(32, 1024), torch.nn.Tanh(), torch.nn.Linear(1024, 1024), torch.nn.Tanh(), torch.nn.Linear(1024, 32)]' \
