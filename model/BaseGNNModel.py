@@ -68,7 +68,7 @@ class BaseGNNModel(BaseEmbeddingModel):
             output_embs = self.gnn(
                 blocks, self.base_emb_table(input_nids.to(self.device))
             )
-            self.out_emb_table[output_nids] = output_embs
+            self.out_emb_table[output_nids.long()] = output_embs
         
         if self.dataset_type == 'user-item':
             self.target_emb_table = self.out_emb_table[self.num_users:]

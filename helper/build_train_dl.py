@@ -4,6 +4,7 @@ from dataloader.train_dataloader import \
     EdgeBased_Full_TrainDataLoader, \
     NodeBased_TrainDataLoader
 
+import torch
 import dgl
 import os.path as osp
 
@@ -75,7 +76,7 @@ def _build_gnn_train_dl(config, data):
         # build node_collate_graph
         g_src = io.load_pickle(osp.join(data_root, 'train_undi_csr_src_indices.pkl'))
         g_dst = io.load_pickle(osp.join(data_root, 'train_undi_csr_indices.pkl'))
-        node_collate_graph = dgl.graph((g_src, g_dst))
+        node_collate_graph = dgl.graph((g_src, g_dst), idtype=torch.int32)
 
         train_dl = EdgeBased_Sampling_Block_TrainDataLoader(
             info, E_src, E_dst,

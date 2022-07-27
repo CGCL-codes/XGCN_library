@@ -41,7 +41,7 @@ python $PROJECT_ROOT'/'main/main.py $PROJECT_ROOT \
     --ppr_data_root $PPR_DATA_ROOT \
     --results_root $RESULTS_ROOT \
     --device $DEVICE \
-    --emb_lr 0.005 \
+    --emb_lr 0.02 \
     --l2_reg_weight 0.0 \
     --loss_fn 'bpr_loss' \
     --validation_method 'one_pos_k_neg' \
@@ -52,6 +52,6 @@ python $PROJECT_ROOT'/'main/main.py $PROJECT_ROOT \
     --file_test $DATA_ROOT'/test_edges-5000.pkl' \
     --train_batch_size 1024 \
     --emb_dim 32 \
-    --epochs 120 --convergence_threshold 2 \
+    --epochs 120 --convergence_threshold 10 \
     --edge_sample_ratio 0.01 \
     --use_sparse 1 \

@@ -21,16 +21,16 @@ def init_emb_table(config, num_nodes=None):
     emb_table_device = config['emb_table_device'] if 'emb_table_device' in config else config['device']
     emb_table = emb_table.to(emb_table_device)
     
-    if not ('use_sparse' in config and config['use_sparse']):
-        if not ('freeze_emb' in config and config['freeze_emb']):
-            emb_table.requires_grad = True
-        return emb_table
-    else:
-        emb_table = torch.nn.Embedding.from_pretrained(
-            emb_table, freeze=bool('freeze_emb' in config and config['freeze_emb']),
-            sparse=bool('use_sparse' in config and config['use_sparse'])
-        )
-        return emb_table
+    # if not ('use_sparse' in config and config['use_sparse']):
+    #     if not ('freeze_emb' in config and config['freeze_emb']):
+    #         emb_table.requires_grad = True
+    #     return emb_table
+    # else:
+    emb_table = torch.nn.Embedding.from_pretrained(
+        emb_table, freeze=bool('freeze_emb' in config and config['freeze_emb']),
+        sparse=bool('use_sparse' in config and config['use_sparse'])
+    )
+    return emb_table
 
 
 @numba.jit(nopython=True)
