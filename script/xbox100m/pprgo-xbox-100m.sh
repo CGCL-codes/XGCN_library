@@ -55,3 +55,30 @@ python $PROJECT_ROOT'/'main/main.py $PROJECT_ROOT \
     --epochs 120 --convergence_threshold 10 \
     --edge_sample_ratio 0.01 \
     --use_sparse 1 \
+    # --from_pretrained 1 --file_pretrained_emb $RESULTS_ROOT'/base_emb_table.pt'
+
+
+### for debug on pokec:
+# python $PROJECT_ROOT'/'main/main.py $PROJECT_ROOT \
+#     --config_file $CONFIG_ROOT'/pprgo-config.yaml' \
+#     --data_root $DATA_ROOT \
+#     --seed $SEED \
+#     --ppr_data_root $ALL_RESULTS_ROOT'/gnn_'$DATASET'/ppr/undirected-top100' \
+#     --results_root $RESULTS_ROOT \
+#     --device $DEVICE \
+#     --emb_lr 0.005 \
+#     --l2_reg_weight 0.0 \
+#     --loss_fn 'bpr_loss' \
+#     --validation_method 'one_pos_whole_graph' \
+#     --mask_nei_when_validation 1 \
+#     --file_validation $DATA_ROOT'/val_edges-1000.pkl' \
+#     --key_score_metric 'r100' \
+#     --test_method 'multi_pos_whole_graph' \
+#     --mask_nei_when_test 1 \
+#     --file_test $DATA_ROOT'/test.pkl' \
+#     --train_batch_size 1024 \
+#     --emb_dim 32 \
+#     --epochs 120 --convergence_threshold 10 \
+#     --edge_sample_ratio 0.01 \
+#     --use_sparse 1 \
+#     --from_pretrained 1 --file_pretrained_emb $RESULTS_ROOT'/base_emb_table.pt' \

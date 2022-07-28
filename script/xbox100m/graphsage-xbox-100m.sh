@@ -38,6 +38,6 @@ python $PROJECT_ROOT'/'main/main.py $PROJECT_ROOT \
     --freeze_emb 1 \
     --use_sparse 0 \
     --num_gcn_layers 2 --num_layer_sample '[10, 20]' \
-    --gnn_arch "[{'in_feats': 64, 'out_feats': 64, 'aggregator_type': 'pool', 'activation': torch.tanh}, {'in_feats': 64, 'out_feats': 64, 'aggregator_type': 'pool'}]" \
+    --gnn_arch "[{'in_feats': 32, 'out_feats': 32, 'aggregator_type': 'pool', 'activation': torch.tanh}, {'in_feats': 32, 'out_feats': 32, 'aggregator_type': 'pool'}]" \
     # --num_gcn_layers 1 --num_layer_sample '[10]' \
-    # --gnn_arch "[{'in_feats': 64, 'out_feats': 64, 'aggregator_type': 'pool'}]" \
+    # --gnn_arch "[{'in_feats': 32, 'out_feats': 32, 'aggregator_type': 'pool'}]" \
