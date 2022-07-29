@@ -1,4 +1,7 @@
+from model.OptiManager import OptiManager
+
 import torch
+
 
 def build_optimizer(config, data):
     model = data['model']
@@ -7,9 +10,12 @@ def build_optimizer(config, data):
         print("## use SparseAdam")
         opt = torch.optim.SparseAdam(model.model.parameters(), lr=config['emb_lr'])
     else:
-        if config['use_sparse']:
-            print("## use SparseAdam")
-            opt = torch.optim.SparseAdam(model.parameters())
+        if isinstance(model.parameters(), dict):
+            opt = OptiManager(model.parameters())
         else:
-            opt = torch.optim.Adam(model.parameters())
+            if config['use_sparse']:
+                print("## use SparseAdam")
+                opt = torch.optim.SparseAdam(model.parameters())
+            else:
+                opt = torch.optim.Adam(model.parameters())
     return opt
