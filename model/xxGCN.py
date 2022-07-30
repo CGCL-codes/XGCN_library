@@ -23,7 +23,8 @@ class MyDNN(torch.nn.Module):
         #     torch.nn.Tanh(), 
         #     torch.nn.Linear(1024, 64)
         # )
-        
+        print("## dnn")
+        print(self.dnn)
         self.scale_net = torch.nn.Sequential(*eval(scale_net_arch))
         # self.scale_net = torch.nn.Sequential(
         #     torch.nn.Linear(64, 32),
@@ -31,6 +32,8 @@ class MyDNN(torch.nn.Module):
         #     torch.nn.Linear(32, 1),
         #     torch.nn.Sigmoid()
         # )
+        print("## scale_net")
+        print(self.scale_net)
     
     def forward(self, X):
         
@@ -41,40 +44,7 @@ class MyDNN(torch.nn.Module):
         return X
 
 
-def train_identical_mapping_dnn(dnn, embeddings):
-    print("## train_identical_mapping_dnn")
-    loss_fn = torch.nn.MSELoss()
-    opt = torch.optim.Adam(dnn.parameters(), lr=0.001)
-    
-    def get_loss():
-        idx = torch.randint(0, len(embeddings), (1024,))
-        X = embeddings[idx]
-        X_out = dnn(X)
-        loss = loss_fn(X, X_out)
-        return loss
-    
-    best_loss = 999999
-    with torch.no_grad():
-        loss = get_loss()
-    epoch = 0
-    
-    while True:
-        if not (epoch % 100):
-            print(epoch, loss.item())
-            if loss.item() > best_loss:
-                break
-            best_loss = loss.item()
-        epoch += 1
-        
-        opt.zero_grad()
-        loss = get_loss()
-        loss.backward()
-        opt.step()
-    
-    return dnn
-
-
-class xGCN(BaseEmbeddingModel):
+class xxGCN(BaseEmbeddingModel):
     
     def __init__(self, config, data):
         super().__init__(config, data)
@@ -112,9 +82,10 @@ class xGCN(BaseEmbeddingModel):
             
             if 'use_item2item_graph_for_item_prop' in self.config and \
                 self.config['use_item2item_graph_for_item_prop']:
-                topk = self.config['topk']
-                ii_topk_neighbors = io.load_pickle(config['file_ii_topk_neighbors'])
-                self.ii_topk_neighbors = torch.LongTensor(ii_topk_neighbors[:, :topk])
+                assert 0
+                # topk = self.config['topk']
+                # ii_topk_neighbors = io.load_pickle(config['file_ii_topk_neighbors'])
+                # self.ii_topk_neighbors = torch.LongTensor(ii_topk_neighbors[:, :topk])
                 
             E_src = io.load_pickle(osp.join(data_root, 'train_undi_csr_src_indices.pkl'))
             E_dst = io.load_pickle(osp.join(data_root, 'train_undi_csr_indices.pkl'))
@@ -134,9 +105,10 @@ class xGCN(BaseEmbeddingModel):
             del all_degrees
             
             if self.config['use_numba_csr_mult']:
-                self.indptr = indptr
-                self.indices = E_dst
-                self.edge_weights = edge_weights.numpy()
+                assert 0
+                # self.indptr = indptr
+                # self.indices = E_dst
+                # self.edge_weights = edge_weights.numpy()
             elif hasattr(torch, 'sparse_csr_tensor'):
                 self.A = torch.sparse_csr_tensor(
                     torch.LongTensor(np.array(indptr, dtype=np.int64)),
@@ -155,15 +127,20 @@ class xGCN(BaseEmbeddingModel):
                     (self.num_nodes, self.num_nodes)
                 )
         
-        self.emb_table = init_emb_table(config, self.num_nodes)
-        self.emb_table = self.emb_table.weight
+        self.emb_table = torch.FloatTensor(size=(self.num_nodes, self.config['emb_dim'])).to(self.emb_table_device)
+        torch.nn.init.normal_(self.emb_table, mean=0.0, std=config['emb_init_std'])
+
+        self.prop_emb_table = torch.FloatTensor(size=(self.num_nodes, self.config['emb_dim'])).to(self.emb_table_device)
         
+        self.out_emb_table = None
+
         # build dnn and optimizer
         if self.config['use_two_dnn']:
-            assert self.dataset_type == 'user-item'
-            self.user_dnn = self._build_dnn()
-            self.item_dnn = self._build_dnn()
-            dnn_params = [*self.user_dnn.parameters(), *self.item_dnn.parameters()]
+            assert 0
+            # assert self.dataset_type == 'user-item'
+            # self.user_dnn = self._build_dnn()
+            # self.item_dnn = self._build_dnn()
+            # dnn_params = [*self.user_dnn.parameters(), *self.item_dnn.parameters()]
         else:
             self.dnn = self._build_dnn()
             dnn_params = self.dnn.parameters()
@@ -191,14 +168,7 @@ class xGCN(BaseEmbeddingModel):
         return self.param_list
 
     def _build_dnn(self):
-        if 'use_special_dnn' in self.config and self.config['use_special_dnn']:
-            print("## using scale-dnn")
-            dnn = MyDNN(self.config['dnn_arch'], self.config['scale_net_arch']).to(self.device)
-        else:
-            dnn = torch.nn.Sequential(*eval(self.config['dnn_arch'])).to(self.device)
-        
-        if 'use_identical_dnn' in self.config and self.config['use_identical_dnn']:
-            dnn = train_identical_mapping_dnn(dnn, self.emb_table)
+        dnn = MyDNN(self.config['dnn_arch'], self.config['scale_net_arch']).to(self.device)
         return dnn
     
     def _print_emb_info(self, table, name):
@@ -230,66 +200,72 @@ class xGCN(BaseEmbeddingModel):
         with torch.no_grad():
             print("## do_propagation:", self.prop_type)
             if self.prop_type == 'pprgo':
-                _emb_table = torch.empty(self.emb_table.shape, dtype=torch.float32).to(self.emb_table_device)
                 dl = torch.utils.data.DataLoader(dataset=torch.arange(len(self.emb_table)), 
                                                  batch_size=8192)
                 for nids in dl:
-                    _emb_table[nids] = self._calc_pprgo_out_emb(nids).to(self.emb_table_device)
-                
-                self.emb_table = _emb_table
+                    self.prop_emb_table[nids] = self._calc_pprgo_out_emb(nids).to(self.emb_table_device)
                 
             else:  # self.prop_type == 'lightgcn'
                 
                 if 'use_item2item_graph_for_item_prop' in self.config and \
                     self.config['use_item2item_graph_for_item_prop']:
-                    print("## use_item2item_graph_for_item_prop")
+                    assert 0
+                    # print("## use_item2item_graph_for_item_prop")
                     
-                    self.emb_table = self.emb_table.cpu()
-                    _emb_table = torch.empty(self.emb_table.shape, dtype=torch.float32)
+                    # self.emb_table = self.emb_table.cpu()
+                    # _emb_table = torch.empty(self.emb_table.shape, dtype=torch.float32)
                     
-                    dl = torch.utils.data.DataLoader(
-                        dataset=torch.arange(self.info['num_items']), 
-                        batch_size=8192
-                    )
-                    for item_nids in dl:
-                        _emb_table[item_nids + self.num_users] = self._calc_item2item_emb(item_nids)
+                    # dl = torch.utils.data.DataLoader(
+                    #     dataset=torch.arange(self.info['num_items']), 
+                    #     batch_size=8192
+                    # )
+                    # for item_nids in dl:
+                    #     _emb_table[item_nids + self.num_users] = self._calc_item2item_emb(item_nids)
                     
-                    X = get_lightgcn_out_emb(
-                        self.A, self.emb_table, self.config['num_gcn_layers'],
-                        stack_layers=self.config['stack_layers']
-                    )
-                    _emb_table[:self.num_users] = X[:self.num_users]
+                    # X = get_lightgcn_out_emb(
+                    #     self.A, self.emb_table, self.config['num_gcn_layers'],
+                    #     stack_layers=self.config['stack_layers']
+                    # )
+                    # _emb_table[:self.num_users] = X[:self.num_users]
                     
-                    self.emb_table = _emb_table.to(self.emb_table_device)
+                    # self.emb_table = _emb_table.to(self.emb_table_device)
                     
                 else:
                     if self.config['use_numba_csr_mult']:
-                        print("- use_numba_csr_mult, do not stack")
-                        X_in = self.emb_table.cpu().numpy()
-                        X_out = np.empty(X_in.shape, dtype=np.float32)
-                        numba_csr_mult_dense(
-                            self.indptr, self.indices, self.edge_weights,
-                            X_in, X_out
-                        )
-                        self.emb_table = torch.FloatTensor(X_out).to(self.emb_table_device)
-                        del X_in
+                        assert 0
+                        # print("- use_numba_csr_mult, do not stack")
+                        # X_in = self.emb_table.cpu().numpy()
+                        # X_out = np.empty(X_in.shape, dtype=np.float32)
+                        # numba_csr_mult_dense(
+                        #     self.indptr, self.indices, self.edge_weights,
+                        #     X_in, X_out
+                        # )
+                        # self.emb_table = torch.FloatTensor(X_out).to(self.emb_table_device)
+                        # del X_in
                     else:
-                        self.emb_table = get_lightgcn_out_emb(
+                        self.prop_emb_table = get_lightgcn_out_emb(
                             self.A, self.emb_table.cpu(), self.config['num_gcn_layers'],
                             stack_layers=self.config['stack_layers']
                         ).to(self.emb_table_device)
             self._print_emb_info(self.emb_table, 'emb_table')
     
-    def _infer_dnn_output_emb(self, dnn, input_table, output_table):
+    def _infer_dnn_output_emb(self, output_table):
         with torch.no_grad():
-            _dnn = deepcopy(dnn).to(input_table.device)
             dl = torch.utils.data.DataLoader(
-                torch.arange(len(input_table)),
+                torch.arange(self.num_nodes),
                 batch_size=4096
             )
-            for idx in dl:
-                output_table[idx] = _dnn(input_table[idx]).to(output_table.device)
-        
+            for nids in dl:
+                output_table[nids] = self._get_out_emb(nids).to(output_table.device)
+    
+    def _get_out_emb(self, nids):
+        emb = self.emb_table[nids]
+        prop_emb = self.prop_emb_table[nids]
+
+        out_emb = self.dnn(torch.cat([emb, prop_emb], dim=-1))
+
+        return out_emb
+
     def _renew_emb_table(self):
         if 'cancel_renew' in self.config and self.config['cancel_renew']:
             # do nothing
@@ -305,20 +281,19 @@ class xGCN(BaseEmbeddingModel):
             else:
                 print("## renew_emb_table")
                 if self.config['use_two_dnn']:
-                    self._infer_dnn_output_emb(
-                        self.user_dnn,
-                        input_table=self.emb_table[:self.num_users],
-                        output_table=self.emb_table[:self.num_users]
-                    )
-                    self._infer_dnn_output_emb(
-                        self.item_dnn,
-                        input_table=self.emb_table[self.num_users:],
-                        output_table=self.emb_table[self.num_users:]
-                    )
+                    assert 0
+                    # self._infer_dnn_output_emb(
+                    #     self.user_dnn,
+                    #     input_table=self.emb_table[:self.num_users],
+                    #     output_table=self.emb_table[:self.num_users]
+                    # )
+                    # self._infer_dnn_output_emb(
+                    #     self.item_dnn,
+                    #     input_table=self.emb_table[self.num_users:],
+                    #     output_table=self.emb_table[self.num_users:]
+                    # )
                 else:
                     self._infer_dnn_output_emb(
-                        self.dnn,
-                        input_table=self.emb_table,
                         output_table=self.emb_table
                     )
             self._print_emb_info(self.emb_table, 'emb_table')
@@ -330,13 +305,17 @@ class xGCN(BaseEmbeddingModel):
         src, pos, neg = batch_data
         
         if self.config['use_two_dnn']:
-            src_emb = self.user_dnn(self.emb_table[src].to(self.device))
-            pos_emb = self.item_dnn(self.emb_table[pos].to(self.device))
-            neg_emb = self.item_dnn(self.emb_table[neg].to(self.device))
+            assert 0
+            # src_emb = self.user_dnn(self.emb_table[src].to(self.device))
+            # pos_emb = self.item_dnn(self.emb_table[pos].to(self.device))
+            # neg_emb = self.item_dnn(self.emb_table[neg].to(self.device))
         else:
-            src_emb = self.dnn(self.emb_table[src].to(self.device))
-            pos_emb = self.dnn(self.emb_table[pos].to(self.device))
-            neg_emb = self.dnn(self.emb_table[neg].to(self.device))
+            src_emb = self._get_out_emb(src)
+            pos_emb = self._get_out_emb(pos)
+            neg_emb = self._get_out_emb(neg)
+            # src_emb = self.dnn(self.emb_table[src].to(self.device))
+            # pos_emb = self.dnn(self.emb_table[pos].to(self.device))
+            # neg_emb = self.dnn(self.emb_table[neg].to(self.device))
         
         loss_fn_type = self.config['loss_fn']
         if loss_fn_type == 'bpr_loss':
@@ -388,24 +367,24 @@ class xGCN(BaseEmbeddingModel):
                     self.epoch_last_prop = epoch
     
     def prepare_for_eval(self):
-        self.out_emb_table = torch.empty(self.emb_table.shape, dtype=torch.float32).to(
-            self.emb_table_device
-        )
+        if self.out_emb_table is None:
+            self.out_emb_table = torch.empty(self.emb_table.shape, dtype=torch.float32).to(
+                self.emb_table_device
+            )
         if self.config['use_two_dnn']:
-            self._infer_dnn_output_emb(
-                self.user_dnn,
-                input_table=self.emb_table[:self.num_users],
-                output_table=self.out_emb_table[:self.num_users]
-            )
-            self._infer_dnn_output_emb(
-                self.item_dnn,
-                input_table=self.emb_table[self.num_users:],
-                output_table=self.out_emb_table[self.num_users:]
-            )
+            assert 0
+            # self._infer_dnn_output_emb(
+            #     self.user_dnn,
+            #     input_table=self.emb_table[:self.num_users],
+            #     output_table=self.out_emb_table[:self.num_users]
+            # )
+            # self._infer_dnn_output_emb(
+            #     self.item_dnn,
+            #     input_table=self.emb_table[self.num_users:],
+            #     output_table=self.out_emb_table[self.num_users:]
+            # )
         else:
             self._infer_dnn_output_emb(
-                self.dnn,
-                input_table=self.emb_table,
                 output_table=self.out_emb_table
             )
         

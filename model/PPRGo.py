@@ -8,6 +8,27 @@ import os.path as osp
 from tqdm import tqdm
 
 
+class RefNet(torch.nn.Module):
+    
+    def __init__(self):
+        super(RefNet, self).__init__()
+        # self.ffn = torch.nn.Sequential(
+        #     torch.nn.Linear(64, 1024),
+        #     torch.nn.Tanh(),
+        #     torch.nn.Linear(1024, 64)
+        # )
+        self.snn = torch.nn.Sequential(
+            torch.nn.Linear(64, 32),
+            torch.nn.Tanh(),
+            torch.nn.Linear(32, 1),
+            torch.nn.Sigmoid()
+        )
+    
+    def forward(self, X):
+        # return self.snn(X) * self.ffn(X)
+        return self.snn(X) * X
+
+
 class PPRGo(BaseEmbeddingModel):
     
     def __init__(self, config, data):
@@ -17,9 +38,14 @@ class PPRGo(BaseEmbeddingModel):
         self.base_emb_table = init_emb_table(config, self.info['num_nodes'])
         self.out_emb_table = torch.empty(self.base_emb_table.weight.shape, dtype=torch.float32)
         
-        self.param_list = []
+        assert config['use_sparse']
+        
+        self.param_list = {
+            'SparseAdam': [],
+            'Adam': []
+        }
         if not self.config['freeze_emb']:
-            self.param_list.append({'params': list(self.base_emb_table.parameters()),
+            self.param_list['SparseAdam'].append({'params': list(self.base_emb_table.parameters()),
                                     'lr': config['emb_lr']})
         
         print("## load ppr neighbors and ppr weights ...")
@@ -39,6 +65,25 @@ class PPRGo(BaseEmbeddingModel):
             print("## not uniform weight")
             self.wei = self.wei / (self.wei.sum(dim=-1, keepdim=True) + 1e-12)
         
+        # dnn_arch = eval(self.config['dnn_arch'])
+        # self.use_dnn = len(dnn_arch) != 0
+        self.use_dnn = True
+        if self.use_dnn:
+            # print("## use dnn to transform output emb")
+            # self.dnn = torch.nn.Sequential(*dnn_arch).to(self.device)
+            # print(self.dnn)
+            # self.param_list['Adam'].append({
+            #     'params': self.dnn.parameters(), 
+            #     'lr': 0.001
+            # })
+            print("## use SSNet to transform output emb")
+            self.dnn = RefNet().to(self.device)
+            print(self.dnn)
+            self.param_list['Adam'].append({
+                'params': self.dnn.parameters(), 
+                'lr': 0.001
+            })
+        
     def _calc_pprgo_out_emb(self, nids):
         top_nids = self.nei[nids].to(self.device)
         top_weights = self.wei[nids].to(self.device)
@@ -46,6 +91,10 @@ class PPRGo(BaseEmbeddingModel):
         top_embs = self.base_emb_table(top_nids)
         
         out_embs = torch.matmul(top_weights.unsqueeze(-2), top_embs)
+        
+        if self.use_dnn:
+            out_embs = self.dnn(out_embs)
+        
         return out_embs.squeeze()
         
     def __call__(self, batch_data):
@@ -121,6 +170,9 @@ class PPRGo(BaseEmbeddingModel):
         for nids in tqdm(dl, desc="infer pprgo output embs"):
             self.out_emb_table[nids] = self._calc_pprgo_out_emb(nids).cpu()
         self.target_emb_table = self.out_emb_table
+        
+        torch.save(self.base_emb_table.weight,
+                   osp.join(osp.join(self.config['results_root'], 'base_emb_table.pt')))
         
     def save(self, root, file_out_emb_table=None):
         if file_out_emb_table is None:
