@@ -71,7 +71,7 @@ class FastNode2vec:
         )
         
         print(">> build vocab...")
-        model.build_vocab()
+        model.build_vocab(sent_wapper)
         # model.build_vocab_from_freq(self.node_degree) ##--
         
         print(">> train...")
