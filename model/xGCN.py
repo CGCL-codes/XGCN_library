@@ -156,6 +156,7 @@ class xGCN(BaseEmbeddingModel):
                 )
         
         self.emb_table = init_emb_table(config, self.num_nodes)
+        self.emb_table = self.emb_table.weight
         
         # build dnn and optimizer
         if self.config['use_two_dnn']:
