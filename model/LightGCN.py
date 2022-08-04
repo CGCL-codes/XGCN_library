@@ -66,7 +66,7 @@ class BaseLightGCN(BaseEmbeddingModel):
         
         self.param_list = []
         if not self.config['freeze_emb']:
-            self.param_list.append({'params': self.base_emb_table,  # not use sparse
+            self.param_list.append({'params': list(self.base_emb_table.parameters()),  # not use sparse
                                     'lr': config['emb_lr']})
         
         self.build_gcn(config, data)
@@ -137,7 +137,7 @@ class BaseLightGCN(BaseEmbeddingModel):
         
         rw = self.config['l2_reg_weight']
         if rw > 0:
-            emb_0 = self.base_emb_table
+            emb_0 = self.base_emb_table.weight
             src_emb_0 = emb_0[src]
             pos_emb_0 = emb_0[pos]
             neg_emb_0 = emb_0[neg]
@@ -181,4 +181,4 @@ class LightGCN(BaseLightGCN):
                                 stack_layers=config['stack_layers'])
     
     def get_out_emb(self):
-        return self.gcn(self.undi_g, self.base_emb_table)
+        return self.gcn(self.undi_g, self.base_emb_table.weight)
