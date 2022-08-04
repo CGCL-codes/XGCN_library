@@ -34,7 +34,7 @@ class FastNode2vec:
         self.embs = None
 
     def run_node2vec(self, dim, epochs=1, alpha=0.001, min_alpha=0.001, alpha_schedule=None, num_walks=20, walk_length=30, window=3, 
-                     p=1.0, q=1.0, walk_seed=None, callbacks=[]):
+                     p=1.0, q=1.0, num_neg=5, walk_seed=None, callbacks=[]):
         if alpha_schedule is not None:
             epoch_list = alpha_schedule[0]
             alpha_list = alpha_schedule[1]
@@ -63,7 +63,7 @@ class FastNode2vec:
         sent_wapper = SentencesWapper(_get_sentences, epochs=epochs, length=self.num_nodes * num_walks)
         
         model = gensim.models.Word2Vec(
-            vector_size=dim, window=window, 
+            vector_size=dim, window=window, negative=num_neg, 
             epochs=epochs, 
             alpha=alpha, 
             min_alpha=min_alpha,
