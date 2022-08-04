@@ -30,9 +30,9 @@ def main():
     
     print("num all samples:", len(src_list))
     
-    # num_sample = config['num_sample']
-    num_sample = int(input("input num_sample="))
-    print("num sample:", num_sample)
+    num_sample = config['num_sample']
+    # num_sample = int(input("input num_sample="))
+    # print("num sample:", num_sample)
     
     sampled_idx = all_idx[:num_sample]
     
