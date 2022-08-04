@@ -19,8 +19,11 @@ class UltraGCN(BaseEmbeddingModel):
         self.out_emb_table = None
         self.target_emb_table = None
         
-        self.param_list = []
-        self.param_list.append({'params': self.base_emb_table, 'lr': config['emb_lr']})
+        self.param_list = {'SparseAdam': []}
+        self.param_list['SparseAdam'].append({
+            'params': list(self.base_emb_table.parameters()), 
+            'lr': config['emb_lr']
+        })
         
         if self.config['loss_fn'] != 'ssm_loss':
             if self.config['lambda'] > 0:
@@ -43,7 +46,7 @@ class UltraGCN(BaseEmbeddingModel):
         pass
     
     def prepare_for_eval(self):
-        self.out_emb_table = self.base_emb_table
+        self.out_emb_table = self.base_emb_table.weight
         if self.dataset_type == 'user-item':
             self.target_emb_table = self.out_emb_table[self.num_users:]
         else:
@@ -55,9 +58,9 @@ class UltraGCN(BaseEmbeddingModel):
     def forward(self, batch_data):
         src, pos, neg = batch_data
         
-        src_emb = self.base_emb_table[src]
-        pos_emb = self.base_emb_table[pos]
-        neg_emb = self.base_emb_table[neg]
+        src_emb = self.base_emb_table(src.to(self.device))
+        pos_emb = self.base_emb_table(pos.to(self.device))
+        neg_emb = self.base_emb_table(neg.to(self.device))
         
         loss_fn = self.config['loss_fn']
         if loss_fn == 'ssm_loss':
@@ -106,18 +109,6 @@ class UltraGCN(BaseEmbeddingModel):
             
             loss = loss_C_O
             
-            # L = -(w1 + w2*\beta)) * log(sigmoid(e_u e_i)) - \sum_{N-} (w3 + w4*\beta) * log(sigmoid(- e_u e_i'))
-            # pos_loss = ((self.config['w1'] + self.config['w2'] * beta_pos) * log_pos)
-            # neg_loss = ((self.config['w3'] + self.config['w4'] * beta_neg) * log_neg).mean(dim=-1)
-            # loss_L = -(pos_loss + self.config['neg_weight'] * neg_loss).sum()
-            
-            # loss L_C and loss L_O
-            # log_pos = pos_scores.sigmoid().log()
-            # log_neg = (-neg_scores).sigmoid().log()
-            # pos_loss = (1 + self.config['lambda'] * beta_pos) * log_pos
-            # neg_loss = ((1 + self.config['lambda'] * beta_neg) * log_neg).mean(dim=-1)
-            # loss_C_O = -(pos_loss + self.config['neg_weight'] * neg_loss).sum()
-            
             # loss L_I
             if self.config['gamma'] > 0:
                 ii_neighbors = self.ii_topk_neighbors[_pos]
@@ -126,7 +117,7 @@ class UltraGCN(BaseEmbeddingModel):
                     _ii_neighbors = ii_neighbors + self.num_users
                 else:
                     _ii_neighbors = ii_neighbors
-                ii_emb = self.base_emb_table[_ii_neighbors]
+                ii_emb = self.base_emb_table(_ii_neighbors)
                 
                 pos_ii_score = dot_product(src_emb, ii_emb)
                 loss_I = -(ii_scores * pos_ii_score.sigmoid().log()).sum()
@@ -134,7 +125,6 @@ class UltraGCN(BaseEmbeddingModel):
                 loss += self.config['gamma'] * loss_I
             
             # L2 regularization loss
-            # L2_reg_loss = 1/2 * (self.base_emb_table ** 2).sum()
             if self.config['l2_reg_weight'] > 0:
                 L2_reg_loss = 1/2 * ((src_emb**2).sum() + (pos_emb**2).sum() + (neg_emb**2).sum())
                 if self.config['gamma'] > 0:
@@ -142,7 +132,4 @@ class UltraGCN(BaseEmbeddingModel):
                 
                 loss += self.config['l2_reg_weight'] * L2_reg_loss
             
-            # loss = loss_L + self.config['lambda'] * loss_I + self.config['gamma'] * L2_reg_loss
-            # loss = loss_C_O + self.config['gamma'] * loss_I + self.config['l2_reg_weight'] * L2_reg_loss
-        
         return loss
