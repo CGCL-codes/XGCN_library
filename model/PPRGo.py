@@ -42,7 +42,7 @@ class PPRGo(BaseEmbeddingModel):
         
         self.param_list = {
             'SparseAdam': [],
-            'Adam': []
+            # 'Adam': []
         }
         if not self.config['freeze_emb']:
             self.param_list['SparseAdam'].append({'params': list(self.base_emb_table.parameters()),
@@ -67,7 +67,7 @@ class PPRGo(BaseEmbeddingModel):
         
         # dnn_arch = eval(self.config['dnn_arch'])
         # self.use_dnn = len(dnn_arch) != 0
-        self.use_dnn = True
+        self.use_dnn = False
         if self.use_dnn:
             # print("## use dnn to transform output emb")
             # self.dnn = torch.nn.Sequential(*dnn_arch).to(self.device)
