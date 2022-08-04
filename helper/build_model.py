@@ -4,6 +4,7 @@ from model.xGCN import xGCN
 from model.xGCN_res import xGCN_res
 from model.xxGCN import xxGCN
 from model.UltraGCN.UltraGCN import UltraGCN
+from model.UltraGCN.UltraGCN_v0 import UltraGCN_v0
 from model.SimpleX import SimpleX
 from model.PPRGo import PPRGo
 from model.GraphSAGE import GraphSAGE
@@ -23,6 +24,7 @@ def build_model(config, data):
         'xgcn_res': xGCN_res,
         'xxgcn': xxGCN,
         'ultragcn': UltraGCN,
+        'ultragcn_v0': UltraGCN_v0,
         'simplex': SimpleX,
         'pprgo': PPRGo,
         'graphsage': GraphSAGE,
