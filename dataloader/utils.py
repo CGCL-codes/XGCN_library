@@ -33,7 +33,7 @@ def generate_one_strict_neg(neg_low, neg_high, src: np.ndarray,
     neg = np.zeros(len(src), dtype=src.dtype)
     for i in numba.prange(len(src)):
         u = src[i]
-        u_nei = csr_helper.neighbors(csr_graph_indptr, csr_graph_indices, u)
+        u_nei = csr_helper.get_neighbors(csr_graph_indptr, csr_graph_indices, u)
         neg[i] = _sample_one_strict_neg(neg_low, neg_high, u_nei)
     return neg
 
@@ -46,7 +46,7 @@ def generate_multi_strict_neg(neg_low, neg_high, num_neg, src: np.ndarray,
     neg = np.zeros((len(src), num_neg), dtype=src.dtype)
     for i in numba.prange(len(src)):
         u = src[i]
-        u_nei = csr_helper.neighbors(csr_graph_indptr, csr_graph_indices, u)
+        u_nei = csr_helper.get_neighbors(csr_graph_indptr, csr_graph_indices, u)
         neg[i] = _sample_multi_strict_neg(neg_low, neg_high, u_nei, num_neg)
     return neg
 
@@ -61,7 +61,7 @@ def generate_pos_and_one_strict_neg(
     neg = np.zeros(src.shape, dtype=src.dtype)
     for i in numba.prange(len(src)):
         u = src[i]
-        u_nei = csr_helper.neighbors(csr_graph_indptr, csr_graph_indices, u)
+        u_nei = csr_helper.get_neighbors(csr_graph_indptr, csr_graph_indices, u)
         
         u_neg = np.random.randint(neg_low, neg_high)
         while u_neg in u_nei:
@@ -90,7 +90,7 @@ def generate_src_pos_and_one_strict_neg(
     for i in numba.prange(batch_size):
         while True:
             u = np.random.randint(src_low, src_high)
-            u_nei = csr_helper.neighbors(csr_graph_indptr, csr_graph_indices, u)
+            u_nei = csr_helper.get_neighbors(csr_graph_indptr, csr_graph_indices, u)
             if len(u_nei) > 0:
                 break
         src[i] = u
