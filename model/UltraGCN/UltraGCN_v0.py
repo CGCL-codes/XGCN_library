@@ -25,19 +25,16 @@ class UltraGCN_v0(BaseEmbeddingModel):
             'lr': config['emb_lr']
         })
         
-        if self.config['loss_fn'] != 'ssm_loss':
-            if self.config['lambda'] > 0:
-                constrain_mat = io.load_pickle(config['file_ultra_constrain_mat'])
-                self.beta_uD = torch.FloatTensor(constrain_mat['beta_users']).to(self.device)
-                self.beta_iD = torch.FloatTensor(constrain_mat['beta_items']).to(self.device)
-            
-            if self.config['gamma'] > 0:
-                self.ii_topk_neighbors = io.load_pickle(config['file_ii_topk_neighbors'])
-                self.ii_topk_similarity_scores = io.load_pickle(config['file_ii_topk_similarity_scores'])
-                
-                topk = config['topk']
-                self.ii_topk_neighbors = torch.LongTensor(self.ii_topk_neighbors[:, :topk]).to(self.device)
-                self.ii_topk_similarity_scores = torch.FloatTensor(self.ii_topk_similarity_scores[:, :topk]).to(self.device)
+        constrain_mat = io.load_pickle(config['file_ultra_constrain_mat'])
+        self.beta_uD = torch.FloatTensor(constrain_mat['beta_users']).to(self.device)
+        self.beta_iD = torch.FloatTensor(constrain_mat['beta_items']).to(self.device)
+    
+        self.ii_topk_neighbors = io.load_pickle(config['file_ii_topk_neighbors'])
+        self.ii_topk_similarity_scores = io.load_pickle(config['file_ii_topk_similarity_scores'])
+        
+        topk = config['topk']
+        self.ii_topk_neighbors = torch.LongTensor(self.ii_topk_neighbors[:, :topk]).to(self.device)
+        self.ii_topk_similarity_scores = torch.FloatTensor(self.ii_topk_similarity_scores[:, :topk]).to(self.device)
         
     def save(self, root):
         torch.save(self.out_emb_table, osp.join(root, 'out_emb_table.pt'))
