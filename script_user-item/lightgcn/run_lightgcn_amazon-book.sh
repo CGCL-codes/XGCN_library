@@ -26,13 +26,15 @@ python $PROJECT_ROOT'/'main/main.py $PROJECT_ROOT \
     --device $DEVICE \
     --validation_method 'multi_pos_whole_graph' \
     --mask_nei_when_validation 1 \
-    --file_validation $DATA_ROOT'/test-1000.pkl' \
+    --file_validation $DATA_ROOT'/test.pkl' \
     --test_method 'multi_pos_whole_graph' \
     --mask_nei_when_test 1 \
     --file_test $DATA_ROOT'/test.pkl' \
-    --key_score_metric 'r50' \
-    --convergence_threshold 20 \
-    --train_batch_size 1024 \
+    --train_dl 'NodeBased_TrainDataLoader' --edge_sample_ratio 1.0 \
+    --key_score_metric 'r20' \
+    --convergence_threshold 50 --epochs 1000 --val_freq 5 \
+    --train_batch_size 2048 \
+    --emb_lr 0.001 \
     --num_gcn_layers 2 \
     --stack_layers 1 \
     --l2_reg_weight 1e-4 \

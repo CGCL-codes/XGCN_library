@@ -11,12 +11,12 @@ DATASET='gowalla'
 
 DATA_ROOT=$ALL_DATASETS_ROOT'/instance_'$DATASET
 
-# #### prepare_ultragcn_data 
-# RESULTS_DIR='ultragcn/data'
-# python $PROJECT_ROOT'/'model/UltraGCN/prepare_ultragcn_data.py $PROJECT_ROOT \
-#     --data_root $ALL_DATASETS_ROOT'/instance_'$DATASET \
-#     --results_root $ALL_RESULTS_ROOT'/gnn_'$DATASET'/'$RESULTS_DIR \
-#     --topk 100 \
+#### prepare_ultragcn_data 
+RESULTS_DIR='ultragcn/data'
+python $PROJECT_ROOT'/'model/UltraGCN/prepare_ultragcn_data.py $PROJECT_ROOT \
+    --data_root $ALL_DATASETS_ROOT'/instance_'$DATASET \
+    --results_root $ALL_RESULTS_ROOT'/gnn_'$DATASET'/'$RESULTS_DIR \
+    --topk 100 \
 
 ################
 SEED=1
@@ -34,19 +34,23 @@ python $PROJECT_ROOT'/'main/main.py $PROJECT_ROOT \
     --file_ii_topk_neighbors $RESULTS_ROOT'/../data/beta_score_topk/ii_topk_neighbors.np.pkl' \
     --file_ii_topk_similarity_scores $RESULTS_ROOT'/../data/beta_score_topk/ii_topk_similarity_scores.np.pkl' \
     --device $DEVICE \
+    --train_dl 'EdgeBased_Full_TrainDataLoader' \
     --loss_fn 'bce_loss' \
-    --emb_lr 0.005 \
-    --num_neg 128 \
-    --neg_weight 128 \
-    --lambda 0.8 \
-    --gamma 3.5 \
-    --w1 0.5 --w2 0.5 --w3 0.5 --w4 0.5 \
-    --l2_reg_weight 0.0 \
+    --emb_init_std 1e-4 \
+    --emb_lr 1e-4 \
+    --train_batch_size 512 \
+    --num_neg 1500 \
+    --neg_weight 300 \
+    --topk 10 \
+    --w1 1e-6 --w2 1 --w3 1e-6 --w4 1 \
+    --gamma 5e-4 \
+    --l2_reg_weight 1e-4  \
     --validation_method 'multi_pos_whole_graph' \
     --mask_nei_when_validation 1 \
-    --file_validation $DATA_ROOT'/test-1000.pkl' \
+    --file_validation $DATA_ROOT'/test.pkl' \
     --test_method 'multi_pos_whole_graph' \
     --mask_nei_when_test 1 \
     --file_test $DATA_ROOT'/test.pkl' \
-    --key_score_metric 'r50' \
-    --convergence_threshold 20 \
+    --key_score_metric 'r20' \
+    --convergence_threshold 150 --val_freq 5 \
+    --epochs 2000 \
