@@ -8,7 +8,7 @@ CONFIG_ROOT=$PROJECT_ROOT'/config'
 ALL_DATASETS_ROOT=$ALL_DATA_ROOT'/datasets'
 ALL_RESULTS_ROOT=$ALL_DATA_ROOT'/model_outputs'
 
-DATASET='taobao-1.6m' ## 'yelp2018'
+DATASET='gowalla' ## 'yelp2018' 'gowalla' 'amazon-book'  'taobao-1.6m'
 
 DATA_ROOT=$ALL_DATASETS_ROOT'/instance_'$DATASET
 
