@@ -7,20 +7,20 @@ ALL_DATA_ROOT='/home/jialia/reco'
 ALL_DATASETS_ROOT=$ALL_DATA_ROOT'/datasets'
 
 ######################################
-DATASET='taobao-1.6m'
+DATASET='amazon-book-1.5m'  ## 'taobao-1.6m' 'amazon-book-1.5m'
 
 DATA_ROOT=$ALL_DATASETS_ROOT'/instance_'$DATASET
 # FILE_INPUT='/media/xreco/DEV/xiran/data/user_item_lightgcn/datasets/instance_taobao-1.6m/train_edges.txt'
 FILE_INPUT="$DATA_ROOT/train_edges.txt"
 FILE_OUTPUT="$DATA_ROOT/train.txt"
 
-# python $PROJECT_ROOT'/'data/convert_edgeList_2_adj.py $FILE_INPUT $FILE_OUTPUT
+python $PROJECT_ROOT'/'data/convert_edgeList_2_adj.py $FILE_INPUT $FILE_OUTPUT
 
-# python $PROJECT_ROOT'/'data/handle_adj_graph_txt.py $PROJECT_ROOT \
-#     --data_root $DATA_ROOT \
-#     --dataset_type 'user-item' \
-#     --dataset_name $DATASET \
-#     --file_input $FILE_OUTPUT \
+python $PROJECT_ROOT'/'data/handle_adj_graph_txt.py $PROJECT_ROOT \
+    --data_root $DATA_ROOT \
+    --dataset_type 'user-item' \
+    --dataset_name $DATASET \
+    --file_input $FILE_OUTPUT \
 
 FILE_INPUT="$DATA_ROOT/val_pos_edges.txt"
 FILE_OUTPUT="$DATA_ROOT/val.txt"
