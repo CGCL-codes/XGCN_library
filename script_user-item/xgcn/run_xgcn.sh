@@ -1,5 +1,5 @@
-PROJECT_ROOT='/home/jialia/reco/xGCN'
 ALL_DATA_ROOT='/home/jialia/reco'
+PROJECT_ROOT="$ALL_DATA_ROOT/xGCN"
 
 
 DEVICE='cuda:0'
@@ -8,7 +8,7 @@ CONFIG_ROOT=$PROJECT_ROOT'/config'
 ALL_DATASETS_ROOT=$ALL_DATA_ROOT'/datasets'
 ALL_RESULTS_ROOT=$ALL_DATA_ROOT'/model_outputs'
 
-DATASET='gowalla' ## 'yelp2018' 'gowalla' 'amazon-book'  'taobao-1.6m'
+DATASET='amazon-book-1.5m' ## 'yelp2018' 'gowalla' 'amazon-book'  'taobao-1.6m' 'amazon-book-1.5m'
 
 DATA_ROOT=$ALL_DATASETS_ROOT'/instance_'$DATASET
 
@@ -18,7 +18,7 @@ SEED=1
 # RESULTS_DIR='xgcn/[0]'
 
 
-T=5  #5
+T=2  #5
 K=9999999  #999999 
 LOAD_BEST=0
 USE_SNN=1

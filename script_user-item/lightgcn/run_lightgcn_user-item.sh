@@ -1,5 +1,5 @@
-PROJECT_ROOT='/home/jialia/reco/xGCN'
 ALL_DATA_ROOT='/home/jialia/reco'
+PROJECT_ROOT="$ALL_DATA_ROOT/xGCN"
 
 
 DEVICE='cuda:0'   ##'cuda:0'  'cpu'
