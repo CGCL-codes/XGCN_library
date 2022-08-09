@@ -1,5 +1,6 @@
-PROJECT_ROOT='/media/xreco/jianxun/xGCN'
-ALL_DATA_ROOT='/media/xreco/DEV/xiran/data/social_and_user_item'
+PROJECT_ROOT='/home/jialia/reco/xGCN'
+ALL_DATA_ROOT='/home/jialia/reco'
+
 
 DEVICE='cuda:0'
 
@@ -13,19 +14,20 @@ DATA_ROOT=$ALL_DATASETS_ROOT'/instance_'$DATASET
 
 ################
 SEED=1
-RESULTS_DIR='xgcn/[2dnn][2layer-ffn][prop1][reg-3][T5-Kinf][not-load_best]'
+
 # RESULTS_DIR='xgcn/[0]'
 
-RESULTS_ROOT=$ALL_RESULTS_ROOT'/gnn_'$DATASET'/'$RESULTS_DIR
-T=5
-K=999999
 
+T=5  #5
+K=9999999  #999999 
 LOAD_BEST=0
-
 USE_SNN=1
-USE_TWO_REFNET=1
-
+USE_TWO_REFNET=1 
 L2_REG=1e-3
+endure=3
+
+RESULTS_DIR="xgcn/[2dnn][2layer-ffn][prop1][reg$L2_REG][T$T-K$K][load_best=$LOAD_BEST][USE_SNN=$USE_SNN][endure=$endure]"
+RESULTS_ROOT=$ALL_RESULTS_ROOT'/gnn_'$DATASET'/'$RESULTS_DIR
 
 mkdir -p $RESULTS_ROOT
 LOG_FILE=$RESULTS_ROOT'/log.txt'
@@ -54,7 +56,7 @@ python $PROJECT_ROOT'/'main/main.py $PROJECT_ROOT \
     --use_special_dnn $USE_SNN --dnn_arch '[torch.nn.Linear(64, 1024), torch.nn.Tanh(), torch.nn.Linear(1024, 64)]' \
     --scale_net_arch '[torch.nn.Linear(64, 32), torch.nn.Tanh(), torch.nn.Linear(32, 1), torch.nn.Sigmoid()]' \
     --use_two_dnn $USE_TWO_REFNET \
-    --renew_and_prop_freq $T --K $K --endure 3 \
+    --renew_and_prop_freq $T --K $K --endure $endure \
     --renew_by_loading_best $LOAD_BEST \
     --emb_init_std 1.0 \
     --l2_reg_weight $L2_REG \

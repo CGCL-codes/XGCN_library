@@ -91,7 +91,7 @@ class Trainer:
             
             print(">> epoch {}".format(epoch + 1))
             self.timer.start("epoch")
-            for batch_data in tqdm(self.train_dl):
+            for batch_data in tqdm(self.train_dl, desc='train epoch {0}'.format(epoch + 1)):
                 self.timer.start("batch")
                 
                 self.timer.start("batch_forward")
