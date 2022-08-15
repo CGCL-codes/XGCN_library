@@ -1,5 +1,5 @@
-PROJECT_ROOT='/media/xreco/jianxun/xGCN'
-ALL_DATA_ROOT='/media/xreco/DEV/xiran/data/social_and_user_item'
+PROJECT_ROOT='/home/jialia/reco/xGCN'
+ALL_DATA_ROOT='/home/jialia/reco'
 
 DEVICE='cuda:0'
 
@@ -7,7 +7,7 @@ CONFIG_ROOT=$PROJECT_ROOT'/config'
 ALL_DATASETS_ROOT=$ALL_DATA_ROOT'/datasets'
 ALL_RESULTS_ROOT=$ALL_DATA_ROOT'/model_outputs'
 
-DATASET='taobao-1.6m'
+DATASET='taobao-1.6m'  ## 'taobao-1.6m' 'amazon-book-1.5m'
 
 DATA_ROOT=$ALL_DATASETS_ROOT'/instance_'$DATASET
 
@@ -24,12 +24,12 @@ python $PROJECT_ROOT'/'main/main.py $PROJECT_ROOT \
     --results_root $RESULTS_ROOT \
     --seed $SEED \
     --device $DEVICE \
-    --validation_method 'one_pos_whole_graph' \
+    --validation_method 'multi_pos_whole_graph' \
     --mask_nei_when_validation 1 \
-    --file_validation $DATA_ROOT'/val_edges-1000.pkl' \
-    --test_method 'one_pos_whole_graph' \
+    --file_validation $DATA_ROOT'/val-1000.pkl' \
+    --test_method 'multi_pos_whole_graph' \
     --mask_nei_when_test 1 \
-    --file_test $DATA_ROOT'/test_edges.pkl' \
+    --file_test $DATA_ROOT'/test.pkl' \
     --key_score_metric 'r100' \
     --convergence_threshold 20 \
     --train_batch_size 2048 \

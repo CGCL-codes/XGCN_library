@@ -1,7 +1,5 @@
-# PROJECT_ROOT='/media/xreco/jianxun/xGCN'
-# ALL_DATA_ROOT='/media/xreco/DEV/xiran/data/social_and_user_item'
-PROJECT_ROOT='/home/jialia/reco/xGCN'
 ALL_DATA_ROOT='/home/jialia/reco'
+PROJECT_ROOT="$ALL_DATA_ROOT/xGCN"
 
 
 ALL_DATASETS_ROOT=$ALL_DATA_ROOT'/datasets'
