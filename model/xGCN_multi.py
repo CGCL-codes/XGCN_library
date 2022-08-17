@@ -74,7 +74,7 @@ def train_identical_mapping_dnn(dnn, embeddings):
     return dnn
 
 
-class xGCN(BaseEmbeddingModel):
+class xGCN_multi(BaseEmbeddingModel):
     
     def __init__(self, config, data):
         super().__init__(config, data)
@@ -158,6 +158,14 @@ class xGCN(BaseEmbeddingModel):
         self.emb_table = init_emb_table(config, self.num_nodes)
         self.emb_table = self.emb_table.weight
         
+        # to store the embeddings of different times of propagation
+        self.prop_tables = [
+            torch.empty(size=self.emb_table.shape, 
+                        dtype=torch.float32,
+                        device=self.device)
+            for _ in range(self.config['num_gcn_layers'])
+        ]
+        
         # build dnn and optimizer
         if self.config['use_two_dnn']:
             assert self.dataset_type == 'user-item'
@@ -184,8 +192,8 @@ class xGCN(BaseEmbeddingModel):
         self.epoch_last_prop = 0
         self.total_prop_times = 0
         
-        if not self.config['from_pretrained']:
-            self._do_propagation()
+        # if not self.config['from_pretrained']:
+        self._do_propagation()
     
     def parameters(self):
         return self.param_list
@@ -223,62 +231,75 @@ class xGCN(BaseEmbeddingModel):
         return self.emb_table[top_nids + self.num_users].mean(dim=-2)
     
     def _do_propagation(self):
-        if 'cancel_prop' in self.config and self.config['cancel_prop']:
-            # do nothing
-            return
+        X = self.emb_table.cpu()
+        for i in range(self.config['num_gcn_layers']):
+            self.prop_tables[i] = self.prop_tables[i].cpu()
+            
+        for i in range(self.config['num_gcn_layers']):
+            self.prop_tables[i][:] = self.A @ X
+            X = self.prop_tables[i]
         
-        with torch.no_grad():
-            print("## do_propagation:", self.prop_type)
-            if self.prop_type == 'pprgo':
-                _emb_table = torch.empty(self.emb_table.shape, dtype=torch.float32).to(self.emb_table_device)
-                dl = torch.utils.data.DataLoader(dataset=torch.arange(len(self.emb_table)), 
-                                                 batch_size=8192)
-                for nids in dl:
-                    _emb_table[nids] = self._calc_pprgo_out_emb(nids).to(self.emb_table_device)
+        self.emb_table = self.emb_table.to(self.device)
+        for i in range(self.config['num_gcn_layers']):
+            self.prop_tables[i] = self.prop_tables[i].to(self.device)
+            
+    # def _do_propagation(self):
+        # if 'cancel_prop' in self.config and self.config['cancel_prop']:
+        #     # do nothing
+        #     return
+        
+        # with torch.no_grad():
+        #     print("## do_propagation:", self.prop_type)
+        #     if self.prop_type == 'pprgo':
+        #         _emb_table = torch.empty(self.emb_table.shape, dtype=torch.float32).to(self.emb_table_device)
+        #         dl = torch.utils.data.DataLoader(dataset=torch.arange(len(self.emb_table)), 
+        #                                          batch_size=8192)
+        #         for nids in dl:
+        #             _emb_table[nids] = self._calc_pprgo_out_emb(nids).to(self.emb_table_device)
                 
-                self.emb_table = _emb_table
+        #         self.emb_table = _emb_table
                 
-            else:  # self.prop_type == 'lightgcn'
+        #     else:  # self.prop_type == 'lightgcn'
                 
-                if 'use_item2item_graph_for_item_prop' in self.config and \
-                    self.config['use_item2item_graph_for_item_prop']:
-                    print("## use_item2item_graph_for_item_prop")
+        #         if 'use_item2item_graph_for_item_prop' in self.config and \
+        #             self.config['use_item2item_graph_for_item_prop']:
+        #             print("## use_item2item_graph_for_item_prop")
                     
-                    self.emb_table = self.emb_table.cpu()
-                    _emb_table = torch.empty(self.emb_table.shape, dtype=torch.float32)
+        #             self.emb_table = self.emb_table.cpu()
+        #             _emb_table = torch.empty(self.emb_table.shape, dtype=torch.float32)
                     
-                    dl = torch.utils.data.DataLoader(
-                        dataset=torch.arange(self.info['num_items']), 
-                        batch_size=8192
-                    )
-                    for item_nids in dl:
-                        _emb_table[item_nids + self.num_users] = self._calc_item2item_emb(item_nids)
+        #             dl = torch.utils.data.DataLoader(
+        #                 dataset=torch.arange(self.info['num_items']), 
+        #                 batch_size=8192
+        #             )
+        #             for item_nids in dl:
+        #                 _emb_table[item_nids + self.num_users] = self._calc_item2item_emb(item_nids)
                     
-                    X = get_lightgcn_out_emb(
-                        self.A, self.emb_table, self.config['num_gcn_layers'],
-                        stack_layers=self.config['stack_layers']
-                    )
-                    _emb_table[:self.num_users] = X[:self.num_users]
+        #             X = get_lightgcn_out_emb(
+        #                 self.A, self.emb_table, self.config['num_gcn_layers'],
+        #                 stack_layers=self.config['stack_layers']
+        #             )
+        #             _emb_table[:self.num_users] = X[:self.num_users]
                     
-                    self.emb_table = _emb_table.to(self.emb_table_device)
+        #             self.emb_table = _emb_table.to(self.emb_table_device)
                     
-                else:
-                    if self.config['use_numba_csr_mult']:
-                        print("- use_numba_csr_mult, do not stack")
-                        X_in = self.emb_table.cpu().numpy()
-                        X_out = np.empty(X_in.shape, dtype=np.float32)
-                        numba_csr_mult_dense(
-                            self.indptr, self.indices, self.edge_weights,
-                            X_in, X_out
-                        )
-                        self.emb_table = torch.FloatTensor(X_out).to(self.emb_table_device)
-                        del X_in
-                    else:
-                        self.emb_table = get_lightgcn_out_emb(
-                            self.A, self.emb_table.cpu(), self.config['num_gcn_layers'],
-                            stack_layers=self.config['stack_layers']
-                        ).to(self.emb_table_device)
-            self._print_emb_info(self.emb_table, 'emb_table')
+        #         else:
+        #             if self.config['use_numba_csr_mult']:
+        #                 print("- use_numba_csr_mult, do not stack")
+        #                 X_in = self.emb_table.cpu().numpy()
+        #                 X_out = np.empty(X_in.shape, dtype=np.float32)
+        #                 numba_csr_mult_dense(
+        #                     self.indptr, self.indices, self.edge_weights,
+        #                     X_in, X_out
+        #                 )
+        #                 self.emb_table = torch.FloatTensor(X_out).to(self.emb_table_device)
+        #                 del X_in
+        #             else:
+        #                 self.emb_table = get_lightgcn_out_emb(
+        #                     self.A, self.emb_table.cpu(), self.config['num_gcn_layers'],
+        #                     stack_layers=self.config['stack_layers']
+        #                 ).to(self.emb_table_device)
+        #     self._print_emb_info(self.emb_table, 'emb_table')
     
     def _infer_dnn_output_emb(self, dnn, input_table, output_table):
         with torch.no_grad():
@@ -288,7 +309,7 @@ class xGCN(BaseEmbeddingModel):
                 batch_size=4096
             )
             for idx in dl:
-                output_table[idx] = _dnn(input_table[idx]).to(output_table.device)
+                output_table[idx] = self._get_out_emb(idx, dnn)
         
     def _renew_emb_table(self):
         if 'cancel_renew' in self.config and self.config['cancel_renew']:
@@ -323,6 +344,17 @@ class xGCN(BaseEmbeddingModel):
                     )
             self._print_emb_info(self.emb_table, 'emb_table')
     
+    def _get_out_emb(self, nids, dnn):
+        emb0 = self.emb_table[nids]
+        input_embs = [
+            table[nids] for table in self.prop_tables
+        ]
+        input_embs.append(emb0)
+
+        out_emb = dnn(torch.cat(input_embs, dim=-1))
+
+        return out_emb
+    
     def __call__(self, batch_data):
         return self.forward(batch_data)
         
@@ -330,13 +362,13 @@ class xGCN(BaseEmbeddingModel):
         src, pos, neg = batch_data
         
         if self.config['use_two_dnn']:
-            src_emb = self.user_dnn(self.emb_table[src].to(self.device))
-            pos_emb = self.item_dnn(self.emb_table[pos].to(self.device))
-            neg_emb = self.item_dnn(self.emb_table[neg].to(self.device))
+            src_emb = self._get_out_emb(src, self.user_dnn)
+            pos_emb = self._get_out_emb(pos, self.item_dnn)
+            neg_emb = self._get_out_emb(neg, self.item_dnn)
         else:
-            src_emb = self.dnn(self.emb_table[src].to(self.device))
-            pos_emb = self.dnn(self.emb_table[pos].to(self.device))
-            neg_emb = self.dnn(self.emb_table[neg].to(self.device))
+            src_emb = self._get_out_emb(src, self.dnn)
+            pos_emb = self._get_out_emb(pos, self.dnn)
+            neg_emb = self._get_out_emb(neg, self.dnn)
         
         loss_fn_type = self.config['loss_fn']
         if loss_fn_type == 'bpr_loss':
