@@ -9,6 +9,7 @@ from model.BaseEmbeddingModel import BaseEmbeddingModel, init_emb_table
 from model.module import dot_product, bpr_loss, bce_loss, cosine_contrastive_loss
 from model.LightGCN import get_lightgcn_out_emb
 from data.csr_graph_helper import numba_csr_mult_dense
+from helper.eval_helper import eval_model
 
 
 class MyDNN(torch.nn.Module):
@@ -169,7 +170,8 @@ class xGCN(BaseEmbeddingModel):
             dnn_params = self.dnn.parameters()
         
         self.param_list = []
-        self.param_list.append({'params': dnn_params, 'lr': config['dnn_lr']})
+        self.param_list.append({'params': dnn_params, 'lr': self.config['dnn_lr'],
+                                'weight_decay': self.config['dnn_l2_reg_weight']})
 
         # renew/propagation config
         # self.renew_and_prop_freq = self.config['renew_and_prop_freq']
@@ -279,6 +281,26 @@ class xGCN(BaseEmbeddingModel):
                             stack_layers=self.config['stack_layers']
                         ).to(self.emb_table_device)
             self._print_emb_info(self.emb_table, 'emb_table')
+        
+        self.out_emb_table = self.emb_table
+        if self.dataset_type == 'user-item':
+            self.target_emb_table = self.out_emb_table[self.num_users:]
+        else:
+            self.target_emb_table = self.out_emb_table
+        
+        if 'val_dl' in self.data:
+            with torch.no_grad():
+                results = eval_model(self, self.data['val_dl'], desc='val')
+                print("## after prop:", results)
+                record_file = osp.join(self.config['results_root'], 'train_record.txt')
+                with open(record_file, "a") as f:
+                    f.write('after prop:')
+                    f.write(
+                        ','.join(map(
+                            lambda x: "{:.4g}".format(x) if isinstance(x, float) else str(x), 
+                            results.values())
+                        ) + '\n'
+                    )
     
     def _infer_dnn_output_emb(self, dnn, input_table, output_table):
         with torch.no_grad():
@@ -296,7 +318,8 @@ class xGCN(BaseEmbeddingModel):
             return
         
         with torch.no_grad():
-            if self.config['renew_by_loading_best']:
+            # if self.config['renew_by_loading_best']:
+            if self.config['renew_by_loading_best'] and (self.total_prop_times >= self.config['K']):
                 print("## renew_emb_table_by_loading_best")
                 self.emb_table = torch.load(
                     osp.join(self.config['results_root'], 'out_emb_table.pt'),
