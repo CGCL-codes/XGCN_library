@@ -36,6 +36,10 @@ class Trainer:
         self.train_dl = train_dl
         self.val_dl = val_dl
         self.test_dl = test_dl
+        
+        data['train_dl'] = self.train_dl
+        data['val_dl'] = self.val_dl
+        data['test_dl'] = self.test_dl
 
         self.results_root = config['results_root']
         
