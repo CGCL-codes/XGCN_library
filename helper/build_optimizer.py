@@ -18,4 +18,7 @@ def build_optimizer(config, data):
                 opt = torch.optim.SparseAdam(model.parameters())
             else:
                 opt = torch.optim.Adam(model.parameters())
+    
+    data['opt'] = opt
+    
     return opt
