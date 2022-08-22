@@ -75,6 +75,7 @@ def _parse_arguments():
     parser.add_argument("--use_special_dnn", type=int)
     parser.add_argument("--dnn_lr", type=float)
     parser.add_argument("--dnn_l2_reg_weight", type=float)
+    parser.add_argument("--use_dnn_list", type=int)
     
     parser.add_argument("--renew_by_check_val_score", type=int)
     parser.add_argument("--endure", type=int)

@@ -11,6 +11,27 @@ from model.LightGCN import get_lightgcn_out_emb
 from data.csr_graph_helper import numba_csr_mult_dense
 
 
+class ResNet(torch.nn.Module):
+    
+    def __init__(self, dnn_arch):
+        super(ResNet, self).__init__()
+        self.dnn = torch.nn.Sequential(*eval(dnn_arch))
+    
+    def forward(self, X):
+        return X + self.dnn(X)
+
+
+class MergeNet(torch.nn.Module):
+    
+    def __init__(self, num_merge):
+        super(MergeNet, self).__init__()
+        self.num_merge = num_merge
+        # self.w = torch.ones(self.num_merge) / self.num_merge
+        
+    def forward(self, X_list):
+        return torch.stack(X_list).mean(dim=0)
+
+
 class MyDNN(torch.nn.Module):
     
     def __init__(self, dnn_arch, scale_net_arch):
@@ -179,6 +200,10 @@ class xGCN_multi(BaseEmbeddingModel):
         self.param_list = []
         self.param_list.append({'params': dnn_params, 'lr': config['dnn_lr']})
 
+        if 'use_dnn_list' in self.config and self.config['use_dnn_list']:
+            self.merge_net = MergeNet(num_merge=self.config['num_gcn_layers'] + 1).to(self.device)
+            self.param_list.append({'params': self.merge_net.parameters(), 'lr': 0.001})
+        
         # renew/propagation config
         # self.renew_and_prop_freq = self.config['renew_and_prop_freq']
         # self.epoch = 0
@@ -199,15 +224,24 @@ class xGCN_multi(BaseEmbeddingModel):
         return self.param_list
 
     def _build_dnn(self):
-        if 'use_special_dnn' in self.config and self.config['use_special_dnn']:
-            print("## using scale-dnn")
-            dnn = MyDNN(self.config['dnn_arch'], self.config['scale_net_arch']).to(self.device)
+        if 'use_dnn_list' in self.config and self.config['use_dnn_list']:
+            return self._build_dnn_list()
         else:
-            dnn = torch.nn.Sequential(*eval(self.config['dnn_arch'])).to(self.device)
-        
-        if 'use_identical_dnn' in self.config and self.config['use_identical_dnn']:
-            dnn = train_identical_mapping_dnn(dnn, self.emb_table)
-        return dnn
+            if 'use_special_dnn' in self.config and self.config['use_special_dnn']:
+                print("## using scale-dnn")
+                dnn = MyDNN(self.config['dnn_arch'], self.config['scale_net_arch']).to(self.device)
+            else:
+                dnn = torch.nn.Sequential(*eval(self.config['dnn_arch'])).to(self.device)
+            
+            if 'use_identical_dnn' in self.config and self.config['use_identical_dnn']:
+                dnn = train_identical_mapping_dnn(dnn, self.emb_table)
+            return dnn
+    
+    def _build_dnn_list(self):
+        dnn_list = torch.nn.ModuleList([
+            ResNet(self.config['dnn_arch']) for _ in range(self.config['num_gcn_layers'] + 1)
+        ]).to(self.device)
+        return dnn_list
     
     def _print_emb_info(self, table, name):
         emb_abs = table.abs()
@@ -231,6 +265,7 @@ class xGCN_multi(BaseEmbeddingModel):
         return self.emb_table[top_nids + self.num_users].mean(dim=-2)
     
     def _do_propagation(self):
+        print("## do_propagation")
         X = self.emb_table.cpu()
         for i in range(self.config['num_gcn_layers']):
             self.prop_tables[i] = self.prop_tables[i].cpu()
@@ -350,10 +385,14 @@ class xGCN_multi(BaseEmbeddingModel):
             table[nids] for table in self.prop_tables
         ]
         input_embs.append(emb0)
-
-        out_emb = dnn(torch.cat(input_embs, dim=-1))
-
-        return out_emb
+        if 'use_dnn_list' in self.config and self.config['use_dnn_list']:
+            X_list = []
+            for f, X in zip(dnn, input_embs):
+                X_list.append(f(X))
+            return self.merge_net(X_list)
+        else:
+            out_emb = dnn(torch.cat(input_embs, dim=-1))
+            return out_emb
     
     def __call__(self, batch_data):
         return self.forward(batch_data)
