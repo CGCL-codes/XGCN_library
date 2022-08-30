@@ -9,6 +9,7 @@ from model.BaseEmbeddingModel import BaseEmbeddingModel, init_emb_table
 from model.module import dot_product, bpr_loss, bce_loss, cosine_contrastive_loss
 from model.LightGCN import get_lightgcn_out_emb
 from data.csr_graph_helper import numba_csr_mult_dense
+from helper.eval_helper import eval_model
 
 
 class ResNet(torch.nn.Module):
@@ -26,10 +27,21 @@ class MergeNet(torch.nn.Module):
     def __init__(self, num_merge):
         super(MergeNet, self).__init__()
         self.num_merge = num_merge
-        # self.w = torch.ones(self.num_merge) / self.num_merge
-        
+        # w = torch.ones(self.num_merge) / self.num_merge
+        # # w = w.unsqueeze(dim=-1).unsqueeze(dim=-1)  # shape=(num_merge, 1, 1)
+        # self.w = torch.nn.Parameter(w)
+        # self.softmax = torch.nn.Softmax(dim=-1)
+
     def forward(self, X_list):
+        # Xs = torch.stack(X_list)
+        # w = self.softmax(self.w).unsqueeze(dim=-1).unsqueeze(dim=-1)
+        # return (w * Xs).sum(dim=0)
         return torch.stack(X_list).mean(dim=0)
+
+    def print_weight(self):
+        pass
+    #     with torch.no_grad():
+    #         print("## w:", self.w.data, "## softmax(w):", self.softmax(self.w.data))
 
 
 class MyDNN(torch.nn.Module):
@@ -277,7 +289,26 @@ class xGCN_multi(BaseEmbeddingModel):
         self.emb_table = self.emb_table.to(self.device)
         for i in range(self.config['num_gcn_layers']):
             self.prop_tables[i] = self.prop_tables[i].to(self.device)
-            
+
+        self.out_emb_table = (torch.stack(self.prop_tables).sum(dim=0) + self.emb_table) / (1 + self.config['num_gcn_layers'])  # stack all
+        if self.dataset_type == 'user-item':
+            self.target_emb_table = self.out_emb_table[self.num_users:]
+        else:
+            self.target_emb_table = self.out_emb_table
+        
+        if 'val_dl' in self.data:
+            with torch.no_grad():
+                results = eval_model(self, self.data['val_dl'], desc='val')
+                print("## after prop:", results)
+                record_file = osp.join(self.config['results_root'], 'train_record.txt')
+                with open(record_file, "a") as f:
+                    f.write('after prop:')
+                    f.write(
+                        ','.join(map(
+                            lambda x: "{:.4g}".format(x) if isinstance(x, float) else str(x), 
+                            results.values())
+                        ) + '\n'
+                    )    
     # def _do_propagation(self):
         # if 'cancel_prop' in self.config and self.config['cancel_prop']:
         #     # do nothing
@@ -440,6 +471,10 @@ class xGCN_multi(BaseEmbeddingModel):
     
     def prepare_for_train(self):
         epoch = self.data['epoch']
+        
+        if 'use_dnn_list' in self.config and self.config['use_dnn_list']:
+            self.merge_net.print_weight()
+
         if self.total_prop_times < self.config['K']:
             if not (epoch % self.config['renew_and_prop_freq']) and epoch != 0:
                 self._renew_emb_table()
