@@ -391,6 +391,12 @@ class xGCN(BaseEmbeddingModel):
         return loss
     
     def prepare_for_train(self):
+        if self.config['use_two_dnn']:
+            self.user_dnn.train()
+            self.item_dnn.train()
+        else:
+            self.dnn.train()
+        
         epoch = self.data['epoch']
         if self.total_prop_times < self.config['K']:
             if not (epoch % self.config['renew_and_prop_freq']) and epoch != 0:
@@ -411,6 +417,12 @@ class xGCN(BaseEmbeddingModel):
                     self.epoch_last_prop = epoch
     
     def prepare_for_eval(self):
+        if self.config['use_two_dnn']:
+            self.user_dnn.eval()
+            self.item_dnn.eval()
+        else:
+            self.dnn.eval()
+        
         self.out_emb_table = torch.empty(self.emb_table.shape, dtype=torch.float32).to(
             self.emb_table_device
         )
