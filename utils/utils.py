@@ -114,7 +114,7 @@ def get_formatted_results(r):
     return s
 
 
-def get_ui_degree_and_id(g: dgl.DGLGraph):
+def get_ui_degree_and_id(g):
     user_flag = g.ndata['user_flag']
     
     all_id = g.nodes()
