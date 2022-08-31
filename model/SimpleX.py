@@ -20,11 +20,14 @@ class SimpleX(BaseEmbeddingModel):
             self.num_users = self.info['num_users']
         
         self.base_emb_table = init_emb_table(config, self.info['num_nodes'])
-        
-        self.param_list = []
-        if not self.config['freeze_emb']:
-            self.param_list.append({'params': self.base_emb_table, 'lr': config['emb_lr']})
-        
+        self.out_emb_table = torch.empty(self.base_emb_table.weight.shape, dtype=torch.float32)
+
+        self.param_list = {'SparseAdam': []}
+        self.param_list['SparseAdam'].append({
+            'params': list(self.base_emb_table.parameters()), 
+            'lr': config['emb_lr']
+        })
+
         data_root = self.config['data_root']
         
         if self.dataset_type == 'user-item':
@@ -60,7 +63,7 @@ class SimpleX(BaseEmbeddingModel):
     def _get_user_output_emb(self, users=None):
         if users is None:
             with self.g.local_scope():
-                self.g.srcdata['h'] = self.base_emb_table
+                self.g.srcdata['h'] = self.base_emb_table.weight
                 self.g.update_all(self.fn_msg, self.fn_reduce)
                 if self.dataset_type == 'user-item':
                     aggregated_item_emb = self.g.dstdata['h'][:self.num_users]
@@ -68,19 +71,19 @@ class SimpleX(BaseEmbeddingModel):
                     aggregated_item_emb = self.g.dstdata['h']
             
             if self.dataset_type == 'user-item':
-                user_self_emb = self.base_emb_table[:self.num_users]
+                user_self_emb = self.base_emb_table.weight[:self.num_users]
             else:
-                user_self_emb = self.base_emb_table
+                user_self_emb = self.base_emb_table.weight
         else:
             input_items, _, blocks = self.node_collator.collate(users.to(self.device))
             block = blocks[0]
             
             with block.local_scope():
-                block.srcdata['h'] = self.base_emb_table[input_items]
+                block.srcdata['h'] = self.base_emb_table(input_items.to(self.device))
                 block.update_all(self.fn_msg, self.fn_reduce)
                 aggregated_item_emb = block.dstdata['h']
             
-            user_self_emb = self.base_emb_table[users]
+            user_self_emb = self.base_emb_table(users.to(self.device))
             
         theta = self.config['theta']
         user_output_emb = theta * user_self_emb + (1 - theta) * aggregated_item_emb
@@ -93,9 +96,9 @@ class SimpleX(BaseEmbeddingModel):
     def forward(self, batch_data):
         src, pos, neg = batch_data
         
-        src_emb = self._get_user_output_emb(src)
-        pos_emb = self.base_emb_table[pos]
-        neg_emb = self.base_emb_table[neg]
+        src_emb = self._get_user_output_emb(src.to(self.device))
+        pos_emb = self.base_emb_table(pos.to(self.device))
+        neg_emb = self.base_emb_table(neg.to(self.device))
         
         loss = cosine_contrastive_loss(src_emb, pos_emb, neg_emb, 
                                        self.config['margin'], self.config['neg_weight'])
@@ -112,10 +115,10 @@ class SimpleX(BaseEmbeddingModel):
     def prepare_for_eval(self):
         if self.dataset_type == 'user-item':
             self.out_emb_table[:self.num_users] = self._get_user_output_emb().cpu()
-            self.out_emb_table[self.num_users:] = self.base_emb_table[self.num_users:].cpu()
+            self.out_emb_table[self.num_users:] = self.base_emb_table.weight[self.num_users:].cpu()
             self.target_emb_table = self.out_emb_table[self.num_users:]
         else:
-            self.out_emb_table = self.base_emb_table
+            self.out_emb_table = self.base_emb_table.weight
             self.target_emb_table = self.out_emb_table
         
     def save(self, root):

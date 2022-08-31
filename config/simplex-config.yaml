@@ -17,6 +17,7 @@ neg_weight: 64
 emb_dim: 64
 emb_init_std: 0.1
 emb_lr: 0.001
+use_sparse: 1
 freeze_emb: 0
 from_pretrained: 0
 
