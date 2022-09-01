@@ -23,9 +23,9 @@ class SimpleX(BaseEmbeddingModel):
         self.out_emb_table = torch.empty(self.base_emb_table.weight.shape, dtype=torch.float32)
 
         if self.config['use_sparse']:
-            opt_name = 'Adam'
-        else:
             opt_name = 'SparseAdam'
+        else:
+            opt_name = 'Adam'
         
         print("# opt:", opt_name)
         self.param_list = {opt_name: []}
