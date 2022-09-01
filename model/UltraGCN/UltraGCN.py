@@ -97,12 +97,12 @@ class UltraGCN(BaseEmbeddingModel):
             pos_loss = F.binary_cross_entropy_with_logits(
                 pos_score, 
                 torch.ones(pos_score.shape).to(self.device),
-                weight=pos_coe
+                weight=pos_coe, reduction='none'
             )
             neg_loss = F.binary_cross_entropy_with_logits(
                 neg_score, 
                 torch.zeros(neg_score.shape).to(self.device),
-                weight=neg_coe
+                weight=neg_coe, reduction='none'
             ).mean(dim = -1)
             
             loss_C_O = (pos_loss + self.config['neg_weight'] * neg_loss).sum()
