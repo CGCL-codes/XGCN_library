@@ -19,8 +19,14 @@ class UltraGCN(BaseEmbeddingModel):
         self.out_emb_table = None
         self.target_emb_table = None
         
-        self.param_list = {'SparseAdam': []}
-        self.param_list['SparseAdam'].append({
+        if self.config['use_sparse']:
+            opt_name = 'Adam'
+        else:
+            opt_name = 'SparseAdam'
+        
+        print("# opt:", opt_name)
+        self.param_list = {opt_name: []}
+        self.param_list[opt_name].append({
             'params': list(self.base_emb_table.parameters()), 
             'lr': config['emb_lr']
         })

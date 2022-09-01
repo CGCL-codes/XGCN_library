@@ -22,8 +22,14 @@ class SimpleX(BaseEmbeddingModel):
         self.base_emb_table = init_emb_table(config, self.info['num_nodes'])
         self.out_emb_table = torch.empty(self.base_emb_table.weight.shape, dtype=torch.float32)
 
-        self.param_list = {'SparseAdam': []}
-        self.param_list['SparseAdam'].append({
+        if self.config['use_sparse']:
+            opt_name = 'Adam'
+        else:
+            opt_name = 'SparseAdam'
+        
+        print("# opt:", opt_name)
+        self.param_list = {opt_name: []}
+        self.param_list[opt_name].append({
             'params': list(self.base_emb_table.parameters()), 
             'lr': config['emb_lr']
         })
