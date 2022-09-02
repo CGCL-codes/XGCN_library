@@ -1,32 +1,25 @@
-PROJECT_ROOT='/home/songxiran/code/xGCN'
-ALL_DATA_ROOT='/home/songxiran/data/social_and_user_item'
+PROJECT_ROOT=$1
+ALL_DATA_ROOT=$2
 
-DEVICE=$1
+DEVICE=$3
 
 CONFIG_ROOT=$PROJECT_ROOT'/config'
 ALL_DATASETS_ROOT=$ALL_DATA_ROOT'/datasets'
 ALL_RESULTS_ROOT=$ALL_DATA_ROOT'/model_outputs'
 
-DATASET=$2
+DATASET=$4
 
 DATA_ROOT=$ALL_DATASETS_ROOT'/instance_'$DATASET
-
-#### prepare_ultragcn_data 
-RESULTS_DIR='ultragcn/data'
-python $PROJECT_ROOT'/'model/UltraGCN/prepare_ultragcn_data.py $PROJECT_ROOT \
-    --data_root $ALL_DATASETS_ROOT'/instance_'$DATASET \
-    --results_root $ALL_RESULTS_ROOT'/gnn_'$DATASET'/'$RESULTS_DIR \
-    --topk 100 \
 
 ################
 SEED=1
 
-lambda=$3
-gamma=$4
-reg=$5
-num_neg=$6
-neg_weight=$7
-topk=$8
+lambda=$5
+gamma=$6
+reg=$7
+num_neg=$8
+neg_weight=$9
+topk=${10}
 
 RESULTS_DIR="ultragcn/[lambda$lambda][gamma$gamma][reg$reg][neg$num_neg-weight$neg_weight][K$topk]"
 
@@ -42,8 +35,8 @@ python $PROJECT_ROOT'/'main/main.py $PROJECT_ROOT \
     --file_ii_topk_similarity_scores $RESULTS_ROOT'/../data/beta_score_topk/ii_topk_similarity_scores.np.pkl' \
     --device $DEVICE \
     --loss_fn 'bce_loss' \
-    --train_batch_size 2048 \
-    --emb_lr 0.005 \
+    --train_batch_size 4096 \
+    --emb_lr 0.001 \
     --num_neg $num_neg \
     --neg_weight $neg_weight \
     --lambda $lambda \
@@ -57,6 +50,7 @@ python $PROJECT_ROOT'/'main/main.py $PROJECT_ROOT \
     --mask_nei_when_test 1 \
     --file_test $DATA_ROOT'/test_edges.pkl' \
     --key_score_metric 'r100' \
-    --convergence_threshold 30 --epochs 500 \
+    --convergence_threshold 100 --epochs 1000 \
+    --use_sparse 0 \
 
 # find $RESULTS_ROOT -name "*.pt" -type f -print -exec rm -rf {} \;

@@ -1,22 +1,22 @@
-PROJECT_ROOT='/home/songxiran/code/xGCN'
-ALL_DATA_ROOT='/home/songxiran/data/social_and_user_item'
+PROJECT_ROOT=$1
+ALL_DATA_ROOT=$2
 
-DEVICE=$1
+DEVICE=$3
 
 CONFIG_ROOT=$PROJECT_ROOT'/config'
 ALL_DATASETS_ROOT=$ALL_DATA_ROOT'/datasets'
 ALL_RESULTS_ROOT=$ALL_DATA_ROOT'/model_outputs'
 
-DATASET=$2
+DATASET=$4
 
 DATA_ROOT=$ALL_DATASETS_ROOT'/instance_'$DATASET
 
 ################
 SEED=1
 
-reg=$3
-num_neg=$4
-neg_weight=$5
+reg=$5
+num_neg=$6
+neg_weight=$7
 
 RESULTS_DIR="simplex/[reg$reg][neg$num_neg-weight$neg_weight]"
 
@@ -28,8 +28,8 @@ python $PROJECT_ROOT'/'main/main.py $PROJECT_ROOT \
     --results_root $RESULTS_ROOT \
     --seed $SEED \
     --device $DEVICE \
-    --train_batch_size 2048 \
-    --emb_lr 0.005 \
+    --train_batch_size 4096 \
+    --emb_lr 0.001 \
     --l2_reg_weight $reg \
     --num_neg $num_neg \
     --neg_weight $neg_weight \
@@ -42,6 +42,7 @@ python $PROJECT_ROOT'/'main/main.py $PROJECT_ROOT \
     --mask_nei_when_test 1 \
     --file_test $DATA_ROOT'/test_edges.pkl' \
     --key_score_metric 'r100' \
-    --convergence_threshold 30 --epochs 500 \
+    --convergence_threshold 100 --epochs 1000 \
+    --use_sparse 0 \
 
 # find $RESULTS_ROOT -name "*.pt" -type f -print -exec rm -rf {} \;
