@@ -41,6 +41,14 @@ class EdgeBased_Full_TrainDataLoader:
                 self.neg_low, self.neg_high, self.num_neg, src, 
                 self.csr_indptr, self.csr_indices
             )
+            
+    def get_neg_samples(self, src):
+        if self.ensure_neg_is_not_neighbor:
+            neg = torch.LongTensor(self._generate_strict_neg(src.numpy()))
+        else:
+            neg = torch.randint(self.neg_low, self.neg_high, 
+                                (len(src), self.num_neg)).squeeze()
+        return neg
     
     def __len__(self):
         return len(self.dl)
@@ -56,10 +64,6 @@ class EdgeBased_Full_TrainDataLoader:
         if self.num_neg < 1:
             neg = None
         else:
-            if self.ensure_neg_is_not_neighbor:
-                neg = torch.LongTensor(self._generate_strict_neg(src.numpy()))
-            else:
-                neg = torch.randint(self.neg_low, self.neg_high, 
-                                    (len(src), self.num_neg)).squeeze()
+            neg = self.get_neg_samples(src)
         
         return src, pos, neg
