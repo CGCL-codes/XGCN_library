@@ -121,6 +121,15 @@ class xGCN_multi(BaseEmbeddingModel):
         
         data_root = self.config['data_root']
         
+        if 'gamma' in self.config and self.config['gamma'] > 0:
+            print("## using item-item graph additional training signal")
+            self.ii_topk_neighbors = io.load_pickle(config['file_ii_topk_neighbors'])
+            # self.ii_topk_similarity_scores = io.load_pickle(config['file_ii_topk_similarity_scores'])
+            
+            topk = config['topk']
+            self.ii_topk_neighbors = torch.LongTensor(self.ii_topk_neighbors[:, :topk]).to(self.device)
+            # self.ii_topk_similarity_scores = torch.FloatTensor(self.ii_topk_similarity_scores[:, :topk]).to(self.device)
+
         self.prop_type = self.config['prop_type']
         if self.prop_type == 'pprgo':
             print("## load ppr neighbors and ppr weights ...")
@@ -216,16 +225,6 @@ class xGCN_multi(BaseEmbeddingModel):
             self.merge_net = MergeNet(num_merge=self.config['num_gcn_layers'] + 1).to(self.device)
             self.param_list.append({'params': self.merge_net.parameters(), 'lr': 0.001})
         
-        # renew/propagation config
-        # self.renew_and_prop_freq = self.config['renew_and_prop_freq']
-        # self.epoch = 0
-        
-        # self.max_renew_times = self.config['max_renew_times']
-        # self.already_done_renew_times = 0
-        
-        # self.max_prop_times = self.config['max_prop_times']
-        # self.already_done_prop_times = 0
-        
         self.epoch_last_prop = 0
         self.total_prop_times = 0
         
@@ -308,64 +307,7 @@ class xGCN_multi(BaseEmbeddingModel):
                             lambda x: "{:.4g}".format(x) if isinstance(x, float) else str(x), 
                             results.values())
                         ) + '\n'
-                    )    
-    # def _do_propagation(self):
-        # if 'cancel_prop' in self.config and self.config['cancel_prop']:
-        #     # do nothing
-        #     return
-        
-        # with torch.no_grad():
-        #     print("## do_propagation:", self.prop_type)
-        #     if self.prop_type == 'pprgo':
-        #         _emb_table = torch.empty(self.emb_table.shape, dtype=torch.float32).to(self.emb_table_device)
-        #         dl = torch.utils.data.DataLoader(dataset=torch.arange(len(self.emb_table)), 
-        #                                          batch_size=8192)
-        #         for nids in dl:
-        #             _emb_table[nids] = self._calc_pprgo_out_emb(nids).to(self.emb_table_device)
-                
-        #         self.emb_table = _emb_table
-                
-        #     else:  # self.prop_type == 'lightgcn'
-                
-        #         if 'use_item2item_graph_for_item_prop' in self.config and \
-        #             self.config['use_item2item_graph_for_item_prop']:
-        #             print("## use_item2item_graph_for_item_prop")
-                    
-        #             self.emb_table = self.emb_table.cpu()
-        #             _emb_table = torch.empty(self.emb_table.shape, dtype=torch.float32)
-                    
-        #             dl = torch.utils.data.DataLoader(
-        #                 dataset=torch.arange(self.info['num_items']), 
-        #                 batch_size=8192
-        #             )
-        #             for item_nids in dl:
-        #                 _emb_table[item_nids + self.num_users] = self._calc_item2item_emb(item_nids)
-                    
-        #             X = get_lightgcn_out_emb(
-        #                 self.A, self.emb_table, self.config['num_gcn_layers'],
-        #                 stack_layers=self.config['stack_layers']
-        #             )
-        #             _emb_table[:self.num_users] = X[:self.num_users]
-                    
-        #             self.emb_table = _emb_table.to(self.emb_table_device)
-                    
-        #         else:
-        #             if self.config['use_numba_csr_mult']:
-        #                 print("- use_numba_csr_mult, do not stack")
-        #                 X_in = self.emb_table.cpu().numpy()
-        #                 X_out = np.empty(X_in.shape, dtype=np.float32)
-        #                 numba_csr_mult_dense(
-        #                     self.indptr, self.indices, self.edge_weights,
-        #                     X_in, X_out
-        #                 )
-        #                 self.emb_table = torch.FloatTensor(X_out).to(self.emb_table_device)
-        #                 del X_in
-        #             else:
-        #                 self.emb_table = get_lightgcn_out_emb(
-        #                     self.A, self.emb_table.cpu(), self.config['num_gcn_layers'],
-        #                     stack_layers=self.config['stack_layers']
-        #                 ).to(self.emb_table_device)
-        #     self._print_emb_info(self.emb_table, 'emb_table')
+                    )
     
     def _infer_dnn_output_emb(self, dnn, input_table, output_table):
         with torch.no_grad():
@@ -375,7 +317,7 @@ class xGCN_multi(BaseEmbeddingModel):
                 batch_size=4096
             )
             for idx in dl:
-                output_table[idx] = self._get_out_emb(idx, dnn)
+                output_table[idx] = self.get_output_emb(idx, dnn)
         
     def _renew_emb_table(self):
         if 'cancel_renew' in self.config and self.config['cancel_renew']:
@@ -410,7 +352,7 @@ class xGCN_multi(BaseEmbeddingModel):
                     )
             self._print_emb_info(self.emb_table, 'emb_table')
     
-    def _get_out_emb(self, nids, dnn):
+    def get_output_emb(self, nids, dnn):
         emb0 = self.emb_table[nids]
         input_embs = [
             table[nids] for table in self.prop_tables
@@ -427,19 +369,8 @@ class xGCN_multi(BaseEmbeddingModel):
     
     def __call__(self, batch_data):
         return self.forward(batch_data)
-        
-    def forward(self, batch_data):
-        src, pos, neg = batch_data
-        
-        if self.config['use_two_dnn']:
-            src_emb = self._get_out_emb(src, self.user_dnn)
-            pos_emb = self._get_out_emb(pos, self.item_dnn)
-            neg_emb = self._get_out_emb(neg, self.item_dnn)
-        else:
-            src_emb = self._get_out_emb(src, self.dnn)
-            pos_emb = self._get_out_emb(pos, self.dnn)
-            neg_emb = self._get_out_emb(neg, self.dnn)
-        
+    
+    def get_rank_loss(self, src_emb, pos_emb, neg_emb):
         loss_fn_type = self.config['loss_fn']
         if loss_fn_type == 'bpr_loss':
             pos_score = dot_product(src_emb, pos_emb)
@@ -460,15 +391,68 @@ class xGCN_multi(BaseEmbeddingModel):
         else:
             assert 0
         
+        return loss
+    
+    def forward(self, batch_data):
+        src, pos, neg = batch_data
+        emb_for_reg_list = []  # embeddings that need to calculate L2 regularization loss
+        
+        # calculate main loss
+        if self.config['use_two_dnn']:
+            src_emb = self.get_output_emb(src, self.user_dnn)
+            pos_emb = self.get_output_emb(pos, self.item_dnn)
+            neg_emb = self.get_output_emb(neg, self.item_dnn)
+        else:
+            src_emb = self.get_output_emb(src, self.dnn)
+            pos_emb = self.get_output_emb(pos, self.dnn)
+            neg_emb = self.get_output_emb(neg, self.dnn)
+        emb_for_reg_list.extend([src_emb, pos_emb, 
+                                 neg_emb.reshape(-1, src_emb.shape[-1])])
+        
+        loss = self.get_rank_loss(src_emb, pos_emb, neg_emb)
+        
+        # calculate loss from augmented training samples
+        if 'gamma' in self.config and self.config['gamma'] > 0:
+            src_aug = src.repeat_interleave(self.config['topk'])
+            pos_aug = self.get_augmented_pos(pos)
+            neg_aug = self.data['train_dl'].get_neg_samples(src_aug)
+            
+            src_aug_emb = src_emb.repeat_interleave(self.config['topk'], dim=0)
+            if self.config['use_two_dnn']:
+                pos_aug_emb = self.get_output_emb(pos_aug, self.item_dnn)
+                neg_aug_emb = self.get_output_emb(neg_aug, self.item_dnn)
+            else:
+                pos_aug_emb = self.get_output_emb(pos_aug, self.dnn)
+                neg_aug_emb = self.get_output_emb(neg_aug, self.dnn)    
+            emb_for_reg_list.extend([pos_aug_emb, 
+                                     neg_aug_emb.reshape(-1, src_emb.shape[-1])])
+            
+            loss_aug = self.get_rank_loss(src_aug_emb, pos_aug_emb, neg_aug_emb)
+            loss += self.config['gamma'] * loss_aug
+        
         rw = self.config['l2_reg_weight']
         if rw > 0:
-            L2_reg_loss = 1/2 * (1 / len(src)) * (
-                (src_emb**2).sum() + (pos_emb**2).sum() + (neg_emb**2).sum()
-            )
-            loss += rw * L2_reg_loss
+            loss_reg = self.get_L2_regularization_loss(torch.cat(emb_for_reg_list))
+            loss += rw * loss_reg
         
         return loss
     
+    def get_L2_regularization_loss(self, emb):
+        loss_reg = 1/2 * ((emb**2).sum()) / len(emb)
+        return loss_reg
+    
+    def get_augmented_pos(self, pos):
+        if self.dataset_type == 'user-item':
+            pos -= self.num_users
+            
+        pos_aug = self.ii_topk_neighbors[pos].flatten()
+        # ii_scores = self.ii_topk_similarity_scores[pos]
+        
+        if self.dataset_type == 'user-item':
+            pos_aug += self.num_users
+        
+        return pos_aug
+        
     def prepare_for_train(self):
         epoch = self.data['epoch']
         
