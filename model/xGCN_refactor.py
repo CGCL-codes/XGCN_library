@@ -25,7 +25,7 @@ class MyDNN(torch.nn.Module):
         #     torch.nn.Linear(1024, 64)
         # )
         
-        self.scale_net = torch.nn.Sequential(*eval(scale_net_arch))
+        # self.scale_net = torch.nn.Sequential(*eval(scale_net_arch))
         # self.scale_net = torch.nn.Sequential(
         #     torch.nn.Linear(64, 32),
         #     torch.nn.Tanh(),
@@ -35,11 +35,11 @@ class MyDNN(torch.nn.Module):
     
     def forward(self, X):
         
-        theta = self.scale_net(X)
+        # theta = self.scale_net(X)
         
-        X = theta * self.dnn(X)
+        # X = theta * self.dnn(X)
         
-        return X
+        return X + self.dnn(X)
 
 
 def train_identical_mapping_dnn(dnn, embeddings):
@@ -89,6 +89,15 @@ class xGCN_refactor(BaseEmbeddingModel):
         
         data_root = self.config['data_root']
         
+        if 'gamma' in self.config and self.config['gamma'] > 0:
+            print("## using item-item graph additional training signal")
+            self.ii_topk_neighbors = io.load_pickle(config['file_ii_topk_neighbors'])
+            # self.ii_topk_similarity_scores = io.load_pickle(config['file_ii_topk_similarity_scores'])
+            
+            topk = config['topk']
+            self.ii_topk_neighbors = torch.LongTensor(self.ii_topk_neighbors[:, :topk]).to(self.device)
+            # self.ii_topk_similarity_scores = torch.FloatTensor(self.ii_topk_similarity_scores[:, :topk]).to(self.device)
+
         self.prop_type = self.config['prop_type']
         if self.prop_type == 'pprgo':
             print("## load ppr neighbors and ppr weights ...")
@@ -176,16 +185,6 @@ class xGCN_refactor(BaseEmbeddingModel):
         self.param_list = []
         self.param_list.append({'params': dnn_params, 'lr': self.config['dnn_lr'],
                                 'weight_decay': self.config['dnn_l2_reg_weight']})
-
-        # renew/propagation config
-        # self.renew_and_prop_freq = self.config['renew_and_prop_freq']
-        # self.epoch = 0
-        
-        # self.max_renew_times = self.config['max_renew_times']
-        # self.already_done_renew_times = 0
-        
-        # self.max_prop_times = self.config['max_prop_times']
-        # self.already_done_prop_times = 0
         
         self.epoch_last_prop = 0
         self.total_prop_times = 0
@@ -334,46 +333,53 @@ class xGCN_refactor(BaseEmbeddingModel):
                     input_table=self.emb_table,
                     output_table=self.emb_table
                 )
-                # if self.config['use_two_dnn']:
-                #     self._infer_dnn_output_emb(
-                #         self.user_dnn,
-                #         input_table=self.emb_table[:self.num_users],
-                #         output_table=self.emb_table[:self.num_users]
-                #     )
-                #     self._infer_dnn_output_emb(
-                #         self.item_dnn,
-                #         input_table=self.emb_table[self.num_users:],
-                #         output_table=self.emb_table[self.num_users:]
-                #     )
-                # else:
-                #     self._infer_dnn_output_emb(
-                #         self.dnn,
-                #         input_table=self.emb_table,
-                #         output_table=self.emb_table
-                #     )
             self._print_emb_info(self.emb_table, 'emb_table')
     
     def __call__(self, batch_data):
-        return self.new_forward(batch_data)
+        return self.forward(batch_data)
     
-    def new_forward(self, batch_data):
+    def forward(self, batch_data):
         emb_for_reg_list = []  # embeddings that need to calculate L2 regularization loss
         
         # calculate main loss
         loss, emb_for_reg = self.get_rank_loss(batch_data)
-        emb_for_reg_list.extend(emb_for_reg)
+        emb_for_reg_list.append(emb_for_reg)
         
         # calculate augmented loss
         if 'gamma' in self.config and self.config['gamma'] > 0:
             batch_data_aug = self.get_augmented_data(batch_data)
+            
             loss_aug, emb_for_reg = self.get_rank_loss(batch_data_aug)
-            emb_for_reg_list.extend(emb_for_reg)
+            emb_for_reg_list.append(emb_for_reg)
+            
             loss += self.config['gamma'] * loss_aug
+        
         if self.config['l2_reg_weight'] > 0:
             loss_reg = self.get_L2_regularization_loss(torch.cat(emb_for_reg_list))
             loss += self.config['l2_reg_weight'] * loss_reg
         
         return loss
+    
+    def get_augmented_data(self, batch_data):
+        src, pos, neg = batch_data
+        
+        if self.dataset_type == 'user-item':
+            _pos = pos - self.num_users
+        else:
+            _pos = pos
+        
+        ii_neighbors = self.ii_topk_neighbors[_pos]
+        
+        if self.dataset_type == 'user-item':
+            _ii_neighbors = ii_neighbors + self.num_users
+        else:
+            _ii_neighbors = ii_neighbors
+        
+        src_aug = src.repeat_interleave(self.config['topk'])
+        pos_aug = _ii_neighbors.flatten()
+        neg_aug = self.data['train_dl'].get_neg_samples(src_aug)
+        
+        return src_aug, pos_aug, neg_aug
     
     def get_rank_loss(self, batch_data):
         src, pos, neg = batch_data
@@ -382,7 +388,6 @@ class xGCN_refactor(BaseEmbeddingModel):
         pos_emb = self.get_output_emb(pos)
         neg_emb = self.get_output_emb(neg)
         
-        import pdb; pdb.set_trace()
         loss_fn_type = self.config['loss_fn']
         if loss_fn_type == 'bpr_loss':
             pos_score = dot_product(src_emb, pos_emb)
@@ -403,12 +408,11 @@ class xGCN_refactor(BaseEmbeddingModel):
         else:
             assert 0
         
-        return loss, [src_emb, pos_emb, neg_emb]
+        return loss, torch.cat([src_emb, pos_emb, 
+                                neg_emb.reshape(-1, src_emb.shape[-1])])
     
     def get_L2_regularization_loss(self, emb):
-        loss_reg = 1/2 * (1 / (len(emb)/3)) * (
-            (emb**2).sum()
-        )
+        loss_reg = 1/2 * ((emb**2).sum())
         return loss_reg
     
     def get_output_emb(self, nids):
@@ -422,7 +426,7 @@ class xGCN_refactor(BaseEmbeddingModel):
             user_emb = self.user_dnn(self.emb_table[user_nids].to(self.device))
             item_emb = self.item_dnn(self.emb_table[item_nids].to(self.device))
             
-            emb = torch.empty((len(nids), user_emb.shape[-1]), 
+            emb = torch.empty((*nids.shape, user_emb.shape[-1]), 
                               dtype=torch.float32, device=self.device)
             emb[user_mask] = user_emb
             emb[item_mask] = item_emb
@@ -430,47 +434,6 @@ class xGCN_refactor(BaseEmbeddingModel):
             emb = self.dnn(self.emb_table[nids].to(self.device))
         
         return emb
-    
-    # def forward(self, batch_data):
-    #     src, pos, neg = batch_data
-        
-    #     if self.config['use_two_dnn']:
-    #         src_emb = self.user_dnn(self.emb_table[src].to(self.device))
-    #         pos_emb = self.item_dnn(self.emb_table[pos].to(self.device))
-    #         neg_emb = self.item_dnn(self.emb_table[neg].to(self.device))
-    #     else:
-    #         src_emb = self.dnn(self.emb_table[src].to(self.device))
-    #         pos_emb = self.dnn(self.emb_table[pos].to(self.device))
-    #         neg_emb = self.dnn(self.emb_table[neg].to(self.device))
-        
-    #     loss_fn_type = self.config['loss_fn']
-    #     if loss_fn_type == 'bpr_loss':
-    #         pos_score = dot_product(src_emb, pos_emb)
-    #         neg_score = dot_product(src_emb, neg_emb)
-    #         loss = bpr_loss(pos_score, neg_score)
-        
-    #     elif loss_fn_type == 'bce_loss':
-    #         pos_score = dot_product(src_emb, pos_emb)
-    #         neg_score = dot_product(src_emb, neg_emb)
-    #         loss = bce_loss(pos_score, neg_score, 
-    #                         self.config['neg_weight'], reduction='mean')
-        
-    #     elif loss_fn_type == 'cosine_contrastive_loss':
-    #         loss = cosine_contrastive_loss(
-    #             src_emb, pos_emb, neg_emb,
-    #             self.config['margin'], self.config['neg_weight']
-    #         )
-    #     else:
-    #         assert 0
-        
-    #     rw = self.config['l2_reg_weight']
-    #     if rw > 0:
-    #         L2_reg_loss = 1/2 * (1 / len(src)) * (
-    #             (src_emb**2).sum() + (pos_emb**2).sum() + (neg_emb**2).sum()
-    #         )
-    #         loss += rw * L2_reg_loss
-        
-    #     return loss
     
     def prepare_for_train(self):
         if self.config['use_two_dnn']:
@@ -509,23 +472,6 @@ class xGCN_refactor(BaseEmbeddingModel):
             input_table=self.emb_table,
             output_table=self.out_emb_table
         )
-        # if self.config['use_two_dnn']:
-        #     self._infer_dnn_output_emb(
-        #         self.user_dnn,
-        #         input_table=self.emb_table[:self.num_users],
-        #         output_table=self.out_emb_table[:self.num_users]
-        #     )
-        #     self._infer_dnn_output_emb(
-        #         self.item_dnn,
-        #         input_table=self.emb_table[self.num_users:],
-        #         output_table=self.out_emb_table[self.num_users:]
-        #     )
-        # else:
-        #     self._infer_dnn_output_emb(
-        #         self.dnn,
-        #         input_table=self.emb_table,
-        #         output_table=self.out_emb_table
-        #     )
         
         if 'zero_degree_zero_emb' in self.config and self.config['zero_degree_zero_emb']:
             self.out_emb_table[self.zero_degree_nodes] = 0
