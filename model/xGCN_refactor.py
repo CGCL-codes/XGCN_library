@@ -25,7 +25,7 @@ class MyDNN(torch.nn.Module):
         #     torch.nn.Linear(1024, 64)
         # )
         
-        # self.scale_net = torch.nn.Sequential(*eval(scale_net_arch))
+        self.scale_net = torch.nn.Sequential(*eval(scale_net_arch))
         # self.scale_net = torch.nn.Sequential(
         #     torch.nn.Linear(64, 32),
         #     torch.nn.Tanh(),
@@ -35,11 +35,11 @@ class MyDNN(torch.nn.Module):
     
     def forward(self, X):
         
-        # theta = self.scale_net(X)
+        theta = self.scale_net(X)
         
-        # X = theta * self.dnn(X)
+        X = theta * self.dnn(X)
         
-        return X + self.dnn(X)
+        return X
 
 
 def train_identical_mapping_dnn(dnn, embeddings):
@@ -285,7 +285,7 @@ class xGCN_refactor(BaseEmbeddingModel):
                         ).to(self.emb_table_device)
             self._print_emb_info(self.emb_table, 'emb_table')
         
-        self.out_emb_table = self.emb_table
+        self.out_emb_table[:] = self.emb_table
         if self.dataset_type == 'user-item':
             self.target_emb_table = self.out_emb_table[self.num_users:]
         else:
@@ -305,7 +305,7 @@ class xGCN_refactor(BaseEmbeddingModel):
                         ) + '\n'
                     )
     
-    def infer_all_output_emb(self, input_table, output_table):
+    def infer_all_output_emb(self, output_table):
         with torch.no_grad():
             dl = torch.utils.data.DataLoader(
                 torch.arange(self.num_nodes),
@@ -329,10 +329,7 @@ class xGCN_refactor(BaseEmbeddingModel):
                 )
             else:
                 print("## renew_emb_table")
-                self.infer_all_output_emb(
-                    input_table=self.emb_table,
-                    output_table=self.emb_table
-                )
+                self.infer_all_output_emb(output_table=self.emb_table)
             self._print_emb_info(self.emb_table, 'emb_table')
     
     def __call__(self, batch_data):
@@ -340,7 +337,6 @@ class xGCN_refactor(BaseEmbeddingModel):
     
     def forward(self, batch_data):
         emb_for_reg_list = []  # embeddings that need to calculate L2 regularization loss
-        
         # calculate main loss
         loss, emb_for_reg = self.get_rank_loss(batch_data)
         emb_for_reg_list.append(emb_for_reg)
@@ -412,7 +408,7 @@ class xGCN_refactor(BaseEmbeddingModel):
                                 neg_emb.reshape(-1, src_emb.shape[-1])])
     
     def get_L2_regularization_loss(self, emb):
-        loss_reg = 1/2 * ((emb**2).sum())
+        loss_reg = 1/2 * ((emb**2).sum()) / len(emb)
         return loss_reg
     
     def get_output_emb(self, nids):
@@ -467,11 +463,7 @@ class xGCN_refactor(BaseEmbeddingModel):
             self.item_dnn.eval()
         else:
             self.dnn.eval()
-        
-        self.infer_all_output_emb(
-            input_table=self.emb_table,
-            output_table=self.out_emb_table
-        )
+        self.infer_all_output_emb(output_table=self.out_emb_table)
         
         if 'zero_degree_zero_emb' in self.config and self.config['zero_degree_zero_emb']:
             self.out_emb_table[self.zero_degree_nodes] = 0
