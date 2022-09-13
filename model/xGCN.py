@@ -89,6 +89,15 @@ class xGCN(BaseEmbeddingModel):
         
         data_root = self.config['data_root']
         
+        if 'gamma' in self.config and self.config['gamma'] > 0:
+            print("## using item-item graph additional training signal")
+            self.ii_topk_neighbors = io.load_pickle(config['file_ii_topk_neighbors'])
+            # self.ii_topk_similarity_scores = io.load_pickle(config['file_ii_topk_similarity_scores'])
+            
+            topk = config['topk']
+            self.ii_topk_neighbors = torch.LongTensor(self.ii_topk_neighbors[:, :topk]).to(self.device)
+            # self.ii_topk_similarity_scores = torch.FloatTensor(self.ii_topk_similarity_scores[:, :topk]).to(self.device)
+
         self.prop_type = self.config['prop_type']
         if self.prop_type == 'pprgo':
             print("## load ppr neighbors and ppr weights ...")
