@@ -316,7 +316,10 @@ class xGCN(BaseEmbeddingModel):
     def get_output_emb(self, nids, dnn, input_emb=None):
         if input_emb is None:
             input_emb = self.emb_table[nids]
-        return dnn(input_emb)
+        if 'use_residual' in self.config and self.config['use_residual']:
+            return dnn(input_emb) + input_emb
+        else:    
+            return dnn(input_emb)
         
     def _renew_emb_table(self):
         if 'cancel_renew' in self.config and self.config['cancel_renew']:

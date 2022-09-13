@@ -358,14 +358,19 @@ class xGCN_multi(BaseEmbeddingModel):
             table[nids] for table in self.prop_tables
         ]
         input_embs.append(emb0)
+        
         if 'use_dnn_list' in self.config and self.config['use_dnn_list']:
             X_list = []
             for f, X in zip(dnn, input_embs):
                 X_list.append(f(X))
-            return self.merge_net(X_list)
+            out_emb = self.merge_net(X_list)
         else:
             out_emb = dnn(torch.cat(input_embs, dim=-1))
-            return out_emb
+        
+        if 'use_residual' in self.config and self.config['use_residual']:
+            out_emb += emb0
+        
+        return out_emb
     
     def __call__(self, batch_data):
         return self.forward(batch_data)
