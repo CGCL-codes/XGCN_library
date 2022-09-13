@@ -310,7 +310,13 @@ class xGCN(BaseEmbeddingModel):
                 batch_size=4096
             )
             for idx in dl:
-                output_table[idx] = _dnn(input_table[idx]).to(output_table.device)
+                # output_table[idx] = _dnn(input_table[idx]).to(output_table.device)
+                output_table[idx] = self.get_output_emb(None, dnn, input_table[idx])
+    
+    def get_output_emb(self, nids, dnn, input_emb=None):
+        if input_emb is None:
+            input_emb = self.emb_table[nids]
+        return dnn(input_emb)
         
     def _renew_emb_table(self):
         if 'cancel_renew' in self.config and self.config['cancel_renew']:
@@ -346,21 +352,23 @@ class xGCN(BaseEmbeddingModel):
                     )
             self._print_emb_info(self.emb_table, 'emb_table')
     
-    def __call__(self, batch_data):
-        return self.forward(batch_data)
+    def get_L2_regularization_loss(self, emb):
+        loss_reg = 1/2 * ((emb**2).sum()) / len(emb)
+        return loss_reg
+    
+    def get_augmented_pos(self, pos):
+        if self.dataset_type == 'user-item':
+            pos -= self.num_users
+            
+        pos_aug = self.ii_topk_neighbors[pos].flatten()
+        # ii_scores = self.ii_topk_similarity_scores[pos]
         
-    def forward(self, batch_data):
-        src, pos, neg = batch_data
+        if self.dataset_type == 'user-item':
+            pos_aug += self.num_users
         
-        if self.config['use_two_dnn']:
-            src_emb = self.user_dnn(self.emb_table[src].to(self.device))
-            pos_emb = self.item_dnn(self.emb_table[pos].to(self.device))
-            neg_emb = self.item_dnn(self.emb_table[neg].to(self.device))
-        else:
-            src_emb = self.dnn(self.emb_table[src].to(self.device))
-            pos_emb = self.dnn(self.emb_table[pos].to(self.device))
-            neg_emb = self.dnn(self.emb_table[neg].to(self.device))
-        
+        return pos_aug
+    
+    def get_rank_loss(self, src_emb, pos_emb, neg_emb):
         loss_fn_type = self.config['loss_fn']
         if loss_fn_type == 'bpr_loss':
             pos_score = dot_product(src_emb, pos_emb)
@@ -381,12 +389,52 @@ class xGCN(BaseEmbeddingModel):
         else:
             assert 0
         
+        return loss
+    
+    def __call__(self, batch_data):
+        return self.forward(batch_data)
+        
+    def forward(self, batch_data):
+        src, pos, neg = batch_data
+        emb_for_reg_list = []  # embeddings that need to calculate L2 regularization loss
+        
+        # calculate main loss
+        if self.config['use_two_dnn']:
+            src_emb = self.get_output_emb(src, self.user_dnn)
+            pos_emb = self.get_output_emb(pos, self.item_dnn)
+            neg_emb = self.get_output_emb(neg, self.item_dnn)
+        else:
+            src_emb = self.get_output_emb(src, self.dnn)
+            pos_emb = self.get_output_emb(pos, self.dnn)
+            neg_emb = self.get_output_emb(neg, self.dnn)
+        emb_for_reg_list.extend([src_emb, pos_emb, 
+                                 neg_emb.reshape(-1, src_emb.shape[-1])])
+        
+        loss = self.get_rank_loss(src_emb, pos_emb, neg_emb)
+        
+        # calculate loss from augmented training samples
+        if 'gamma' in self.config and self.config['gamma'] > 0:
+            src_aug = src.repeat_interleave(self.config['topk'])
+            pos_aug = self.get_augmented_pos(pos)
+            neg_aug = self.data['train_dl'].get_neg_samples(src_aug)
+            
+            src_aug_emb = src_emb.repeat_interleave(self.config['topk'], dim=0)
+            if self.config['use_two_dnn']:
+                pos_aug_emb = self.get_output_emb(pos_aug, self.item_dnn)
+                neg_aug_emb = self.get_output_emb(neg_aug, self.item_dnn)
+            else:
+                pos_aug_emb = self.get_output_emb(pos_aug, self.dnn)
+                neg_aug_emb = self.get_output_emb(neg_aug, self.dnn)    
+            emb_for_reg_list.extend([pos_aug_emb, 
+                                     neg_aug_emb.reshape(-1, src_emb.shape[-1])])
+            
+            loss_aug = self.get_rank_loss(src_aug_emb, pos_aug_emb, neg_aug_emb)
+            loss += self.config['gamma'] * loss_aug
+        
         rw = self.config['l2_reg_weight']
         if rw > 0:
-            L2_reg_loss = 1/2 * (1 / len(src)) * (
-                (src_emb**2).sum() + (pos_emb**2).sum() + (neg_emb**2).sum()
-            )
-            loss += rw * L2_reg_loss
+            loss_reg = self.get_L2_regularization_loss(torch.cat(emb_for_reg_list))
+            loss += rw * loss_reg
         
         return loss
     
