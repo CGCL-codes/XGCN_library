@@ -313,7 +313,7 @@ class xGCN(BaseEmbeddingModel):
     
     def _infer_dnn_output_emb(self, dnn, input_table, output_table):
         with torch.no_grad():
-            _dnn = deepcopy(dnn).to(input_table.device)
+            # _dnn = deepcopy(dnn).to(input_table.device)
             dl = torch.utils.data.DataLoader(
                 torch.arange(len(input_table)),
                 batch_size=4096
