@@ -1,8 +1,6 @@
 # from model.Node2vecWrapper import Node2vecWrapper
 from model.LightGCN import LightGCN
 from model.xGCN import xGCN
-from model.xGCN_refactor import xGCN_refactor
-from model.xGCN_res import xGCN_res
 from model.xGCN_multi import xGCN_multi
 from model.xxGCN import xxGCN
 from model.UltraGCN.UltraGCN import UltraGCN
@@ -23,8 +21,6 @@ def build_model(config, data):
         'block_lightgcn': Block_LightGCN,
         'block_simplex': Block_SimpleX,
         'xgcn': xGCN,
-        'xgcn_refactor': xGCN_refactor,
-        'xgcn_res': xGCN_res,
         'xgcn_multi': xGCN_multi,
         'xxgcn': xxGCN,
         'ultragcn': UltraGCN,
