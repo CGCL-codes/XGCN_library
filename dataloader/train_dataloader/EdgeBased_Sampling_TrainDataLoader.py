@@ -9,7 +9,7 @@ class EdgeBased_Sampling_TrainDataLoader:
     def __init__(self, info, E_src: np.ndarray, E_dst: np.ndarray,
                  batch_size, num_neg=1, ratio=0.1,
                  ensure_neg_is_not_neighbor=False, csr_indptr=None, csr_indices=None,
-                 use_degree_for_neg_sample=False):
+                 use_degree_for_neg_sample=False, undi_indptr=None):
         # for each epoch, sample ratio*num_edges edges from all edges
         self.E_src = E_src
         self.E_dst = E_dst
@@ -37,8 +37,7 @@ class EdgeBased_Sampling_TrainDataLoader:
         self.samples_weights = None
         if self.use_degree_for_neg_sample:
             print("## use_degree_for_neg_sample")
-            all_degrees = csr_indptr[1:] - csr_indptr[:-1]
-            import pdb; pdb.set_trace()
+            all_degrees = undi_indptr[1:] - undi_indptr[:-1]
             self.sample_weights = torch.FloatTensor(all_degrees[self.neg_low:self.neg_high])
             self.sample_weights = self.sample_weights ** 0.75
             
