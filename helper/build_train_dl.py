@@ -46,12 +46,17 @@ def _build_gnn_train_dl(config, data):
     else:
         ratio = 0.1
     
-    if config['train_dl'] == 'EdgeBased_Sampling_TrainDataLoader':    
+    if config['train_dl'] == 'EdgeBased_Sampling_TrainDataLoader':
+        if 'use_degree_for_neg_sample' in config and config['use_degree_for_neg_sample']:
+            use_degree_for_neg_sample = True
+        else:
+            use_degree_for_neg_sample = False
+        
         train_dl = EdgeBased_Sampling_TrainDataLoader(
             info, E_src, E_dst,
             batch_size=batch_size, num_neg=num_neg, ratio=ratio,  # for each epoch, sample ratio*num_edges edges from all edges
             ensure_neg_is_not_neighbor=ensure_neg_is_not_neighbor, 
-            csr_indptr=indptr, csr_indices=indices
+            csr_indptr=indptr, csr_indices=indices, use_degree_for_neg_sample=use_degree_for_neg_sample
         )
     
     elif config['train_dl'] == 'EdgeBased_Full_TrainDataLoader':
