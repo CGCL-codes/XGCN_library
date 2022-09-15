@@ -1,4 +1,4 @@
-# from model.Node2vecWrapper import Node2vecWrapper
+from model.Node2vecWrapper import Node2vecWrapper
 from model.LightGCN import LightGCN
 from model.xGCN import xGCN
 from model.xGCN_multi import xGCN_multi
@@ -16,7 +16,7 @@ from model.Block_SimpleX import Block_SimpleX
 
 def build_model(config, data):
     model = {
-        # 'node2vec': Node2vecWrapper,
+        'node2vec': Node2vecWrapper,
         'lightgcn': LightGCN,
         'block_lightgcn': Block_LightGCN,
         'block_simplex': Block_SimpleX,
