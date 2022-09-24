@@ -7,6 +7,7 @@ import numba
 from scipy.sparse import csr_matrix
 from tqdm import tqdm
 import os.path as osp
+import os
 
 
 @numba.jit(nopython=True, parallel=True)
@@ -146,6 +147,8 @@ class ItemCF:
         return np.concatenate(top_k_list)
 
     def infer_top_k_item_from_file_and_save(self, k, file_in, file_out):
+        pdir = os.path.dirname(file_out)
+        os.makedirs(pdir, exist_ok=True)
         # file_in: each line contains a user id
         # file_out: each line contains k items id
         uids = np.loadtxt(file_in, dtype=int)
