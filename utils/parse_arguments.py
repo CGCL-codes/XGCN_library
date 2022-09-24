@@ -50,6 +50,7 @@ def _parse_arguments():
     
     parser.add_argument("--num_layer_sample", type=str)  # e.g. "[10, 10]"
     parser.add_argument("--gnn_arch", type=str)
+    parser.add_argument("--use_degree_norm", type=int)
 
     parser.add_argument("--emb_dim", type=int)
     parser.add_argument("--emb_init_std", type=float)

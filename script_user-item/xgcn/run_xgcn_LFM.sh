@@ -1,5 +1,15 @@
-ALL_DATA_ROOT='/media/xreco/jianxun/xgcn_data'
+
 PROJECT_ROOT="/media/xreco/jianxun/xGCN"
+ALL_DATA_ROOT='/media/xreco/jianxun/xgcn_data'
+
+if [ $# -gt 1 ]
+  then 
+    PROJECT_ROOT=$1
+    ALL_DATA_ROOT=$2 
+fi
+
+echo $PROJECT_ROOT
+echo $ALL_DATA_ROOT
 
 #############################################
 
@@ -22,9 +32,9 @@ SEED=1
 T=2  #5
 K=9999999  #999999 
 LOAD_BEST=0
-USE_SNN=1
+USE_SNN=0
 USE_TWO_REFNET=1 
-L2_REG=1e-3
+L2_REG=1e-2
 endure=3
 
 # RESULTS_DIR="xgcn/[2dnn][2layer-ffn][prop1][reg$L2_REG][T$T-K$K][load_best=$LOAD_BEST][USE_SNN=$USE_SNN][endure=$endure]"

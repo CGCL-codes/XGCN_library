@@ -2,8 +2,10 @@ from utils import io
 from utils.metric import all_metrics, multi_pos_all_metrics
 
 import numpy as np
+import torch
 import numba
 from scipy.sparse import csr_matrix
+from tqdm import tqdm
 import os.path as osp
 
 
@@ -63,6 +65,7 @@ class ItemCF:
         
         self.ui_indptr = io.load_pickle(osp.join(self.config['data_root'], 'train_csr_indptr.pkl'))
         self.ui_indices = io.load_pickle(osp.join(self.config['data_root'], 'train_csr_indices.pkl'))
+        self.ui_src_indices = io.load_pickle(osp.join(self.config['data_root'], 'train_csr_src_indices.pkl'))
         
         info = io.load_yaml(osp.join(config['data_root'], 'info.yaml'))
         num_users = info['num_users']
@@ -70,9 +73,18 @@ class ItemCF:
         self.num_users = num_users
         
         print("## calc A^A...")
-        A = csr_matrix((np.ones(len(self.ui_indices), dtype=np.float32),
-                        self.ui_indices - num_users, 
-                        self.ui_indptr[:num_users+1]),
+        if self.config['use_degree_norm']:
+            print("# use_degree_norm: np.sqrt(1 / (src_degree * dst_degree))")
+            undi_indptr = io.load_pickle(osp.join(self.config['data_root'], 'train_undi_csr_indptr.pkl'))
+            all_degrees = undi_indptr[1:] - undi_indptr[:-1]
+            d_src = all_degrees[self.ui_src_indices]
+            d_dst = all_degrees[self.ui_indices]
+            edge_weights = np.sqrt(1 / (d_src * d_dst + 1e-8))
+        else:
+            edge_weights = np.ones(len(self.ui_indices), dtype=np.float32)
+        A = csr_matrix((edge_weights,
+                       self.ui_indices - num_users, 
+                       self.ui_indptr[:num_users+1]),
                        shape=(num_users, num_items))
         A2 = A.T.dot(A)
         
@@ -116,3 +128,26 @@ class ItemCF:
                 batch_results = multi_pos_all_metrics(pos, all_item_scores)
                 
         return batch_results, num_batch_samples
+
+    def infer_top_k_item(self, uids, k):
+        top_k_list = []
+        dl = torch.utils.data.DataLoader(
+            dataset=uids,
+            batch_size=256
+        )
+        for batch_uid in tqdm(dl):
+            batch_uid = batch_uid.numpy()
+            all_item_scores = _batch_item_cf_return_all_item_scores(
+                batch_uid, self.num_users, self.ui_indptr, self.ui_indices, 
+                self.ii_indptr, self.ii_indices, self.ii_weights, self.i_weights_sum
+            )
+            _, top_items = torch.tensor(all_item_scores).topk(k=k, dim=-1)
+            top_k_list.append(top_items.numpy())
+        return np.concatenate(top_k_list)
+
+    def infer_top_k_item_from_file_and_save(self, k, file_in, file_out):
+        # file_in: each line contains a user id
+        # file_out: each line contains k items id
+        uids = np.loadtxt(file_in, dtype=int)
+        top_k_list = self.infer_top_k_item(uids, k)
+        np.savetxt(file_out, top_k_list, fmt='%d')
