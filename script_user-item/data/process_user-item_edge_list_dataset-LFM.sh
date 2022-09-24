@@ -47,6 +47,7 @@ if [[ -e $FILE_INPUT ]]; then
         --file_input $DATA_ROOT'/val.pkl' \
         --file_output $DATA_ROOT'/val-1000.pkl' \
         --num_sample 1000 \
+        
 fi
 #################################
 

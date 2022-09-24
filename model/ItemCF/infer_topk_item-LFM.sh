@@ -20,7 +20,8 @@ use_degree_norm=1
 FILE_INPUT=$DATA_ROOT"/test_user_ids.txt"  # each line contains a user id
 FILE_OUTPUT=$RESULTS_ROOT"/top${topk}-item-reco.txt"  # each line contains topk item id (id starts from 0), seperated by blank
 
-python infer_topk_item.py $PROJECT_ROOT \
+cd $PROJECT_ROOT
+python model/ItemCF/infer_topk_item.py $PROJECT_ROOT \
     --data_root $DATA_ROOT --results_root $RESULTS_ROOT \
     --topk=$topk \
     --file_input=$FILE_INPUT \
