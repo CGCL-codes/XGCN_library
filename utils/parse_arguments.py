@@ -123,6 +123,8 @@ def _parse_arguments():
     parser.add_argument("--theta", type=float)
     parser.add_argument("--tao", type=float)
     
+    parser.add_argument("--infer_full_graph", type=int)
+    
     (args, unknown) = parser.parse_known_args()
     parsed_results = {}
     for arg in sorted(vars(args)):

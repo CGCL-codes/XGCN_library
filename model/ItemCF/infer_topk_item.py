@@ -23,10 +23,13 @@ def main():
     
     model = ItemCF(config, {})
     
-    print("# infer top-k...")
-    model.infer_top_k_item_from_file_and_save(
-        config['topk'], config['file_input'], config['file_output']
-    )
+    if 'infer_full_graph' in config and config['infer_full_graph'] > 0:
+        model.infer_full_graph_scores(config['file_output'])
+    else:    
+        print("# infer top-k...")
+        model.infer_top_k_item_from_file_and_save(
+            config['topk'], config['file_input'], config['file_output']
+        )
 
 
 if __name__ == "__main__":

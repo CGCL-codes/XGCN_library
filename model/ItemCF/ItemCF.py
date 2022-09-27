@@ -154,3 +154,29 @@ class ItemCF:
         uids = np.loadtxt(file_in, dtype=int)
         top_k_list = self.infer_top_k_item(uids, k)
         np.savetxt(file_out, top_k_list, fmt='%d')
+    
+    def infer_full_graph_scores(self, file_out):
+        ## infer the N x M full matrix with the ItemCF model
+        pdir = os.path.dirname(file_out)
+        os.makedirs(pdir, exist_ok=True)
+        uids = np.arange(self.num_users, dtype=np.int32)
+        batch_size = 256
+        n_users = self.num_users
+        n_items = len(self.i_weights_sum)
+        n_batchs = (n_users-1) // batch_size + 1 
+        res = np.zeros((n_users, n_items))
+        for batch_idx in tqdm(range(n_batchs), desc='infer full graph scores'):
+            start = batch_idx * batch_size
+            end = min(n_users, start + batch_size)
+            batch_uid = uids[start:end]
+            all_item_scores = _batch_item_cf_return_all_item_scores(
+                batch_uid, n_users, self.ui_indptr, self.ui_indices, 
+                self.ii_indptr, self.ii_indices, self.ii_weights, self.i_weights_sum
+            )
+            res[start:end] = all_item_scores
+        print('saving to file {0} ... '.format(file_out))
+        np.save(file_out, res)
+        print('done. ')
+        
+            
+        
