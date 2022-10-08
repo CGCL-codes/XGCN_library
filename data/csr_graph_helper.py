@@ -98,3 +98,31 @@ def remove_repeated_edges_in_csr(indptr, indices):
     new_indices = indices[:start]
     
     return new_indptr, new_indices
+
+
+@numba.jit(nopython=True)
+def remove_edges_in_csr(indptr, indices, rm_edge_mask):
+    '''
+        Note: 
+            * rm_edge_mask should correspond to indices
+            * content in indices will be changed
+    '''
+    indices[rm_edge_mask] = -1  # mask removed edges
+    
+    num_nodes = len(indptr) - 1
+    new_indptr = np.empty(num_nodes + 1, dtype=np.int64)
+    start = np.int64(0)
+    for u in range(num_nodes):
+        new_indptr[u] = start
+        nei = indices[indptr[u] : indptr[u + 1]]
+        du = 0  # new_degree of u
+        for v in nei:
+            if v != -1:
+                indices[start + du] = v
+                du += 1
+        start += du
+    
+    new_indptr[-1] = start
+    new_indices = indices[:start]
+    
+    return new_indptr, new_indices
