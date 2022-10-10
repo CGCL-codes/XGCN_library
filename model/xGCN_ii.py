@@ -5,6 +5,7 @@ import os.path as osp
 from copy import deepcopy
 
 from utils import io
+from utils.metric import all_metrics, multi_pos_all_metrics
 from model.BaseEmbeddingModel import BaseEmbeddingModel, init_emb_table
 from model.module import dot_product, bpr_loss, bce_loss, cosine_contrastive_loss
 from model.LightGCN import get_lightgcn_out_emb
@@ -83,11 +84,13 @@ class xGCN_ii(BaseEmbeddingModel):
         self.emb_table_device = self.config['emb_table_device']  # for embeddings
         
         self.dataset_type = self.info['dataset_type']
-        if self.dataset_type == 'user-item':
-            self.num_users = self.info['num_users']
         self.num_nodes = self.info['num_nodes']
         
         data_root = self.config['data_root']
+        
+        self.ui_indptr = io.load_pickle(osp.join(data_root, '../train_csr_indptr.pkl'))
+        self.ui_indices = io.load_pickle(osp.join(data_root, '../train_csr_indices.pkl'))
+        self.num_users = len(self.ui_indptr) - 1
         
         if 'gamma' in self.config and self.config['gamma'] > 0:
             print("## using item-item graph additional training signal")
@@ -519,7 +522,7 @@ class xGCN_ii(BaseEmbeddingModel):
             file_out_emb_table = "out_emb_table.pt"
         torch.save(self.out_emb_table, osp.join(root, file_out_emb_table))
         
-        self.export_embedding_as_npy(root)
+        # self.export_embedding_as_npy(root)
 
     def export_embedding_as_npy(self, root):
         is_user_item = True if self.dataset_type == 'user-item' else False
@@ -533,3 +536,68 @@ class xGCN_ii(BaseEmbeddingModel):
             num_users = self.info['num_users']
             np.save(osp.join(root, file_name_user), out_embeddings[:num_users])
             np.save(osp.join(root, file_name_item), out_embeddings[num_users:])
+
+    def get_user_emb(self, uids):
+        user_emb = torch.empty((len(uids), self.emb_table.shape[-1]),
+                               dtype=torch.float32,
+                               device=self.device)
+        for idx, u in enumerate(uids):
+            items = self.ui_indices[
+                self.ui_indptr[u]: self.ui_indptr[u + 1]
+            ] - self.num_users
+            user_emb[idx] = self.emb_table[torch.LongTensor(items)].mean(dim=0)
+        return user_emb
+    
+    def infer_whole_graph(self, src, mask_nei=False):        
+        # src_emb = self.out_emb_table[src]
+        src_emb = self.get_user_emb(src)
+        all_target_score = (src_emb @ self.target_emb_table.t()).cpu().numpy()
+        
+        if mask_nei:
+            self.mask_neighbors_scores(src, all_target_score)
+        
+        return all_target_score
+        
+    def eval_a_batch(self, batch_data, only_return_all_target_score=False):
+        if self.eval_on_whole_graph:
+            src, pos = batch_data
+            num_batch_samples = len(src)
+            
+            all_target_score = self.infer_whole_graph(src, mask_nei=self.mask_nei)
+            
+            if only_return_all_target_score:
+                return all_target_score
+            
+            if self.one_pos:
+                # src_emb = self.out_emb_table[src]
+                src_emb = self.get_user_emb(src)
+                pos_emb = self.target_emb_table[pos]
+                pos_score = dot_product(src_emb, pos_emb)
+                pos_neg_score = np.concatenate((pos_score.view(-1, 1).cpu().numpy(), all_target_score), axis=-1)
+                batch_results = all_metrics(pos_neg_score)
+            else:
+                pos_list = pos
+                assert isinstance(pos_list, list)
+                batch_results = multi_pos_all_metrics(pos, all_target_score)
+                
+        else:
+            assert self.one_pos == True and self.mask_nei == False
+            src, pos, neg = batch_data
+            num_batch_samples = len(src)
+            
+            # src_emb = self.out_emb_table[src]
+            src_emb = self.get_user_emb(src)
+            pos_emb = self.target_emb_table[pos]
+            neg_emb = self.target_emb_table[torch.LongTensor(neg)]
+            
+            pos_score = dot_product(src_emb, pos_emb)
+            neg_score = dot_product(src_emb, neg_emb)
+            
+            pos_neg_score = torch.cat((pos_score.view(-1, 1), neg_score), dim=-1).cpu().numpy()
+            
+            if only_return_all_target_score:
+                return pos_neg_score
+            
+            batch_results = all_metrics(pos_neg_score)
+        
+        return batch_results, num_batch_samples
