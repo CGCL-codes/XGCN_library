@@ -14,5 +14,6 @@ DATASET=$1
 T=$2
 K=$3
 endure=$4
+convergence_threshold=$5
 
-bash run_xgcn.sh $PROJECT_ROOT $ALL_DATA_ROOT $DEVICE $DATASET $T $K $endure
+bash run_xgcn.sh $PROJECT_ROOT $ALL_DATA_ROOT $DEVICE $DATASET $T $K $endure $convergence_threshold

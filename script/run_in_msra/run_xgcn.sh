@@ -20,6 +20,8 @@ K=$6
 # endure=3
 endure=$7
 
+convergence_threshold=$8
+
 RESULTS_DIR="xgcn/[seed${SEED}][K${K}][endure${endure}]"
 RESULTS_ROOT=$ALL_RESULTS_ROOT'/gnn_'$DATASET'/'$RESULTS_DIR
 
@@ -41,7 +43,7 @@ python $PROJECT_ROOT'/'main/main.py $PROJECT_ROOT \
     --mask_nei_when_validation 1 \
     --file_validation $DATA_ROOT'/val_edges-1000.pkl' \
     --key_score_metric 'r100' \
-    --convergence_threshold 30 \
+    --convergence_threshold $convergence_threshold \
     --epochs 200 \
     --test_method 'multi_pos_whole_graph' \
     --mask_nei_when_test 1 \
