@@ -2,7 +2,7 @@ source /opt/conda/bin/activate
 conda env create --file=env/requirements.xgcn.yaml
 conda activate xgcn 
 
-PROJECT_ROOT='../..'
+PROJECT_ROOT='xGCN'
 ALL_DATA_ROOT='/home/jialia/ds/social_and_user_item'
 
 # PROJECT_ROOT='/media/xreco/jianxun/xGCN'
@@ -16,4 +16,4 @@ K=$3
 endure=$4
 convergence_threshold=$5
 
-bash run_xgcn.sh $PROJECT_ROOT $ALL_DATA_ROOT $DEVICE $DATASET $T $K $endure $convergence_threshold
+bash xGCN/script/run_in_msra/run_xgcn.sh $PROJECT_ROOT $ALL_DATA_ROOT $DEVICE $DATASET $T $K $endure $convergence_threshold
