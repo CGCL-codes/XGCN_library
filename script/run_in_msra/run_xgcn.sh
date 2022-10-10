@@ -7,18 +7,21 @@ CONFIG_ROOT=$PROJECT_ROOT'/config'
 ALL_DATASETS_ROOT=$ALL_DATA_ROOT'/datasets'
 ALL_RESULTS_ROOT=$ALL_DATA_ROOT'/model_outputs'
 
-DATASET='pokec'
+DATASET=$4
 EMB_TABLE_DEVICE=$DEVICE
 
 DATA_ROOT=$ALL_DATASETS_ROOT'/instance_'$DATASET
 
 ################
 SEED=1
-RESULTS_DIR='xgcn/[best'$SEED']'
+T=$5
+# K=5
+K=$6
+# endure=3
+endure=$7
 
+RESULTS_DIR="xgcn/[seed${SEED}][K${K}][endure${endure}]"
 RESULTS_ROOT=$ALL_RESULTS_ROOT'/gnn_'$DATASET'/'$RESULTS_DIR
-T=10
-K=5
 
 mkdir -p $RESULTS_ROOT
 LOG_FILE=$RESULTS_ROOT'/log.txt'
@@ -45,7 +48,7 @@ python $PROJECT_ROOT'/'main/main.py $PROJECT_ROOT \
     --file_test $DATA_ROOT'/test.pkl' \
     --prop_type 'lightgcn' --num_gcn_layers 1 \
     --use_special_dnn 1 --dnn_arch '[torch.nn.Linear(64, 1024), torch.nn.Tanh(), torch.nn.Linear(1024, 1024), torch.nn.Tanh(), torch.nn.Linear(1024, 64)]' \
-    --renew_and_prop_freq $T --K $K --endure 3 \
+    --renew_and_prop_freq $T --K $K --endure $endure \
     --emb_init_std 1.0 \
     # >> $LOG_FILE
 
