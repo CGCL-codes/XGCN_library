@@ -10,7 +10,7 @@ ALL_RESULTS_ROOT=$ALL_DATA_ROOT'/model_outputs'
 DATASET=$4
 
 DATA_ROOT=$ALL_DATASETS_ROOT'/instance_'$DATASET
-PPR_DATA_ROOT=$ALL_RESULTS_ROOT'/gnn_'$DATASET'/ppr/undirected-top100'
+PPR_DATA_ROOT=$ALL_RESULTS_ROOT'/gnn_'$DATASET'/new_ppr/undirected-top100'
 
 ################
 SEED=$5
