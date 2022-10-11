@@ -22,7 +22,9 @@ endure=$7
 
 convergence_threshold=$8
 
-RESULTS_DIR="xgcn/[seed${SEED}][K${K}][endure${endure}]"
+max_prop_times=$9
+
+RESULTS_DIR="xgcn/[seed${SEED}][K${K}][endure${endure}][max_prop_times${max_prop_times}]"
 RESULTS_ROOT=$ALL_RESULTS_ROOT'/gnn_'$DATASET'/'$RESULTS_DIR
 
 mkdir -p $RESULTS_ROOT
@@ -51,6 +53,7 @@ python $PROJECT_ROOT'/'main/main.py $PROJECT_ROOT \
     --prop_type 'lightgcn' --num_gcn_layers 1 \
     --use_special_dnn 1 --dnn_arch '[torch.nn.Linear(64, 1024), torch.nn.Tanh(), torch.nn.Linear(1024, 1024), torch.nn.Tanh(), torch.nn.Linear(1024, 64)]' \
     --renew_and_prop_freq $T --K $K --endure $endure \
+    --max_prop_times $max_prop_times \
     --emb_init_std 1.0 \
     # >> $LOG_FILE
 

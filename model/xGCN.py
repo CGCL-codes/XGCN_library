@@ -189,7 +189,8 @@ class xGCN(BaseEmbeddingModel):
         # self.max_renew_times = self.config['max_renew_times']
         # self.already_done_renew_times = 0
         
-        # self.max_prop_times = self.config['max_prop_times']
+        if 'max_prop_times' in self.config:
+            self.max_prop_times = self.config['max_prop_times']
         # self.already_done_prop_times = 0
         
         self.epoch_last_prop = 0
@@ -458,6 +459,12 @@ class xGCN(BaseEmbeddingModel):
             self.dnn.train()
         
         epoch = self.data['epoch']
+        
+        if 'max_prop_times' in self.config:
+            if self.total_prop_times >= self.config['max_prop_times']:
+                # do nothing
+                return
+        
         if self.total_prop_times < self.config['K']:
             if not (epoch % self.config['renew_and_prop_freq']) and epoch != 0:
                 self._renew_emb_table()

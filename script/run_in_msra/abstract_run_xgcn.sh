@@ -15,5 +15,8 @@ T=$2
 K=$3
 endure=$4
 convergence_threshold=$5
+max_prop_times=$6
 
-bash xGCN/script/run_in_msra/run_xgcn.sh $PROJECT_ROOT $ALL_DATA_ROOT $DEVICE $DATASET $T $K $endure $convergence_threshold
+bash xGCN/script/run_in_msra/run_xgcn.sh $PROJECT_ROOT $ALL_DATA_ROOT \
+    $DEVICE $DATASET \
+    $T $K $endure $convergence_threshold $max_prop_times \
