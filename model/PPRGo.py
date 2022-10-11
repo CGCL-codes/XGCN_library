@@ -8,15 +8,10 @@ import os.path as osp
 from tqdm import tqdm
 
 
-class RefNet(torch.nn.Module):
+class SSNet(torch.nn.Module):
     
     def __init__(self):
-        super(RefNet, self).__init__()
-        # self.ffn = torch.nn.Sequential(
-        #     torch.nn.Linear(64, 1024),
-        #     torch.nn.Tanh(),
-        #     torch.nn.Linear(1024, 64)
-        # )
+        super(SSNet, self).__init__()
         self.snn = torch.nn.Sequential(
             torch.nn.Linear(64, 32),
             torch.nn.Tanh(),
@@ -25,7 +20,6 @@ class RefNet(torch.nn.Module):
         )
     
     def forward(self, X):
-        # return self.snn(X) * self.ffn(X)
         return self.snn(X) * X
 
 
@@ -42,7 +36,6 @@ class PPRGo(BaseEmbeddingModel):
         
         self.param_list = {
             'SparseAdam': [],
-            # 'Adam': []
         }
         if not self.config['freeze_emb']:
             self.param_list['SparseAdam'].append({'params': list(self.base_emb_table.parameters()),
@@ -65,24 +58,13 @@ class PPRGo(BaseEmbeddingModel):
             print("## not uniform weight")
             self.wei = self.wei / (self.wei.sum(dim=-1, keepdim=True) + 1e-12)
         
-        # dnn_arch = eval(self.config['dnn_arch'])
-        # self.use_dnn = len(dnn_arch) != 0
-        self.use_dnn = False
+        self.use_dnn = (
+            'use_special_dnn' in self.config and self.config['use_special_dnn']
+        )
         if self.use_dnn:
-            # print("## use dnn to transform output emb")
-            # self.dnn = torch.nn.Sequential(*dnn_arch).to(self.device)
-            # print(self.dnn)
-            # self.param_list['Adam'].append({
-            #     'params': self.dnn.parameters(), 
-            #     'lr': 0.001
-            # })
-            print("## use SSNet to transform output emb")
-            self.dnn = RefNet().to(self.device)
-            print(self.dnn)
-            self.param_list['Adam'].append({
-                'params': self.dnn.parameters(), 
-                'lr': 0.001
-            })
+            print("## use SSNet to re-scale output emb")
+            self.dnn = SSNet().to(self.device)
+            self.param_list['Adam'] = [{'params': self.dnn.parameters(), 'lr': 0.001}]
         
     def _calc_pprgo_out_emb(self, nids):
         top_nids = self.nei[nids].to(self.device)
