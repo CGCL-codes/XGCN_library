@@ -1,5 +1,6 @@
 from model.BaseGNNModel import BaseGNNModel
 from model.LightGCN import LightGCNConv
+from model.module import dot_product, bpr_loss
 
 import torch
 import dgl
