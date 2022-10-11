@@ -78,7 +78,7 @@ class Block_LightGCN(BaseGNNModel):
             else:
                 print("# use FFN + SSNet to transform lightgcn output emb")
                 self.dnn = MyDNN(self.config['dnn_arch'], self.config['scale_net_arch']).to(self.device)
-            self.param_list.append({'params': self.dnn.parameters(), 'lr': config['emb_lr']})
+            self.param_list.append({'params': self.dnn.parameters(), 'lr': 0.001})
     
     def forward(self, batch_data):
         batch_nids, local_idx, input_nids, output_nids, blocks = batch_data

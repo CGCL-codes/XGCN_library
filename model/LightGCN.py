@@ -107,7 +107,7 @@ class BaseLightGCN(BaseEmbeddingModel):
             else:
                 print("# use FFN + SSNet to transform lightgcn output emb")
                 self.dnn = MyDNN(self.config['dnn_arch'], self.config['scale_net_arch']).to(self.device)
-            self.param_list.append({'params': self.dnn.parameters(), 'lr': config['emb_lr']})
+            self.param_list.append({'params': self.dnn.parameters(), 'lr': 0.001})
             
         self.build_gcn(config, data)
 
