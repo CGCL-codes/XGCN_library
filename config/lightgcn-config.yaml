@@ -19,7 +19,7 @@ test_method: ''
 mask_nei_when_test: 1
 file_test: ''
 
-use_sparse: 1
+use_sparse: 0
 emb_dim: 64
 emb_lr: 0.005
 emb_init_std: 0.1

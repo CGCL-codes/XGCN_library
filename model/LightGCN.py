@@ -51,6 +51,36 @@ def get_lightgcn_out_emb(A, base_emb_table, num_gcn_layers, stack_layers=True):
     return X_out
 
 
+class MyDNN(torch.nn.Module):
+    
+    def __init__(self, dnn_arch, scale_net_arch):
+        super(MyDNN, self).__init__()
+        self.dnn = torch.nn.Sequential(*eval(dnn_arch))
+        # self.dnn = torch.nn.Sequential(
+        #     torch.nn.Linear(64, 1024), 
+        #     torch.nn.Tanh(), 
+        #     torch.nn.Linear(1024, 1024), 
+        #     torch.nn.Tanh(), 
+        #     torch.nn.Linear(1024, 64)
+        # )
+        
+        self.scale_net = torch.nn.Sequential(*eval(scale_net_arch))
+        # self.scale_net = torch.nn.Sequential(
+        #     torch.nn.Linear(64, 32),
+        #     torch.nn.Tanh(),
+        #     torch.nn.Linear(32, 1),
+        #     torch.nn.Sigmoid()
+        # )
+    
+    def forward(self, X):
+        
+        theta = self.scale_net(X)
+        
+        X = theta * self.dnn(X)
+        
+        return X
+
+
 class BaseLightGCN(BaseEmbeddingModel):
     
     def __init__(self, config, data):
@@ -69,6 +99,16 @@ class BaseLightGCN(BaseEmbeddingModel):
             self.param_list.append({'params': list(self.base_emb_table.parameters()),  # not use sparse
                                     'lr': config['emb_lr']})
         
+        self.use_dnn = ('use_special_dnn' in self.config and self.config['use_special_dnn'])
+        if self.use_dnn:
+            if len(eval(self.config['scale_net_arch'])) == 0:
+                print("# use FFN to transform lightgcn output emb")
+                self.dnn = torch.nn.Sequential(*eval(self.config['dnn_arch'])).to(self.device)
+            else:
+                print("# use FFN + SSNet to transform lightgcn output emb")
+                self.dnn = MyDNN(self.config['dnn_arch'], self.config['scale_net_arch']).to(self.device)
+            self.param_list.append({'params': self.dnn.parameters(), 'lr': 0.001})
+            
         self.build_gcn(config, data)
 
     @abstractclassmethod
@@ -76,7 +116,7 @@ class BaseLightGCN(BaseEmbeddingModel):
         pass
     
     @abstractclassmethod
-    def get_out_emb(self):
+    def get_gnn_out_emb(self):
         pass
     
     def save(self, root):
@@ -87,8 +127,16 @@ class BaseLightGCN(BaseEmbeddingModel):
         pass
     
     def prepare_for_eval(self):
-        self.out_emb_table = self.get_out_emb()
+        self.out_emb_table = self.get_gnn_out_emb()
         
+        if self.use_dnn:
+            dl = torch.utils.data.DataLoader(
+                torch.arange(self.info['num_nodes']),
+                batch_size=4096
+            )
+            for idx in dl:
+                self.out_emb_table[idx] = self.dnn(self.out_emb_table[idx])
+            
         if self.dataset_type == 'user-item':
             self.target_emb_table = self.out_emb_table[self.num_users:]
         else:
@@ -100,11 +148,16 @@ class BaseLightGCN(BaseEmbeddingModel):
     def forward(self, batch_data):
         src, pos, neg = batch_data
         
-        out_emb = self.get_out_emb()
+        out_emb = self.get_gnn_out_emb()
         
-        src_emb = out_emb[src]
-        pos_emb = out_emb[pos]
-        neg_emb = out_emb[neg]
+        if self.use_dnn:
+            src_emb = self.dnn(out_emb[src])
+            pos_emb = self.dnn(out_emb[pos])
+            neg_emb = self.dnn(out_emb[neg])
+        else:
+            src_emb = out_emb[src]
+            pos_emb = out_emb[pos]
+            neg_emb = out_emb[neg]
         
         loss_fn_type = self.config['loss_fn']
         if loss_fn_type == 'bpr_loss':
@@ -180,5 +233,5 @@ class LightGCN(BaseLightGCN):
         self.gcn = LightGCNConv(num_layers=config['num_gcn_layers'], 
                                 stack_layers=config['stack_layers'])
     
-    def get_out_emb(self):
+    def get_gnn_out_emb(self):
         return self.gcn(self.undi_g, self.base_emb_table.weight)

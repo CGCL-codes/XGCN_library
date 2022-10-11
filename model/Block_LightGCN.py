@@ -1,5 +1,6 @@
 from model.BaseGNNModel import BaseGNNModel
 from model.LightGCN import LightGCNConv
+from model.module import dot_product, bpr_loss
 
 import torch
 import dgl
@@ -23,6 +24,36 @@ class Block_LightGCNConv(torch.nn.Module):
         return x
 
 
+class MyDNN(torch.nn.Module):
+    
+    def __init__(self, dnn_arch, scale_net_arch):
+        super(MyDNN, self).__init__()
+        self.dnn = torch.nn.Sequential(*eval(dnn_arch))
+        # self.dnn = torch.nn.Sequential(
+        #     torch.nn.Linear(64, 1024), 
+        #     torch.nn.Tanh(), 
+        #     torch.nn.Linear(1024, 1024), 
+        #     torch.nn.Tanh(), 
+        #     torch.nn.Linear(1024, 64)
+        # )
+        
+        self.scale_net = torch.nn.Sequential(*eval(scale_net_arch))
+        # self.scale_net = torch.nn.Sequential(
+        #     torch.nn.Linear(64, 32),
+        #     torch.nn.Tanh(),
+        #     torch.nn.Linear(32, 1),
+        #     torch.nn.Sigmoid()
+        # )
+    
+    def forward(self, X):
+        
+        theta = self.scale_net(X)
+        
+        X = theta * self.dnn(X)
+        
+        return X
+
+
 class Block_LightGCN(BaseGNNModel):
     
     def __init__(self, config, data):
@@ -39,7 +70,47 @@ class Block_LightGCN(BaseGNNModel):
         g.edata['ew'] = edge_weights
         self.g = g
         self._gnn = LightGCNConv(config['num_gcn_layers'], stack_layers=False)
+        
+        self.use_dnn = ('use_special_dnn' in self.config and self.config['use_special_dnn'])
+        if self.use_dnn:
+            if len(eval(self.config['scale_net_arch'])) == 0:
+                print("# use FFN to transform lightgcn output emb")
+                self.dnn = torch.nn.Sequential(*eval(self.config['dnn_arch'])).to(self.device)
+            else:
+                print("# use FFN + SSNet to transform lightgcn output emb")
+                self.dnn = MyDNN(self.config['dnn_arch'], self.config['scale_net_arch']).to(self.device)
+            self.param_list.append({'params': self.dnn.parameters(), 'lr': 0.001})
     
+    def forward(self, batch_data):
+        batch_nids, local_idx, input_nids, output_nids, blocks = batch_data
+    
+        blocks = [block.to(self.device) for block in blocks]
+        
+        output_embs = self.gnn(
+            blocks, self.base_emb_table(input_nids.to(self.device))
+        )
+        
+        output_embs = output_embs[local_idx].view(3, -1, self.base_emb_table.weight.shape[-1])
+        
+        if self.use_dnn:
+            output_embs = self.dnn(output_embs)
+        
+        src_emb = output_embs[0, :, :]
+        pos_emb = output_embs[1, :, :]
+        neg_emb = output_embs[2, :, :]
+        
+        pos_score = dot_product(src_emb, pos_emb)
+        neg_score = dot_product(src_emb, neg_emb)
+        
+        loss = bpr_loss(pos_score, neg_score)
+
+        rw = self.config['l2_reg_weight']
+        if rw > 0:
+            L2_reg_loss = 1/2 * (1 / len(output_embs)) * (output_embs**2).sum()
+            loss += rw * L2_reg_loss
+        
+        return loss
+      
     def save(self, root):
         torch.save(self.out_emb_table, osp.join(root, "out_emb_table.pt"))
 
@@ -56,6 +127,8 @@ class Block_LightGCN(BaseGNNModel):
                 output_embs = self.gnn(
                     blocks, self.base_emb_table(input_nids.to(self.device))
                 )
+                if self.use_dnn:
+                    output_embs = self.dnn(output_embs)
                 self.out_emb_table[output_nids] = output_embs
             
         else:
