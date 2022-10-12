@@ -27,7 +27,7 @@ class Propagation_Model:
         
         config['device'] = 'cpu'
         config['freeze_emb'] = 1  # true
-        self.emb_table = init_emb_table(config, self.num_nodes)
+        self.emb_table = init_emb_table(config, self.num_nodes).weight
         
         self.prop_type = self.config['prop_type']
         if self.prop_type == 'pprgo':
@@ -113,7 +113,8 @@ class Propagation_Model:
                     self.A, self.emb_table, self.config['num_gcn_layers'],
                     stack_layers=self.config['stack_layers']
                 )
-                
+        self.emb_table /= self.emb_table.abs().mean()
+        
     def _calc_pprgo_out_emb(self, nids):
         top_nids = self.nei[nids]
         top_weights = self.wei[nids]
