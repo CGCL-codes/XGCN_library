@@ -1,5 +1,6 @@
 import numpy as np
 import torch
+import torch.nn as nn
 import dgl
 import os.path as osp
 from copy import deepcopy

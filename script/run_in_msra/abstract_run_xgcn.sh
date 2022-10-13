@@ -13,10 +13,9 @@ DEVICE='cuda'
 DATASET=$1
 T=$2
 K=$3
-endure=$4
-convergence_threshold=$5
-max_prop_times=$6
+use_special_dnn=$4
+dnn_arch=$5
 
 bash xGCN/script/run_in_msra/run_xgcn.sh $PROJECT_ROOT $ALL_DATA_ROOT \
     $DEVICE $DATASET \
-    $T $K $endure $convergence_threshold $max_prop_times \
+    $T $K $use_special_dnn $dnn_arch \
