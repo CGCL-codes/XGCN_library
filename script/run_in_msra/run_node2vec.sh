@@ -40,6 +40,6 @@ python $PROJECT_ROOT'/'main/main.py $PROJECT_ROOT \
     --mask_nei_when_test 1 \
     --file_test $DATA_ROOT'/test.pkl' \
     --p $p --q $q \
-    --context_size 3 \
+    --context_size $context_size \
 
 # find $RESULTS_ROOT -name "*.pt" -type f -print -exec rm -rf {} \;
