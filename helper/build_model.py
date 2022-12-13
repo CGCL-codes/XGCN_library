@@ -11,6 +11,7 @@ from model.PPRGo import PPRGo
 from model.GraphSAGE import GraphSAGE
 from model.GAT import GAT
 from model.GIN import GIN
+from model.SIGN import SIGN
 from model.Block_LightGCN import Block_LightGCN
 from model.Block_SimpleX import Block_SimpleX
 
@@ -32,6 +33,7 @@ def build_model(config, data):
         'graphsage': GraphSAGE,
         'gat': GAT,
         'gin': GIN,
+        'sign': SIGN,
     }[config['model']](config, data)
     
     data['model'] = model

@@ -12,12 +12,12 @@ DEVICE='cuda'
 
 ########################################
 DATASET=$1
+seed=$2
 
-p=$2
-q=$3
-context_size=$4
+num_gcn_layers=$3
+num_dnn_layers=$4
 
-# $PROJECT_ROOT/script/run_in_msra/run_node2vec.sh
+# $PROJECT_ROOT/script/run_in_msra/run_sign.sh
 
-bash xGCN/script/run_in_msra/run_node2vec.sh $PROJECT_ROOT $ALL_DATA_ROOT $DEVICE \
-    $DATASET $p $q $context_size \
+bash xGCN/script/run_in_msra/run_sign.sh $PROJECT_ROOT $ALL_DATA_ROOT $DEVICE $DATASET $seed \
+    $num_gcn_layers $num_dnn_layers
