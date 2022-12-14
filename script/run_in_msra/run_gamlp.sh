@@ -13,10 +13,10 @@ DATA_ROOT=$ALL_DATASETS_ROOT'/instance_'$DATASET
 
 ################
 SEED=$5
-num_gcn_layers=$6
-num_dnn_layers=$7
+GAMLP_type=$6
+num_gcn_layers=$7
 
-RESULTS_DIR="sign/[seed$SEED][gcn_layer$num_gcn_layer][dnn_layer$num_dnn_layers]"
+RESULTS_DIR="sign/[seed$SEED][$GAMLP_type][gcn_layer$num_gcn_layers]"
 RESULTS_ROOT=$ALL_RESULTS_ROOT'/gnn_'$DATASET'/'$RESULTS_DIR
 
 file_pretrained_emb=$ALL_RESULTS_ROOT'/gnn_'$DATASET'/node2vec/[best]/out_emb_table.pt'
@@ -39,7 +39,7 @@ python $PROJECT_ROOT'/'main/main.py $PROJECT_ROOT \
     --mask_nei_when_test 1 \
     --file_test $DATA_ROOT'/test.pkl' \
     --file_pretrained_emb $file_pretrained_emb \
+    --GAMLP_type $GAMLP_type \
     --num_gcn_layers $num_gcn_layers \
-    --num_dnn_layers $num_dnn_layers \
 
 # find $RESULTS_ROOT -name "*.pt" -type f -print -exec rm -rf {} \;

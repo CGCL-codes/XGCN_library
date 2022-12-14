@@ -1,4 +1,4 @@
-from model.Node2vecWrapper import Node2vecWrapper
+# from model.Node2vecWrapper import Node2vecWrapper
 from model.LightGCN import LightGCN
 from model.xGCN import xGCN
 from model.xGCN_ii import xGCN_ii
@@ -12,13 +12,14 @@ from model.GraphSAGE import GraphSAGE
 from model.GAT import GAT
 from model.GIN import GIN
 from model.SIGN import SIGN
+from model.GAMLP import GAMLP
 from model.Block_LightGCN import Block_LightGCN
 from model.Block_SimpleX import Block_SimpleX
 
 
 def build_model(config, data):
     model = {
-        'node2vec': Node2vecWrapper,
+        # 'node2vec': Node2vecWrapper,
         'lightgcn': LightGCN,
         'block_lightgcn': Block_LightGCN,
         'block_simplex': Block_SimpleX,
@@ -34,6 +35,7 @@ def build_model(config, data):
         'gat': GAT,
         'gin': GIN,
         'sign': SIGN,
+        'gamlp': GAMLP,
     }[config['model']](config, data)
     
     data['model'] = model

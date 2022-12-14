@@ -26,8 +26,8 @@ freeze_emb: 1
 l2_reg_weight: 0.0
 dnn_lr: 0.001
 
+GAMLP_type: GAMLP_JK
 num_gcn_layers: 2
-num_dnn_layers: 2
 
 loss_fn: bpr_loss
 num_neg: 1
