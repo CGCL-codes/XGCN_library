@@ -17,7 +17,7 @@ dependencies:
   - colorama=0.4.4=pyhd3eb1b0_0
   - cryptography=36.0.0=py38h9ce1e76_0
   - cudatoolkit=11.3.1=h2bc3f7f_2
-  - dgl-cuda11.3=0.8.1=py38_0
+  - dgl-cuda11.3=0.9.1=py38_0
   - gpustat=0.6.0=pyhd3eb1b0_1
   - idna=3.3=pyhd3eb1b0_0
   - intel-openmp=2021.4.0=h06a4308_3561
