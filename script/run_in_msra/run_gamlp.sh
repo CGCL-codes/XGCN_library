@@ -16,13 +16,13 @@ SEED=$5
 GAMLP_type=$6
 num_gcn_layers=$7
 
-RESULTS_DIR="sign/[seed$SEED][$GAMLP_type][gcn_layer$num_gcn_layers]"
+RESULTS_DIR="gamlp/[seed$SEED][$GAMLP_type][gcn_layer$num_gcn_layers]"
 RESULTS_ROOT=$ALL_RESULTS_ROOT'/gnn_'$DATASET'/'$RESULTS_DIR
 
 file_pretrained_emb=$ALL_RESULTS_ROOT'/gnn_'$DATASET'/node2vec/[best]/out_emb_table.pt'
 
 python $PROJECT_ROOT'/'main/main.py $PROJECT_ROOT \
-    --config_file $CONFIG_ROOT'/sign-config.yaml' \
+    --config_file $CONFIG_ROOT'/gamlp-config.yaml' \
     --data_root $DATA_ROOT \
     --seed $SEED \
     --results_root $RESULTS_ROOT \

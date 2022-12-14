@@ -30,6 +30,8 @@ class R_GAMLP(nn.Module):  # recursive GAMLP
             self.act = torch.nn.ReLU()
         elif act == 'leaky_relu':
             self.act = torch.nn.LeakyReLU(0.2)
+        else:
+            self.act = eval(act)
         self.reset_parameters()
 
     def reset_parameters(self):
@@ -115,6 +117,8 @@ class JK_GAMLP(nn.Module):
             self.act = torch.nn.ReLU()
         elif act == 'leaky_relu':
             self.act = torch.nn.LeakyReLU(0.2)
+        else:
+            self.act = eval(act)
         self.residual = residual
         self.reset_parameters()
 
