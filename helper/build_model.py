@@ -1,4 +1,3 @@
-# from model.Node2vecWrapper import Node2vecWrapper
 from model.LightGCN import LightGCN
 from model.xGCN import xGCN
 from model.xGCN_ii import xGCN_ii
@@ -18,8 +17,7 @@ from model.Block_SimpleX import Block_SimpleX
 
 
 def build_model(config, data):
-    model = {
-        # 'node2vec': Node2vecWrapper,
+    model_dict = {
         'lightgcn': LightGCN,
         'block_lightgcn': Block_LightGCN,
         'block_simplex': Block_SimpleX,
@@ -36,7 +34,15 @@ def build_model(config, data):
         'gin': GIN,
         'sign': SIGN,
         'gamlp': GAMLP,
-    }[config['model']](config, data)
+    }
+    
+    try:
+        from model.Node2vecWrapper import Node2vecWrapper
+        model_dict['node2vec'] = Node2vecWrapper
+    except:
+        pass
+    
+    model = model_dict[config['model']](config, data)
     
     data['model'] = model
     
