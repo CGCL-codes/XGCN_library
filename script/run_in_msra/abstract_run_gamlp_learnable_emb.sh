@@ -14,9 +14,9 @@ DEVICE='cuda'
 DATASET=$1
 seed=$2
 
-num_gcn_layers=$3
-num_layer_sample=$4
-num_dnn_layers=$5
+GAMLP_type=$3
+num_gcn_layers=$4
+num_layer_sample=$5
 
-bash $PROJECT_ROOT/script/run_in_msra/run_sign_learnable_emb.sh $PROJECT_ROOT $ALL_DATA_ROOT $DEVICE $DATASET $seed \
-    $num_gcn_layers $num_layer_sample $num_dnn_layers
+bash $PROJECT_ROOT/script/run_in_msra/run_gamlp_learnable_emb.sh $PROJECT_ROOT $ALL_DATA_ROOT $DEVICE $DATASET $seed \
+    $GAMLP_type $num_gcn_layers $num_layer_sample

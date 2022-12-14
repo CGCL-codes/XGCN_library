@@ -11,7 +11,7 @@ from model.GraphSAGE import GraphSAGE
 from model.GAT import GAT
 from model.GIN import GIN
 from model.SIGN import SIGN, SIGN_learnable_emb
-from model.GAMLP import GAMLP
+from model.GAMLP import GAMLP, GAMLP_learnable_emb
 from model.Block_LightGCN import Block_LightGCN
 from model.Block_SimpleX import Block_SimpleX
 
@@ -35,6 +35,7 @@ def build_model(config, data):
         'sign': SIGN,
         'sign_learnable_emb': SIGN_learnable_emb,
         'gamlp': GAMLP,
+        'gamlp_learnable_emb': GAMLP_learnable_emb,
     }
     
     try:
