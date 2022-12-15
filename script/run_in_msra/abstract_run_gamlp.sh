@@ -5,8 +5,8 @@ conda activate xgcn
 PROJECT_ROOT='xGCN'
 ALL_DATA_ROOT='/home/jialia/ds/social_and_user_item'
 
-# PROJECT_ROOT='/home/sxr/code/www23/xGCN'
-# ALL_DATA_ROOT='/home/sxr/data/social_and_user_item'
+# PROJECT_ROOT='/media/xreco/jianxun/xGCN'
+# ALL_DATA_ROOT='/media/xreco/DEV/xiran/data/social_and_user_item'
 
 DEVICE='cuda'
 
@@ -23,8 +23,6 @@ pre_process=${8}
 residual=${9}
 bns=${10}
 
-# bash $PROJECT_ROOT/script/run_in_msra/run_gamlp.sh $PROJECT_ROOT $ALL_DATA_ROOT $DEVICE $DATASET $seed \
-#     $GAMLP_type $num_gcn_layers
-
-bash xGCN/script/run_in_msra/run_gamlp.sh $PROJECT_ROOT $ALL_DATA_ROOT $DEVICE $DATASET $seed \
-    $GAMLP_type $num_gcn_layers
+bash $PROJECT_ROOT/script/run_in_msra/run_gamlp.sh $PROJECT_ROOT $ALL_DATA_ROOT $DEVICE $DATASET $seed \
+    $GAMLP_type $num_gcn_layers \
+    $hidden $n_layers_1 $n_layers_2 $pre_process $residual $bns \

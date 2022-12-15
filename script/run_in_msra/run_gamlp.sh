@@ -47,5 +47,11 @@ python $PROJECT_ROOT'/'main/main.py $PROJECT_ROOT \
     --file_pretrained_emb $file_pretrained_emb \
     --GAMLP_type $GAMLP_type \
     --num_gcn_layers $num_gcn_layers \
+    --hidden $hidden \
+    --n_layers_1 $n_layers_1 \
+    --n_layers_2 $n_layers_2 \
+    --pre_process $pre_process \
+    --residual $residual \
+    --bns $bns \
 
-# find $RESULTS_ROOT -name "*.pt" -type f -print -exec rm -rf {} \;
+find $RESULTS_ROOT -name "*.pt" -type f -print -exec rm -rf {} \;

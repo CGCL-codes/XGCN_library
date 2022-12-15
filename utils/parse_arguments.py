@@ -130,7 +130,7 @@ def _parse_arguments():
     parser.add_argument("--n_layers_2", type=int)
     parser.add_argument("--pre_process", type=int)
     parser.add_argument("--residual", type=int)
-    parser.add_argument("--n_layers_2", type=int)
+    parser.add_argument("--bns", type=int)
     
     parser.add_argument("--infer_full_graph", type=int)
     
