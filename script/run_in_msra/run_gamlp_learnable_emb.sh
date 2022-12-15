@@ -44,4 +44,4 @@ python $PROJECT_ROOT'/'main/main.py $PROJECT_ROOT \
     --num_layer_sample $num_layer_sample \
     --GAMLP_type $GAMLP_type \
 
-# find $RESULTS_ROOT -name "*.pt" -type f -print -exec rm -rf {} \;
+find $RESULTS_ROOT -name "*.pt" -type f -print -exec rm -rf {} \;
