@@ -70,20 +70,20 @@ class GAMLP(BaseEmbeddingModel):
         emb_dim = self.emb_table_list[0].shape[-1]
         mlp = MLP(
             nfeat=emb_dim,
-            hidden=512,
+            hidden=self.config['hidden'],  # default: 512
             nclass=emb_dim,  # output node emb, rather than logits for classification
             num_hops=self.config['num_gcn_layers'] + 1,
             dropout=0.0,
             input_drop=0.0,
             att_dropout=0.0,
             alpha=0.5,
-            n_layers_1=4,
-            n_layers_2=4,
+            n_layers_1=self.config['n_layers_1'],  # default: 4
+            n_layers_2=self.config['n_layers_2'],  # default: 4
             act='torch.tanh',
-            pre_process=False,
-            residual=False,
+            pre_process=bool(self.config['pre_process']),  # default: 0 (False)
+            residual=bool(self.config['residual']),  # default: 0 (False)
             pre_dropout=False,
-            bns=False
+            bns=bool(self.config['bns'])  # default: 0 (False)
         ).to(self.device)
         mlp.reset_parameters()
         return mlp

@@ -125,6 +125,12 @@ def _parse_arguments():
     parser.add_argument("--tao", type=float)
     
     parser.add_argument("--GAMLP_type", type=str)
+    parser.add_argument("--hidden", type=int)
+    parser.add_argument("--n_layers_1", type=int)
+    parser.add_argument("--n_layers_2", type=int)
+    parser.add_argument("--pre_process", type=int)
+    parser.add_argument("--residual", type=int)
+    parser.add_argument("--n_layers_2", type=int)
     
     parser.add_argument("--infer_full_graph", type=int)
     

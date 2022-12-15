@@ -16,6 +16,12 @@ seed=$2
 
 GAMLP_type=$3
 num_gcn_layers=$4
+hidden=$5
+n_layers_1=$6
+n_layers_2=${7}
+pre_process=${8}
+residual=${9}
+bns=${10}
 
 # bash $PROJECT_ROOT/script/run_in_msra/run_gamlp.sh $PROJECT_ROOT $ALL_DATA_ROOT $DEVICE $DATASET $seed \
 #     $GAMLP_type $num_gcn_layers
