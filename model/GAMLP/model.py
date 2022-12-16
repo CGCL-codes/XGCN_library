@@ -21,8 +21,7 @@ class R_GAMLP(nn.Module):  # recursive GAMLP
         self.input_drop = nn.Dropout(input_drop)
         self.att_drop = nn.Dropout(att_dropout)
         self.pre_process = pre_process
-        # self.res_fc = nn.Linear(nfeat, hidden)
-        self.res_fc = nn.Linear(nfeat, nfeat)
+        self.res_fc = nn.Linear(nfeat, hidden)
         self.residual = residual
         self.pre_dropout=pre_dropout
         if act == 'sigmoid':
@@ -78,7 +77,10 @@ class R_GAMLP(nn.Module):  # recursive GAMLP
                 torch.mul(input_list[i], self.att_drop(
                     attention_scores[:, i].view(num_node, 1)))
         if self.residual:
-            right_1 += self.res_fc(feature_list[0])
+            if feature_list[0].shape[-1] == right_1.shape[-1]:
+                right_1 += feature_list[0]
+            else:
+                right_1 += self.res_fc(feature_list[0])
             right_1 = self.dropout(self.prelu(right_1))
         if self.pre_dropout:
             right_1=self.dropout(right_1)
@@ -157,7 +159,10 @@ class JK_GAMLP(nn.Module):
                 torch.mul(input_list[i], self.att_drop(
                     W[:, i].view(num_node, 1)))
         if self.residual:
-            right_1 += self.res_fc(feature_list[0])
+            if feature_list[0].shape[-1] == right_1.shape[-1]:
+                right_1 += feature_list[0]
+            else:
+                right_1 += self.res_fc(feature_list[0])
             right_1 = self.dropout(self.prelu(right_1))
         if self.pre_dropout:
             right_1=self.dropout(right_1)
