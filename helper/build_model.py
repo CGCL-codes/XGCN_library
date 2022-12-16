@@ -11,7 +11,7 @@ from model.GraphSAGE import GraphSAGE
 from model.GAT import GAT
 from model.GIN import GIN
 from model.SGC import SGC, SGC_learnable_emb
-from model.SSGC import SSGC
+from model.SSGC import SSGC, SSGC_learnable_emb
 from model.SIGN import SIGN, SIGN_learnable_emb
 from model.GAMLP import GAMLP, GAMLP_learnable_emb
 from model.Block_LightGCN import Block_LightGCN
@@ -37,6 +37,7 @@ def build_model(config, data):
         'sgc': SGC,
         'sgc_learnable_emb': SGC_learnable_emb,
         'ssgc': SSGC,
+        'ssgc_learnable_emb': SSGC_learnable_emb,
         'sign': SIGN,
         'sign_learnable_emb': SIGN_learnable_emb,
         'gamlp': GAMLP,
