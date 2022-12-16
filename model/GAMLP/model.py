@@ -21,7 +21,8 @@ class R_GAMLP(nn.Module):  # recursive GAMLP
         self.input_drop = nn.Dropout(input_drop)
         self.att_drop = nn.Dropout(att_dropout)
         self.pre_process = pre_process
-        self.res_fc = nn.Linear(nfeat, hidden)
+        # self.res_fc = nn.Linear(nfeat, hidden)
+        self.res_fc = nn.Linear(nfeat, nfeat)
         self.residual = residual
         self.pre_dropout=pre_dropout
         if act == 'sigmoid':
