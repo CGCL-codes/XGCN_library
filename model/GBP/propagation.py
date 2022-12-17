@@ -26,7 +26,7 @@ def GBP_propagation(indptr, indices, X: torch.FloatTensor, L, w, r, rmax, nr):
     Q = [torch.FloatTensor(Q[i]) for i in range(len(Q))]
     R = [torch.FloatTensor(R[i]) for i in range(len(R))]
     
-    D = torch.FloatTensor(indptr[1:] - indptr[:-1])
+    D = torch.FloatTensor(np.array(indptr[1:] - indptr[:-1], dtype=np.float32))
     Dr = (D**(r)).reshape(-1, 1)
     
     print("# get_P")
@@ -46,9 +46,7 @@ def get_random_walk_edges(indptr, indices, L, nr):
     num_nodes = len(indptr)  - 1
     
     S_edges = [
-        [np.array([], dtype=np.int64), 
-         np.array([], dtype=np.int64), 
-         np.array([], dtype=np.float32)]  # E_src, E_dst, data
+        [[], [], []]  # E_src, E_dst, data
         for _ in range(L + 1)
     ]
     '''
@@ -60,7 +58,7 @@ def get_random_walk_edges(indptr, indices, L, nr):
     all_nids = np.arange(num_nodes)
     start = 0
     end = 0
-    batch_size = 128
+    batch_size = 512
     for _ in tqdm(range(int(np.ceil(num_nodes / batch_size)))):
         start = end
         end = start + batch_size
@@ -72,12 +70,16 @@ def get_random_walk_edges(indptr, indices, L, nr):
             indptr, indices, batch_nodes, L, nr
         )
         
-        for l in range(L):
+        for l in range(L + 1):
             for i in range(len(batch_nodes)):
                 num_dst = S_num_dst[l][i]
-                S_edges[l][0] = np.concatenate([S_edges[l][0], S_src[l][i][:num_dst]], dtype=np.int64)
-                S_edges[l][1] = np.concatenate([S_edges[l][1], S_dst[l][i][:num_dst]], dtype=np.int64)
-                S_edges[l][2] = np.concatenate([S_edges[l][2], S_data[l][i][:num_dst]], dtype=np.float32)
+                S_edges[l][0].append(S_src[l][i][:num_dst])
+                S_edges[l][1].append(S_dst[l][i][:num_dst])
+                S_edges[l][2].append(S_data[l][i][:num_dst])
+    
+    for l in range(L + 1):
+        for i in range(3):
+            S_edges[l][i] = np.concatenate(S_edges[l][i])
     
     return S_edges
 
@@ -172,11 +174,10 @@ def get_Q_R(indptr, indices, X, L, r, rmax):
     ])
     
     num_nodes = len(indptr) - 1
-    emb_dim = X.shape[-1]
     for l in range(L - 1):
         u_start = 0
         u_end = 0
-        batch_size = 128
+        batch_size = 512
         for _ in tqdm(range(int(np.ceil(num_nodes / batch_size)))):
             u_start = u_end
             u_end = u_start + batch_size

@@ -132,6 +132,8 @@ def _parse_arguments():
     parser.add_argument("--residual", type=int)
     parser.add_argument("--bns", type=int)
     
+    parser.add_argument("--rmax_ratio", type=float)
+    
     parser.add_argument("--infer_full_graph", type=int)
     
     (args, unknown) = parser.parse_known_args()
