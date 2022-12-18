@@ -14,10 +14,11 @@ PPR_DATA_ROOT=$ALL_RESULTS_ROOT'/gnn_'$DATASET'/new_ppr/undirected-top100'
 
 ################
 SEED=$5
-use_ssnet=$6
 
-RESULTS_DIR="pprgo/[use_ssnet$use_ssnet][seed$SEED]"
+RESULTS_DIR="pprgo/[n2v][seed$SEED]"
 RESULTS_ROOT=$ALL_RESULTS_ROOT'/gnn_'$DATASET'/'$RESULTS_DIR
+
+file_pretrained_emb=$ALL_RESULTS_ROOT'/gnn_'$DATASET'/node2vec/[best]/out_emb_table.pt'
 
 python $PROJECT_ROOT'/'main/main.py $PROJECT_ROOT \
     --config_file $CONFIG_ROOT'/pprgo-config.yaml' \
@@ -30,7 +31,7 @@ python $PROJECT_ROOT'/'main/main.py $PROJECT_ROOT \
     --emb_lr 0.005 \
     --l2_reg_weight 0.0 \
     --loss_fn 'bpr_loss' \
-    --use_special_dnn $use_ssnet \
+    --use_special_dnn 0 \
     --validation_method 'one_pos_whole_graph' \
     --mask_nei_when_validation 1 \
     --file_validation $DATA_ROOT'/val_edges-1000.pkl' \
@@ -39,5 +40,7 @@ python $PROJECT_ROOT'/'main/main.py $PROJECT_ROOT \
     --test_method 'multi_pos_whole_graph' \
     --mask_nei_when_test 1 \
     --file_test $DATA_ROOT'/test.pkl' \
+    --from_pretrained 1 \
+    --file_pretrained_emb $file_pretrained_emb \
 
-# find $RESULTS_ROOT -name "*.pt" -type f -print -exec rm -rf {} \;
+find $RESULTS_ROOT -name "*.pt" -type f -print -exec rm -rf {} \;
