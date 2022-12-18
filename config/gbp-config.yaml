@@ -25,6 +25,7 @@ freeze_emb: 1
 
 l2_reg_weight: 0.0
 dnn_lr: 0.001
+dnn_arch: '[torch.nn.Linear(64, 1024), torch.nn.Tanh(), torch.nn.Linear(1024, 1024), torch.nn.Tanh(), torch.nn.Linear(1024, 64)]'
 
 walk_length: 4
 alpha: 0.1

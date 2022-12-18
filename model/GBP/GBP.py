@@ -38,8 +38,9 @@ class GBP(BaseEmbeddingModel):
             nr=8,
         ).to(self.device)
         
-        emb_dim = self.base_emb_table.shape[-1]
-        self.mlp = torch.nn.Linear(emb_dim, emb_dim).to(self.device)
+        self.mlp = torch.nn.Sequential(
+            *eval(self.config['dnn_arch'])
+        ).to(self.device)
         
         self.param_list = {
             'Adam': [{'params': self.mlp.parameters(), 'lr': self.config['dnn_lr']}],
