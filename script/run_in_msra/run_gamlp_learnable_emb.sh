@@ -17,7 +17,7 @@ GAMLP_type=$6
 num_gcn_layers=$7
 num_layer_sample=$8
 
-RESULTS_DIR="gamlp_learnable_emb/[seed$SEED][$GAMLP_type][gcn_layer$num_gcn_layers]"
+RESULTS_DIR="gamlp_learnable_emb/best/[seed$SEED][$GAMLP_type][gcn_layer$num_gcn_layers]"
 RESULTS_ROOT=$ALL_RESULTS_ROOT'/gnn_'$DATASET'/'$RESULTS_DIR
 
 file_pretrained_emb=$ALL_RESULTS_ROOT'/gnn_'$DATASET'/node2vec/[best]/out_emb_table.pt'

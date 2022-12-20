@@ -16,7 +16,7 @@ SEED=$5
 num_gcn_layers=$6
 num_dnn_layers=$7
 
-RESULTS_DIR="sign/[seed$SEED][gcn_layer$num_gcn_layers][dnn_layer$num_dnn_layers]"
+RESULTS_DIR="sign/best/[seed$SEED][gcn_layer$num_gcn_layers][dnn_layer$num_dnn_layers]"
 RESULTS_ROOT=$ALL_RESULTS_ROOT'/gnn_'$DATASET'/'$RESULTS_DIR
 
 file_pretrained_emb=$ALL_RESULTS_ROOT'/gnn_'$DATASET'/node2vec/[best]/out_emb_table.pt'
@@ -42,4 +42,4 @@ python $PROJECT_ROOT'/'main/main.py $PROJECT_ROOT \
     --num_gcn_layers $num_gcn_layers \
     --num_dnn_layers $num_dnn_layers \
 
-# find $RESULTS_ROOT -name "*.pt" -type f -print -exec rm -rf {} \;
+find $RESULTS_ROOT -name "*.pt" -type f -print -exec rm -rf {} \;

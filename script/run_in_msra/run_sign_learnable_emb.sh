@@ -17,7 +17,7 @@ num_gcn_layers=$6
 num_layer_sample=$7
 num_dnn_layers=$8
 
-RESULTS_DIR="sign_learnable_emb/[seed$SEED][gcn_layer$num_gcn_layers][dnn_layer$num_dnn_layers]"
+RESULTS_DIR="sign_learnable_emb/best/[seed$SEED][gcn_layer$num_gcn_layers][dnn_layer$num_dnn_layers]"
 RESULTS_ROOT=$ALL_RESULTS_ROOT'/gnn_'$DATASET'/'$RESULTS_DIR
 
 file_pretrained_emb=$ALL_RESULTS_ROOT'/gnn_'$DATASET'/node2vec/[best]/out_emb_table.pt'

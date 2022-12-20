@@ -15,7 +15,7 @@ DATA_ROOT=$ALL_DATASETS_ROOT'/instance_'$DATASET
 SEED=$5
 num_gcn_layers=$6
 
-RESULTS_DIR="sgc/[seed$SEED][gcn_layer$num_gcn_layers]"
+RESULTS_DIR="sgc/best/[seed$SEED][gcn_layer$num_gcn_layers]"
 RESULTS_ROOT=$ALL_RESULTS_ROOT'/gnn_'$DATASET'/'$RESULTS_DIR
 
 file_pretrained_emb=$ALL_RESULTS_ROOT'/gnn_'$DATASET'/node2vec/[best]/out_emb_table.pt'

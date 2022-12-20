@@ -22,7 +22,7 @@ pre_process=${11}
 residual=${12}
 bns=${13}
 
-RESULTS_DIR="gamlp/[seed$SEED][$GAMLP_type][gcn_layer$num_gcn_layers][h$hidden][n1$n_layers_1][n2$n_layers_2][pre_process$pre_process][residual$residual][bns$bns]"
+RESULTS_DIR="gamlp/best/[seed$SEED][$GAMLP_type][gcn_layer$num_gcn_layers][h$hidden][n1$n_layers_1][n2$n_layers_2][pre_process$pre_process][residual$residual][bns$bns]"
 RESULTS_ROOT=$ALL_RESULTS_ROOT'/gnn_'$DATASET'/'$RESULTS_DIR
 
 file_pretrained_emb=$ALL_RESULTS_ROOT'/gnn_'$DATASET'/node2vec/[best]/out_emb_table.pt'
