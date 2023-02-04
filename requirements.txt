@@ -1,9 +1,9 @@
-dgl==0.7.2
-numba==0.54.1
-numpy==1.20.3
-PyYAML==6.0
+dgl==0.9.1
+gensim==4.2.0
+numba==0.55.1
+numpy==1.21.5
 scipy==1.7.3
 setproctitle==1.2.2
-torch==1.8.2
-torch_geometric==2.0.1
-tqdm==4.62.3
+torch==1.9.0+cu102
+torch_geometric==2.0.4
+tqdm==4.63.0
