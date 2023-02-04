@@ -62,7 +62,7 @@ class FastNode2vec:
             
         sent_wapper = SentencesWapper(_get_sentences, epochs=epochs, length=self.num_nodes * num_walks)
         
-        model = gensim.models.Word2Vec(
+        self.model = gensim.models.Word2Vec(
             vector_size=dim, window=window, negative=num_neg, 
             epochs=epochs, 
             alpha=alpha, 
@@ -71,8 +71,8 @@ class FastNode2vec:
         )
         
         print(">> build vocab...")
-        model.build_vocab(sent_wapper)
-        # model.build_vocab_from_freq(self.node_degree) ##--
+        self.model.build_vocab(sent_wapper)
+        # self.model.build_vocab_from_freq(self.node_degree) ##--
         
         print(">> train...")
         if alpha_schedule is not None:
@@ -80,19 +80,18 @@ class FastNode2vec:
                 start_alpha = fn_alpha(epoch).item()
                 end_alpha = fn_alpha(epoch + 1).item()
                 print(">> start_alpha {}, end_alpha {}".format(start_alpha, end_alpha))
-                model.train(sent_wapper, epochs=1, start_alpha=start_alpha, end_alpha=end_alpha,
-                            total_examples=model.corpus_count, callbacks=callbacks,
+                self.model.train(sent_wapper, epochs=1, start_alpha=start_alpha, end_alpha=end_alpha,
+                            total_examples=self.model.corpus_count, callbacks=callbacks,
                             total_words=self.num_nodes
                             )
         else:  # use default alpha schedule
-            model.train(sent_wapper, epochs=model.epochs,
-                        total_examples=model.corpus_count, callbacks=callbacks)
+            self.model.train(sent_wapper, epochs=self.model.epochs,
+                        total_examples=self.model.corpus_count, callbacks=callbacks)
         
-        idx = [i for i in np.arange(self.num_nodes)]
-        self.embs = model.wv[idx]
         
     def get_embeddings(self):
+        self.embs = self.model.wv[list(range(self.num_nodes))]
         return self.embs
 
     def save_word2vec_format(self, filename):
-        self.model.wv.save_word2vec_format(filename)
+        self.self.model.wv.save_word2vec_format(filename)
