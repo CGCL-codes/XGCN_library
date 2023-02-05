@@ -1,5 +1,7 @@
 This is an implementation for our TheWebConf 2023 paper: *xGCN: An Extreme Graph Convolutional Network for Large-scale Social Link Prediction*.
 
+The current code is our original scripts. We will soon release a refactored version with improved functionality, and the future updates will happen with the new version. 
+
 To run xGCN and other baselines:
 
 # 1. Install dependencies
