@@ -1,8 +1,11 @@
+build/
+
 .vscode/
 .ipynb_checkpoints/
 __pycache__/
 *.py[cod]
 
-script_local/
+dist/
+*.egg-info
 
-*_local/
+script_local/

@@ -1,0 +1,3 @@
+# MANIFEST.in
+
+recursive-include src/gnn_zoo/model/ *.yaml

@@ -1,0 +1,2 @@
+from .Node2vecRandomWalker import Node2vecRandomWalker
+from .Node2vecRandomWalkGraph import Node2vecRandomWalkGraph

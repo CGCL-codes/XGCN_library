@@ -1,0 +1,56 @@
+seed: 1999
+model: GraphSAGE
+
+data_root: ""
+results_root: ""
+
+Dataset_type: BlockDataset
+num_workers: 0
+num_gcn_layers: 2
+train_num_layer_sample: ""
+
+NodeListDataset_type: LinkDataset
+pos_sampler: ObservedEdges_Sampler
+neg_sampler: RandomNeg_Sampler
+num_neg: 1
+
+BatchSampleIndicesGenerator_type: SampleIndicesWithReplacement
+train_batch_size: 2048
+train_edge_sample_ratio: 0.1
+
+val_evaluator: ""
+val_batch_size: 256
+file_val_set: ""
+
+test_evaluator: ""
+test_batch_size: 256
+file_test_set: ""
+
+epochs: 200
+val_freq: 1
+key_score_metric: r100
+convergence_threshold: 20
+
+forward_mode: sample
+graph_device: cuda
+emb_table_device: cuda
+gnn_device: cuda
+out_emb_table_device: cuda
+
+from_pretrained: 0
+file_pretrained_emb: ""
+
+freeze_emb: 0
+use_sparse: 0
+
+emb_dim: 64 
+emb_init_std: 0.1
+emb_lr: 0.01
+
+gnn_arch: "[{'in_feats': 64, 'out_feats': 64, 'aggregator_type': 'pool', 'activation': torch.tanh}, {'in_feats': 64, 'out_feats': 64, 'aggregator_type': 'pool'}]"
+gnn_lr: 0.01
+
+loss_type: bpr
+L2_reg_weight: 0.0
+
+infer_num_layer_sample: "[]"

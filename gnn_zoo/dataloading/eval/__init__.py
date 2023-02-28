@@ -1,0 +1,2 @@
+from .WholeGraph_MultiPos_EvalDataLoader import WholeGraph_MultiPos_EvalDataLoader
+from .WholeGraph_OnePos_EvalDataLoader import WholeGraph_OnePos_EvalDataLoader

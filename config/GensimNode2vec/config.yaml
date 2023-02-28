@@ -1,0 +1,29 @@
+seed: 1999
+model: GensimNode2vec
+
+data_root: ""
+results_root: ""
+
+val_evaluator: ""
+val_batch_size: 256
+file_val_set: ""
+
+test_evaluator: ""
+test_batch_size: 256
+file_test_set: ""
+
+epochs: 200
+val_freq: 1
+key_score_metric: r100
+convergence_threshold: 20
+
+emb_dim: 64
+emb_lr: 0.01
+num_walks: 16
+walk_length: 16
+p: 1.0
+q: 1.0
+context_size: 5
+num_neg: 5
+
+num_workers: 6
