@@ -20,6 +20,7 @@ XGCN is a light-weight and easy-to-use library for large-scale graph-based recom
    :maxdepth: 1
    :caption: User Guide
 
+   user_guide/overview
    user_guide/data_preparation
    user_guide/train_eval
 
