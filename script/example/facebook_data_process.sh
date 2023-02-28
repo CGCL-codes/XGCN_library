@@ -1,6 +1,6 @@
 # please modify these two paths, and you can run all the stuff here by a "bash facebook_data_process.sh"
 project_root='../..'  # root of the code
-all_data_root='/home/sxr/data/gnn_zoo'  # specify a directory to place the data
+all_data_root='/home/sxr/data/XGCN'  # specify a directory to place the data
 
 raw_data_root=$all_data_root'/dataset/raw_facebook'
 

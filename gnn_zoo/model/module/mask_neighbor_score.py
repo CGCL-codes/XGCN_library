@@ -1,4 +1,4 @@
-from gnn_zoo.utils.csr import get_neighbors
+from XGCN.utils.csr import get_neighbors
 
 import numpy as np
 import numba

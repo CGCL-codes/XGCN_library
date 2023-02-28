@@ -1,5 +1,5 @@
-project_root="/home/sxr/code/gnn_zoo"
-all_data_root="/home/sxr/data/gnn_zoo"
+project_root="/home/sxr/code/XGCN"
+all_data_root="/home/sxr/data/XGCN"
 
 dataset="pokec"
 model="xGCN"

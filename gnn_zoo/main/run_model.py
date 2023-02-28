@@ -1,10 +1,10 @@
-from gnn_zoo.utils.parse_arguments import parse_arguments
-from gnn_zoo.utils.utils import print_dict, ensure_dir, set_random_seed
-from gnn_zoo.utils import io
-from gnn_zoo.model.build import build_Model
-from gnn_zoo.dataloading.build import build_DataLoader
-from gnn_zoo.evaluator.build import build_val_Evaluator, build_test_Evaluator
-from gnn_zoo.train.Trainer import build_Trainer
+from XGCN.utils.parse_arguments import parse_arguments
+from XGCN.utils.utils import print_dict, ensure_dir, set_random_seed
+from XGCN.utils import io
+from XGCN.model.build import build_Model
+from XGCN.dataloading.build import build_DataLoader
+from XGCN.evaluator.build import build_val_Evaluator, build_test_Evaluator
+from XGCN.train.Trainer import build_Trainer
 
 import os.path as osp
 

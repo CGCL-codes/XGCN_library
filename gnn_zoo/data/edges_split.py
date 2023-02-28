@@ -1,8 +1,8 @@
-from gnn_zoo.utils.parse_arguments import parse_arguments
-from gnn_zoo.utils.utils import ensure_dir
-from gnn_zoo.utils import io
-from gnn_zoo.utils import csr
-from gnn_zoo.utils.csr.CSR_Graph import CSR_Graph_rev_rm_edge
+from XGCN.utils.parse_arguments import parse_arguments
+from XGCN.utils.utils import ensure_dir
+from XGCN.utils import io
+from XGCN.utils import csr
+from XGCN.utils.csr.CSR_Graph import CSR_Graph_rev_rm_edge
 
 import numpy as np
 import os.path as osp

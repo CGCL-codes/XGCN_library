@@ -1,4 +1,4 @@
-from gnn_zoo.utils.utils import combine_dict_list_and_calc_mean
+from XGCN.utils.utils import combine_dict_list_and_calc_mean
 
 import numpy as np
 import numba

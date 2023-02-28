@@ -1,4 +1,4 @@
-from gnn_zoo.utils import io
+from XGCN.utils import io
 
 import time
 import numpy as np

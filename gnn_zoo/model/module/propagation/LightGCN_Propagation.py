@@ -1,6 +1,6 @@
-from gnn_zoo.model.LightGCN import get_lightgcn_out_emb
-from gnn_zoo.utils import io
-from gnn_zoo.utils import csr
+from XGCN.model.LightGCN import get_lightgcn_out_emb
+from XGCN.utils import io
+from XGCN.utils import csr
 
 import numpy as np
 import torch

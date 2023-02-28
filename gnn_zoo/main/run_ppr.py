@@ -1,8 +1,8 @@
-from gnn_zoo.model.PPR.ppr_helper import ppr_for_batch_nodes
-from gnn_zoo.utils import io
-from gnn_zoo.utils import csr
-from gnn_zoo.utils.parse_arguments import parse_arguments
-from gnn_zoo.utils.utils import print_dict, ensure_dir
+from XGCN.model.PPR.ppr_helper import ppr_for_batch_nodes
+from XGCN.utils import io
+from XGCN.utils import csr
+from XGCN.utils.parse_arguments import parse_arguments
+from XGCN.utils.utils import print_dict, ensure_dir
 
 import numpy as np
 import os.path as osp

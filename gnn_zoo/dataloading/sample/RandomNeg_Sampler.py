@@ -1,5 +1,5 @@
 from ..base import BaseSampler
-from gnn_zoo.utils import io
+from XGCN.utils import io
 
 import torch
 import os.path as osp

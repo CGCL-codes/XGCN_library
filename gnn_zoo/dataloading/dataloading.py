@@ -1,6 +1,6 @@
 from .base import BaseDataset, NodeListDataset
 from .base import BaseSampler, BatchSampleIndicesGenerator
-from gnn_zoo.utils.utils import get_unique
+from XGCN.utils.utils import get_unique
 
 import torch
 import dgl

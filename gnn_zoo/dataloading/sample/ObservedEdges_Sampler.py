@@ -1,6 +1,6 @@
 from ..base import BaseSampler
-from gnn_zoo.utils import io
-from gnn_zoo.utils import csr
+from XGCN.utils import io
+from XGCN.utils import csr
 
 import torch
 import os.path as osp

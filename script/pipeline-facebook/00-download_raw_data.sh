@@ -1,4 +1,4 @@
-all_data_root='/media/xreco/DEV/xiran/code/gnn_zoo_data'
+all_data_root='/media/xreco/DEV/xiran/code/XGCN_data'
 
 raw_data_root=$all_data_root'/dataset/raw_facebook'
 mkdir -p $raw_data_root

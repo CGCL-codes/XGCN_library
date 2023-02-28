@@ -1,7 +1,7 @@
-project_root="/media/xreco/DEV/xiran/code/gnn_zoo"
-all_data_root="/media/xreco/DEV/xiran/data/gnn_zoo"
+project_root="/media/xreco/DEV/xiran/code/XGCN"
+all_data_root="/media/xreco/DEV/xiran/data/XGCN"
 
-config_root=$project_root'/gnn_zoo/config'
+config_root=$project_root'/XGCN/config'
 all_dataset_root=$all_data_root'/dataset'
 all_results_root=$all_data_root'/model_output'
 
@@ -16,8 +16,8 @@ model='UltraGCN'
 results_dir=$model/"[$seed]"
 results_root=$all_results_root'/gnn_'$dataset'/'$results_dir
 
-python $project_root/gnn_zoo/main/run_model/run_model.py \
-    --config_file $project_root/gnn_zoo"/model/"$model/"config.yaml" \
+python $project_root/XGCN/main/run_model/run_model.py \
+    --config_file $project_root/XGCN"/model/"$model/"config.yaml" \
     --seed $seed \
     --data_root $data_root --results_root $results_root \
     --results_root $results_root \

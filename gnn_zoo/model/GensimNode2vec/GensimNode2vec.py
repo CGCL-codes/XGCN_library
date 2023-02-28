@@ -1,7 +1,7 @@
-from gnn_zoo.dataloading.random_walk import Node2vecRandomWalker
-from gnn_zoo.model.base import BaseEmbeddingModel
-from gnn_zoo.utils import io
-from gnn_zoo.utils import csr
+from XGCN.dataloading.random_walk import Node2vecRandomWalker
+from XGCN.model.base import BaseEmbeddingModel
+from XGCN.utils import io
+from XGCN.utils import csr
 
 from gensim.models import Word2Vec
 import torch

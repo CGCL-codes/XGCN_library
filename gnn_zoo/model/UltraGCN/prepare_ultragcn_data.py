@@ -1,6 +1,6 @@
-from gnn_zoo.utils import io, csr
-from gnn_zoo.utils.parse_arguments import parse_arguments
-from gnn_zoo.utils.utils import print_dict, ensure_dir
+from XGCN.utils import io, csr
+from XGCN.utils.parse_arguments import parse_arguments
+from XGCN.utils.utils import print_dict, ensure_dir
 
 import numpy as np
 import numba

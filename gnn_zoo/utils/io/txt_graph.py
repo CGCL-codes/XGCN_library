@@ -1,4 +1,4 @@
-from gnn_zoo.utils.utils import wc_count
+from XGCN.utils.utils import wc_count
 
 import numpy as np
 from tqdm import tqdm

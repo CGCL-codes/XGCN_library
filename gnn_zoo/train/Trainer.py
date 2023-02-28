@@ -1,7 +1,7 @@
 from .TrainTracer import TrainTracer
-from gnn_zoo.utils import io
-from gnn_zoo.utils.Timer import Timer
-from gnn_zoo.utils.utils import get_formatted_results
+from XGCN.utils import io
+from XGCN.utils.Timer import Timer
+from XGCN.utils.utils import get_formatted_results
 
 import numpy as np
 import os.path as osp

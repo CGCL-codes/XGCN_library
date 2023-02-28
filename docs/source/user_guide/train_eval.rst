@@ -1,11 +1,11 @@
 Model Training
 =========================
 
-Users can easily run a model with the ``gnn_zoo.main.run_model`` module: 
+Users can easily run a model with the ``XGCN.main.run_model`` module: 
 
 .. code:: bash
 
-    python -m gnn_zoo.main.run_model \
+    python -m XGCN.main.run_model \
         --model "GraphSAGE" \
         --seed 1999 \
         --data_root /xxx/xxx \
@@ -16,7 +16,7 @@ In this section, we introduce the configuration format, the setting of model inp
 1. Configuration Format
 -----------------------------
 
-GNN_ZOO supports parsing model configurations from command line arguments and ``.yaml`` files. 
+XGCN supports parsing model configurations from command line arguments and ``.yaml`` files. 
 Directory ``scripts/`` provides examples of ``.sh`` shell scripts to run all the models. 
 
 If you want to use a ``.yaml`` configuration file, specify the path 
@@ -24,7 +24,7 @@ with the command line argument ``--config_file`` like follows:
 
 .. code:: bash
 
-    python -m gnn_zoo.main.run_model \
+    python -m XGCN.main.run_model \
         --config_file "../config/GraphSAGE/config.yaml" \
         --seed 1999 \
         ...
@@ -43,7 +43,7 @@ In the last section, we process the raw facebook data and generate a dataset ins
 
 .. code:: 
 
-    gnn_zoo_data
+    XGCN_data
     └── dataset
         └── instance_facebook
             ├── indices.pkl
@@ -54,5 +54,5 @@ In the last section, we process the raw facebook data and generate a dataset ins
             └── val_set.pkl
 
 With these cached data, we can run all the models by specifying the ``data_root`` in the configuration, 
-which is ``/xxx/gnn_zoo_data/dataset/instance_facebook`` here. 
+which is ``/xxx/XGCN_data/dataset/instance_facebook`` here. 
 We use the

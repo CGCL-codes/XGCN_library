@@ -1,7 +1,7 @@
 from ..base import BaseEmbeddingModel
 from ..module import init_emb_table
 from ..module import dot_product, bpr_loss, bce_loss
-from gnn_zoo.utils import io
+from XGCN.utils import io
 
 import torch
 import os.path as osp

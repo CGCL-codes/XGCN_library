@@ -6,7 +6,7 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = 'gnn_zoo'
+project = 'XGCN'
 copyright = '2023, xiransong'
 author = 'xiransong'
 release = '0.0.0'

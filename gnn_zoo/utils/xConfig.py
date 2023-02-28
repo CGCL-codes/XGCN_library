@@ -1,4 +1,4 @@
-from gnn_zoo.utils import io
+from XGCN.utils import io
 
 
 def load_from_yaml(file_config):

@@ -1,8 +1,8 @@
 from .BaseEmbeddingModel import BaseEmbeddingModel
 from ..module import init_emb_table
 from ..module import dot_product, bpr_loss, bce_loss
-from gnn_zoo.dataloading.build import prepare_gnn_graph
-from gnn_zoo.utils.utils import id_map
+from XGCN.dataloading.build import prepare_gnn_graph
+from XGCN.utils.utils import id_map
 
 import torch
 import dgl

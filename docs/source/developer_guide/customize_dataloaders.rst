@@ -2,7 +2,7 @@ Customize DataLoaders
 =========================
 
 
-1. Architecture of GNN_ZOO DataLoader
+1. Architecture of XGCN DataLoader
 -----------------------------
 
 The UML class diagram of the dataloader designing is shown in the figure below.

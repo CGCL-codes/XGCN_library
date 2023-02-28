@@ -1,6 +1,6 @@
-from gnn_zoo.utils import io
-from gnn_zoo.utils import csr
-from gnn_zoo.model.base import BaseEmbeddingModel
+from XGCN.utils import io
+from XGCN.utils import csr
+from XGCN.model.base import BaseEmbeddingModel
 
 import torch
 import os.path as osp

@@ -1,6 +1,6 @@
-from gnn_zoo.dataloading.eval import WholeGraph_OnePos_EvalDataLoader
-from gnn_zoo.utils.metric import one_pos_metrics
-from gnn_zoo.utils.utils import combine_dict_list_and_calc_mean
+from XGCN.dataloading.eval import WholeGraph_OnePos_EvalDataLoader
+from XGCN.utils.metric import one_pos_metrics
+from XGCN.utils.utils import combine_dict_list_and_calc_mean
 
 from tqdm import tqdm
 

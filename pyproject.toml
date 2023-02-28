@@ -1,14 +1,14 @@
 # pyproject.toml
 
 [tool.setuptools]
-packages = ["gnn_zoo"]
+packages = ["XGCN"]
 
 [build-system]
 requires      = ["setuptools>=61.0.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "hust-gnn_zoo"
+name = "hust-XGCN"
 version = "0.0.0"
 description = "test..."
 # readme = ""

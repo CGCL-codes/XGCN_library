@@ -1,4 +1,4 @@
-from gnn_zoo.utils import io
+from XGCN.utils import io
 from ..base import BaseEmbeddingModel
 from ..module import dot_product, init_emb_table
 

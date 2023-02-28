@@ -1,6 +1,6 @@
 from .dataloading import *
 from .sample import *
-from gnn_zoo.utils import csr
+from XGCN.utils import csr
 
 import dgl
 

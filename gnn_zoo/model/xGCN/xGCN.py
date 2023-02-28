@@ -1,6 +1,6 @@
-from gnn_zoo.model.base import BaseEmbeddingModel
-from gnn_zoo.model.module.propagation import LightGCN_Propagation
-from gnn_zoo.model.module import init_emb_table, dot_product, bpr_loss, bce_loss
+from XGCN.model.base import BaseEmbeddingModel
+from XGCN.model.module.propagation import LightGCN_Propagation
+from XGCN.model.module import init_emb_table, dot_product, bpr_loss, bce_loss
 from .module import RefNet
 
 import torch

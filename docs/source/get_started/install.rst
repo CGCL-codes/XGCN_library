@@ -1,13 +1,13 @@
-Install GNN_ZOO
+Install XGCN
 ======================
 
-GNN_ZOO can be installed from source files or using ``pip``. 
+XGCN can be installed from source files or using ``pip``. 
 
 
 System requirements
 ------------------------
 
-GNN_ZOO supports Linux systems. for Windows users, it's recommended to install a 
+XGCN supports Linux systems. for Windows users, it's recommended to install a 
 Windows Subsystem for Linux (`WSL <https://learn.microsoft.com/en-us/windows/wsl/install>`_).
 
 
@@ -20,23 +20,23 @@ If you want to use GPU for training, please first manually install torch, dgl, a
 according to their official documentation. 
 
 
-Install GNN_ZOO from source
+Install XGCN from source
 ------------------------------
 
 Download the source files from GitHub and install locally:
 
 .. code:: bash
 
-    git clone git@github.com:xiransong/gnn_zoo.git -b dev
-    cd gnn_zoo
+    git clone git@github.com:xiransong/XGCN.git -b dev
+    cd XGCN
     python -m pip install -e .
 
 
-Install GNN_ZOO using pip
+Install XGCN using pip
 ------------------------------
 
 Run the following command:
 
 .. code:: bash
 
-    python -m pip install -i https://test.pypi.org/simple gnn-zoo
+    python -m pip install -i https://test.pypi.org/simple XGCN

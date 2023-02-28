@@ -1,5 +1,5 @@
-project_root="/media/xreco/DEV/xiran/code/gnn_zoo"
-all_data_root="/media/xreco/DEV/xiran/data/gnn_zoo"
+project_root="/media/xreco/DEV/xiran/code/XGCN"
+all_data_root="/media/xreco/DEV/xiran/data/XGCN"
 
 dataset="facebook"
 model="LightGCN"

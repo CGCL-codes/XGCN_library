@@ -1,21 +1,21 @@
 Data Preparation
 ======================
 
-GNN_ZOO supports handling both social graphs (all the nodes are users) and user-item graphs. 
+XGCN supports handling both social graphs (all the nodes are users) and user-item graphs. 
 In this section, let's take a small dataset - `facebook <http://snap.stanford.edu/data/ego-Facebook.html>`_ - as an example, 
 start from the raw ``.txt`` file of a graph and go through the whole data preparation pipeline. 
 
-The facebook data follows the edge-list format and is included in our GNN_ZOO repository: ``example_data/raw_facebook/facebook_combined.txt``. 
+The facebook data follows the edge-list format and is included in our XGCN repository: ``example_data/raw_facebook/facebook_combined.txt``. 
 You can also download it from SNAP: `facebook_combined.txt.gz <http://snap.stanford.edu/data/facebook_combined.txt.gz>`_. 
 
 
 1. Prepare the Raw Data
 -----------------------------
 
-Firstly, let's make an empty directory named ``gnn_zoo_data`` (or any one you like) to place all the datasets and model outputs. 
-It's recommended to put ``gnn_zoo_data`` somewhere else than in this repository. 
+Firstly, let's make an empty directory named ``XGCN_data`` (or any one you like) to place all the datasets and model outputs. 
+It's recommended to put ``XGCN_data`` somewhere else than in this repository. 
 
-GNN_ZOO supports two kinds of text graph data as input: 
+XGCN supports two kinds of text graph data as input: 
 
 (1) **Edge list**. One line represents an edge: (source node, destination node). The nodes are seperated by a whitespace, 
 for example::
@@ -35,12 +35,12 @@ for example::
     2 1 3 4
 
 We recommend to arrange the data with a clear directory structure. 
-From the beginning, you may manually setup the ``gnn_zoo_data`` directory as follows, 
+From the beginning, you may manually setup the ``XGCN_data`` directory as follows, 
 where ``raw_graph.txt`` is renamed from ``facebook_combined.txt`` for consistency. 
 
 .. code:: 
 
-    gnn_zoo_data
+    XGCN_data
     └── dataset
         └── raw_facebook
             └── raw_graph.txt
@@ -49,7 +49,7 @@ After some further data processing and model running, the directory may look lik
 
 .. code:: 
 
-    gnn_zoo_data
+    XGCN_data
     ├── dataset
     |   ├── raw_facebook         # raw data
     |   ├── instance_facebook    # processed graph and evaluation sets
@@ -70,16 +70,16 @@ Firstly, import some modules:
 
 .. code:: python
 
-    >>> import gnn_zoo
-    >>> from gnn_zoo.utils import io  # to save/load files
-    >>> from gnn_zoo.utils.utils import ensure_dir, set_random_seed
+    >>> import XGCN
+    >>> from XGCN.utils import io  # to save/load files
+    >>> from XGCN.utils.utils import ensure_dir, set_random_seed
     >>> import os.path as osp
 
 Specify the data root and the dataset name: 
 
 .. code:: python
 
-    >>> all_data_root = '../../gnn_zoo_data'  # write your own data root here
+    >>> all_data_root = '../../XGCN_data'  # write your own data root here
     >>> dataset = 'facebook'
 
 Load the ``raw_graph.txt`` as numpy array: 
@@ -98,7 +98,7 @@ Convert the edge list to CSR format:
 
 .. code:: python
     
-    >>> info, indptr, indices = gnn_zoo.data.from_edges_to_csr( \
+    >>> info, indptr, indices = XGCN.data.from_edges_to_csr( \
     ...     E_src, E_dst, graph_type='homo')
     # from_edges_to_csr ...
     # remove_repeated_edges ...
@@ -106,7 +106,7 @@ Convert the edge list to CSR format:
     >>> print(info)
     {'graph_type': 'homo', 'num_nodes': 4039, 'num_edges': 88234}
 
-In function ``gnn_zoo.data.from_edges_to_csr``, the argument ``graph_type`` can be 
+In function ``XGCN.data.from_edges_to_csr``, the argument ``graph_type`` can be 
 'homo' (homogeneous) or 'user-item'. For social graphs, fill 'homo'. 
 The function returns a ``dict`` containing basic information about the graph and 
 the numpy CSR array: ``indptr`` and ``indices``. 
@@ -123,7 +123,7 @@ as ``info.yaml``.
     >>> io.save_pickle(osp.join(raw_csr_root, 'indices.pkl'), indices)
 
 To evaluate a link prediction model, it is common to split a portion of edges as 
-positive samples. To do this, you can use the function ``gnn_zoo.data.edges_split``:
+positive samples. To do this, you can use the function ``XGCN.data.edges_split``:
 
 .. code:: python
 
@@ -132,7 +132,7 @@ positive samples. To do this, you can use the function ``gnn_zoo.data.edges_spli
     >>> min_src_out_degree = 3    # guarantee the minimum out-degree of a source node
     >>> min_dst_in_degree = 1     # guarantee the minimum in-degree of a destination node
     >>> 
-    >>> info, indptr, indices, pos_edges = gnn_zoo.data.edges_split( \
+    >>> info, indptr, indices, pos_edges = XGCN.data.edges_split( \
     ...     info, indptr, indices, \
     ...     num_sample, min_src_out_degree, min_dst_in_degree)
     # init CSR_Graph_rev_rm_edge...
@@ -146,8 +146,8 @@ positive samples. To do this, you can use the function ``gnn_zoo.data.edges_spli
     >>> val_edges = pos_edges[:num_validation]     # edges for validation
     >>> test_edges = pos_edges[num_validation:]    # edges for test
     >>> 
-    >>> val_set = gnn_zoo.data.from_edges_to_adj_eval_set(val_edges)    # convert the edges to adjacency list
-    >>> test_set = gnn_zoo.data.from_edges_to_adj_eval_set(test_edges)
+    >>> val_set = XGCN.data.from_edges_to_adj_eval_set(val_edges)    # convert the edges to adjacency list
+    >>> test_set = XGCN.data.from_edges_to_adj_eval_set(test_edges)
 
 Now we have a complete dataset instance: the graph for model training, 
 the validation set, and the test set. 
@@ -168,7 +168,7 @@ Your data directory will be like:
 
 .. code:: 
 
-    gnn_zoo_data
+    XGCN_data
     └── dataset
         ├── raw_facebook
         |   ├── raw_graph.txt

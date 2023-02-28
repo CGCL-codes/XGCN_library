@@ -1,6 +1,6 @@
 from ..base import BatchSampleIndicesGenerator
 from ..utils import EpochReducer, BatchIndexer
-from gnn_zoo.utils import io
+from XGCN.utils import io
 
 import numpy as np
 import torch

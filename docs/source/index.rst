@@ -1,13 +1,13 @@
-.. gnn_zoo documentation master file, created by
+.. XGCN documentation master file, created by
    sphinx-quickstart on Tue Feb 14 09:22:13 2023.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
-.. title:: GNN_ZOO v0.0.0
+.. title:: XGCN v0.0.0
 
-Welcome to GNN_ZOO's documentation!
+Welcome to XGCN's documentation!
 ===================================
 
-GNN_ZOO is a light-weight and easy-to-use library for large-scale graph-based recommendation. 
+XGCN is a light-weight and easy-to-use library for large-scale graph-based recommendation. 
 
 
 .. toctree::
@@ -34,4 +34,4 @@ GNN_ZOO is a light-weight and easy-to-use library for large-scale graph-based re
 .. .. autosummary::
 ..    :toctree: generated
 
-..    gnn_zoo
+..    XGCN

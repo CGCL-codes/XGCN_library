@@ -1,7 +1,7 @@
-from gnn_zoo.utils.parse_arguments import parse_arguments
-from gnn_zoo.utils.utils import ensure_dir, print_dict
-from gnn_zoo.utils import io
-from gnn_zoo.utils import csr
+from XGCN.utils.parse_arguments import parse_arguments
+from XGCN.utils.utils import ensure_dir, print_dict
+from XGCN.utils import io
+from XGCN.utils import csr
 
 import os.path as osp
 

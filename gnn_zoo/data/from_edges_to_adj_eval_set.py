@@ -1,5 +1,5 @@
-from gnn_zoo.utils.parse_arguments import parse_arguments
-from gnn_zoo.utils import io
+from XGCN.utils.parse_arguments import parse_arguments
+from XGCN.utils import io
 
 import numpy as np
 import os.path as osp
