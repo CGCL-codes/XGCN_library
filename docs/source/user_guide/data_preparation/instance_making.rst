@@ -2,7 +2,7 @@ Dataset Intance Making
 =========================
 
 Now we have the raw text data, let's start the dataset instance making! 
-Here assume that we don't have existing evaluation set 
+Here let's assume that we don't have existing evaluation set 
 and want to split some edges for model evaluation. 
 
 Firstly, import some modules: 
@@ -33,7 +33,7 @@ Load the ``raw_graph.txt`` as numpy array:
     >>> print(E_dst)
     [   1    2    3 ... 4032 4038 4038]
 
-Convert the edge list to CSR format: 
+Convert the edge-list to CSR format: 
 
 .. code:: python
     
@@ -57,7 +57,7 @@ And save the graph information as ``info.yaml``:
 .. code:: python
 
     >>> raw_csr_root = osp.join(raw_data_root, 'csr')
-    >>> ensure_dir(raw_csr_root)
+    >>> ensure_dir(raw_csr_root)  # make the directory if it doesn't exist
     >>> io.save_yaml(osp.join(raw_csr_root, 'info.yaml'), info)
     >>> io.save_pickle(osp.join(raw_csr_root, 'indptr.pkl'), indptr)
     >>> io.save_pickle(osp.join(raw_csr_root, 'indices.pkl'), indices)
@@ -82,13 +82,51 @@ positive samples. To do this, you can use the function ``XGCN.data.edges_split``
     >>> print(info)  # information of the new graph
     {'graph_type': 'homo', 'num_nodes': 4039, 'num_edges': 78234}
 
-Now we already have a complete Dataset Instance, let's save it:
+Now we have all the positive edges: ``pos_edges``, let's divide them for 
+validation set and test set, and we use the "multi-pos-whole-graph" evaluation method:
+
+.. code:: python
+
+    >>> num_validation = 2000
+    >>> val_edges = pos_edges[:num_validation]     # edges for validation
+    >>> test_edges = pos_edges[num_validation:]    # edges for test
+    >>> val_set = XGCN.data.from_edges_to_adj_eval_set(val_edges)    # convert the edges to adjacency list
+    >>> test_set = XGCN.data.from_edges_to_adj_eval_set(test_edges)
+
+Up to now, we have already generated a complete Dataset Instance, 
+let's save these files:
 
 .. code:: python
 
     >>> data_root = osp.join(all_data_root, 'dataset/instance_' + dataset)
-    >>> ensure_dir(data_root)
+    >>> ensure_dir(data_root)  # make the directory if it doesn't exist
     >>> io.save_yaml(osp.join(data_root, 'info.yaml'), info)
     >>> io.save_pickle(osp.join(data_root, 'indptr.pkl'), indptr)
     >>> io.save_pickle(osp.join(data_root, 'indices.pkl'), indices)
     >>> io.save_pickle(osp.join(data_root, 'pos_edges.pkl'), pos_edges)
+    >>> io.save_pickle(osp.join(data_root, 'val_set.pkl'), val_set)
+    >>> io.save_pickle(osp.join(data_root, 'test_set.pkl'), test_set)
+
+We also save the ``pos_edges``, and you can use it to make evaluation sets for 
+"one-pos-k-neg" or "one-pos-whole-graph" method by concatenating some randomly 
+sampled negative nodes. 
+
+If you have done the above steps successfully, your data directory will be like follows: 
+
+.. code:: 
+
+    XGCN_data
+    └── dataset
+        ├── raw_facebook
+        |   ├── raw_graph.txt
+        |   └── csr
+        |       ├── info.yaml
+        |       ├── indices.pkl
+        |       └── indptr.pkl
+        └── instance_facebook
+            ├── info.yaml
+            ├── indices.pkl
+            ├── indptr.pkl
+            ├── pos_edges.pkl
+            ├── test_set.pkl
+            └── val_set.pkl
