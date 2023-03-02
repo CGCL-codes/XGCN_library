@@ -1,4 +1,4 @@
-Prepare the Raw Data
+2. Prepare the Raw Data
 ======================
 
 First of all, let's make an empty directory named ``XGCN_data`` (or any one you like) 

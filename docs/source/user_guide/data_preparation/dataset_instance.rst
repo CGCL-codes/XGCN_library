@@ -1,4 +1,4 @@
-Dataset Instance
+1. Dataset Instance
 =======================
 
 In XGCN, datasets must be processed into a standard format before running the models. 

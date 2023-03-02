@@ -1,4 +1,4 @@
-Dataset Intance Making
+3. Dataset Intance Making
 =========================
 
 Now we have the raw text data, let's start the dataset instance making! 
