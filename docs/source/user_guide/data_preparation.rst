@@ -12,7 +12,7 @@ You can also download it from SNAP: `facebook_combined.txt.gz <http://snap.stanf
 .. toctree::
     :maxdepth: 1
    
-    data_preparation/data_instance
+    data_preparation/dataset_instance
     data_preparation/prepare_raw_data
     data_preparation/instance_making
     data_preparation/prepare_eval_set

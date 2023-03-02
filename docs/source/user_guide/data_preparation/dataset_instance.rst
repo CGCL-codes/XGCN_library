@@ -1,8 +1,8 @@
 Dataset Instance
 =======================
 
-In XGCN, datasets must be processed into a standard format before the model running. 
-We call such processed data as "Dataset Instance", 
+In XGCN, datasets must be processed into a standard format before running the models. 
+We call such processed data as **"Dataset Instance"**, 
 which is basically a directory containing several formatted data files. 
 For example, a Dataset Instance of facebook may look like follows:
 
@@ -18,46 +18,74 @@ For example, a Dataset Instance of facebook may look like follows:
 XGCN has no restriction on the name of the Dataset Instance directory, 
 but we recommend to name them as ``instance_[dataset]`` for clarity. 
 
-Only the names of the three files are strictly specified: 
-``info.yaml``, ``indices.pkl``, and ``indptr.pkl``. 
-With the XGCN APIs, they can easily be generated from the raw ``.txt`` graph data.
-
 ``info.yaml`` contains some basic information such as "graph type" and "number of nodes". 
 ``indices.pkl`` and ``indptr.pkl`` are CSR format of the graph for training, 
 They are numpy arrays saved using pickle. 
+The names of these three files are strictly specified. 
+With the XGCN APIs, they can easily be generated from the raw ``.txt`` graph data.
 
+In link prediction tasks, A single evaluation sample can be formulated as: 
+(src, pos[1], ..., pos[m], neg[1], ... neg[k]), where src, pos, neg denotes source node, 
+positive node, and negative node, respectively. 
+The positive nodes usually comes from the removed edges from the original graph. 
+The negative nodes are usually sampled from un-interacted nodes 
+(i.e. nodes that are not neighbors of the source node). 
 
-
-.. code:: python
-
-    X = [
-        [0, 1], 
-        [0, 2], 
-        [2, 4],
-        [5, 0],
-        ...
-    ]
-
+Considering the number of positive nodes and negative nodes for each source node, 
 XGCN supports three kinds of evaluation methods: 
 "one-pos-k-neg", "one-pos-whole-graph", and "multi-pos-whole-graph". 
-We don't restrict filenames of evaluation sets. 
 
-For "one-pos-k-neg", each positive node is associated with k negative samples. 
+For "one-pos-k-neg", each evaluation sample has one positive node and k negative nodes. 
+Different evaluation samples may have the same source node. 
 The saved pickle file should be a N*(2+k) numpy array, for example: 
 
 .. code:: 
 
-    [
+    X = np.array([
         [0, 1, 33, 102, 56, ... ], 
         [0, 2, 150, 98, 72, ... ], 
         [2, 4, 203, 42, 11, ... ],
         [5, 0, 64, 130, 10, ... ],
         ...
-    ]
+    ])
 
 The first column is the source nodes, the second column is the positive nodes, 
 and the rest is the negative nodes. 
 
-For "one-pos-whole-graph", we consider all the un-interacted nodes 
-(i.e. nodes that are not neighbors of the source node) in the graph as negative samples. 
+For "one-pos-whole-graph", each evaluation sample has one positive node. 
+Different evaluation samples may have the same source node. 
+We consider all the un-interacted nodes in the graph as negative samples. 
 The saved pickle file should be a N*2 numpy array, for example: 
+
+.. code:: python
+
+    X = np.array([
+        [0, 1], 
+        [0, 2], 
+        [2, 4],
+        [5, 0],
+        ...
+    ])
+
+For "multi-pos-whole-graph", we also consider all the un-interacted nodes as negative samples. 
+Each evaluation sample has one or more positive nodes. 
+Different evaluation samples should have different source nodes. 
+The saved object should be a Dict like follows: 
+
+.. code:: python
+
+    eval_set = {
+        'src': np.array([0, 2, 5, ... ]),
+        'pos_list': [
+            np.array([1, 2]), 
+            np.array([4, ]), 
+            np.array([0, ]), 
+            ...
+        ]
+    }
+
+The 'src' field of the Dict is a numpy array of the source nodes. 
+The 'pos_list' field of the Dict is a list of numpy array of the positive nodes. 
+
+We don't restrict filenames for the evaluation sets. 
+The evaluation method and the corresponding file can be specified in the model configuration.

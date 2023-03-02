@@ -34,7 +34,7 @@ After some further data processing and model running, your directory may look li
 
 XGCN supports two kinds of text graph data as input: 
 
-(1) **Edge list**. One line represents an edge: (source node, destination node). The nodes are seperated by a whitespace, 
+(1) **Edge-list**. One line represents an edge: (source node, destination node). The nodes are seperated by a whitespace, 
 for example::
 
     0 1
@@ -51,4 +51,4 @@ for example::
     1 4
     2 1 3 4
 
-The raw facebook data follows the latter. 
+The raw facebook data follows the edge-list format. 
