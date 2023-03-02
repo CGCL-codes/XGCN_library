@@ -1,23 +1,21 @@
-Architecture Overview
-=========================
+Overview of Key Modules
+===========================
 
-
-The code architecture of XGCN is summarized as the figure below. 
-As shown in the figure, there are four key moduels: 
-``Trainer``, ``DataLoader``, ``Model``, and ``Evaluator``.
+XGCN has four key modules: ``Model``, ``DataLoader``, ``Evaluator``, and ``Trainer``. 
+An overview of their interactions is shown in the figure below:
 
 .. image:: ../asset/overview.jpg
   :width: 600
-  :alt: overview of the code architecture
+  :alt: key modules of XGCN
 
-The ``Trainer`` lies in the center of control flow and is responsible for 
+The ``Trainer`` lies in the center of the control flow and is responsible for 
 the whole model training process. 
-The ``Model`` is in the center of data flow and receives training/evaluation data. 
+The ``Model`` is in the center of the data flow and receives training/evaluation data. 
 The ``DataLoader`` feeds batch training data to the ``Model``. 
 The ``Evaluator`` sends batch evaluation data to the ``Model``, receives inference outputs, 
-and calculates accuracy metrics.
+and calculates accuracy metrics. 
 
-To construct these modules and run a model, 
+To initialize these modules and run a model, 
 one can use the high-level APIs such as ``XGCN.build_Model``, as shown below: 
 
 .. code:: python
@@ -43,3 +41,5 @@ one can use the high-level APIs such as ``XGCN.build_Model``, as shown below:
     
     # start training and test the model after the training process has converged
     trainer.train_and_test()
+
+For more information, you can referance ``XGCN/main/run_model.py``.

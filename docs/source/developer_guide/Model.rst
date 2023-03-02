@@ -1,22 +1,43 @@
-Customize Models
+Model
 =========================
 
-In this part, let's go through how to customize a new model, starting from the 
-``BaseEmbeddingModel`` class provided by XGCN. 
+
+In this part, let's dive into the implementations of a model 
+by customizing a new one. 
+We'll first introduce the interface functions of a model, and then 
+give some implementation examples of them. 
+
 
 1. Interface Overview
 -----------------------------
 
-As shown in the figure below, to utilize other modules like ``Trainer``, 
-a ``Model`` must implement some interface functions. 
-
 .. image:: ../asset/overview.jpg
   :width: 600
-  :alt: overview of the code architecture
+  :alt: key modules of XGCN
+
+As shown in the figure above, to communicate with other modules, 
+plus ``__init__()``, a ``Model`` must implement five interface functions: 
+
+(1) ``__init__()``. This function is called by ``XGCN.build_Model`` 
+and is responsible for initializing model parameters and optimizers. 
+
+(2) ``forward_and_backward()``. This function is called by ``Trainer`` 
+during the batch training and is supposed to execute forward calculation and 
+backward propagation. 
+
+(3) ``eval()``. This function is called by ``Evaluator`` and is expected to return 
+the corresponding prediction to calculate accuracy metrics. 
+
+(4) ``save()``. This function is call by ``Trainer`` when a new best score on the 
+validation set is achieved. The function should save the parameters that is needed 
+by ``eval()``. 
+
+(5) ``load()``. This function is call by ``Trainer`` 
+
 
 Specifically, these interface functions are described by the ``BaseModel`` class 
 which must be inherited by a new model. 
-The ``BaseModel`` class and the descriptions of each function is as follows: 
+The code of the ``BaseModel`` class is as follows: 
 
 .. code:: python
 
@@ -54,8 +75,10 @@ The ``BaseModel`` class and the descriptions of each function is as follows:
             # to load the saved best model for testing.
             pass
 
+
 2. Implement __init__()
 -----------------------------
+
 
 XGCN provides a ``BaseEmbeddingModel`` class which is inherited from ``BaseModel`` 
 and implements some useful functions for model evaluation. 

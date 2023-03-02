@@ -1,9 +1,9 @@
 Introduction
 ===============
 
-The "DEVELOPER GUIDE" section is for those who want to know more about 
-the implementation details and create new models.
+The "Developer Guide" section is for those who want to know more about 
+the implementation details and develop new models. 
 
-We'll first briefly introduce the overall architecture of XGCN 
-and then go through the whole training process. 
-Next, we'll introduce how to customize two key parts: "Models" and "DataLoaders". 
+We'll first give an overview of the four key modules in XGCN: 
+``Model``, ``DataLoader``, ``Evaluator``, and ``Trainer``. 
+And then we'll introduce the implementation of each of them. 

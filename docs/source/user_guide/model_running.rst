@@ -135,3 +135,9 @@ Specifies the model configuration.
 .. With these cached data, we can run all the models by specifying the ``data_root`` in the configuration, 
 .. which is ``/xxx/XGCN_data/dataset/instance_facebook`` here. 
 .. We use the
+
+
+Training Process
+-----------------------
+
+
