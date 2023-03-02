@@ -18,7 +18,7 @@ using the facebook dataset created in the previous subsection
 and the common model GraphSAGE as an example.
 
 
-1. Configuration Parsing
+Configuration Parsing
 ----------------------------
 
 The ``XGCN.main.run_model`` module supports parsing model configurations 
@@ -40,7 +40,7 @@ Note that a ``.yaml`` file is not a necessity of running the code and has lower
 priority when the same command line argument is given. 
 
 
-2. Configuration Components 
+Configuration Components 
 -------------------------------
 
 A typical ``.yaml`` configuration file including all the arguments is like follows:
