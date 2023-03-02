@@ -1,7 +1,6 @@
 Model
 =========================
 
-
 In this part, let's dive into the implementations of a model 
 by customizing a new one. 
 We'll first introduce the interface functions of a model, and then 
@@ -32,10 +31,11 @@ the corresponding prediction to calculate accuracy metrics.
 validation set is achieved. The function should save the parameters that is needed 
 by ``eval()``. 
 
-(5) ``load()``. This function is call by ``Trainer`` 
+(5) ``load()``. This function is call by ``Trainer`` when the training process is converged 
+and the testing is to begin. The function should load the saved best parameters. 
 
 
-Specifically, these interface functions are described by the ``BaseModel`` class 
+Specifically, these functions are described by the ``BaseModel`` class 
 which must be inherited by a new model. 
 The code of the ``BaseModel`` class is as follows: 
 
@@ -75,19 +75,26 @@ The code of the ``BaseModel`` class is as follows:
             # to load the saved best model for testing.
             pass
 
-
-2. Implement __init__()
------------------------------
-
-
 XGCN provides a ``BaseEmbeddingModel`` class which is inherited from ``BaseModel`` 
-and implements some useful functions for model evaluation. 
-With the ``BaseEmbeddingModel`` class, we only need to implement two interface functions: 
-``forward_and_backward()`` 
-Let's start from it and create a new model. 
+and implements some useful functions for model evaluation 
+(see ``XGCN/model/base/BaseEmbeddingModel.py``). 
+It's easier to start from the ``BaseEmbeddingModel`` class. 
+With it we only need to implement these three functions: 
+``__init__()``, ``forward_and_backward()``, and ``on_eval_begin()``. 
 
+In the following, we'll create a new model based on the ``BaseEmbeddingModel`` class, 
+and implement the needed functions. 
+Firstly, create a file named ``NewModel.py`` in the ``XGCN/model`` directory 
+with the contents below: 
 
 .. code:: python
+
+    from XGCN.model.base import BaseEmbeddingModel
+    from XGCN.model.module import init_emb_table, dot_product, bpr_loss
+    from XGCN.utils import io
+
+    import torch
+    import os.path as osp
 
     class NewModel(BaseEmbeddingModel):
         
@@ -103,11 +110,82 @@ Let's start from it and create a new model.
         def on_eval_begin(self):
             pass
 
+
+2. Implement __init__()
+-----------------------------
+
+The ``__init__()`` function is responsible for initializing model parameters and optimizers. 
+For simplicity, here we just create an embedding table, an MLP, and a Adam optimizer: 
+
+.. code:: python
+
+    def __init__(self, config, data):
+        super().__init__(config, data)
+        self.emb_table = init_emb_table(self.config, self.info['num_nodes'])
+        self.mlp = torch.nn.Sequential(
+            torch.nn.Linear(self.config['emb_dim'], 1024), 
+            torch.nn.Tanh(), 
+            torch.nn.Linear(1024, self.config['emb_dim']), 
+        )
+        self.opt = torch.optim.Adam([
+            {'params': self.emb_table.parameters(),'lr': self.config['emb_lr']},
+            {'params': self.mlp.parameters(), 'lr': self.config['dnn_lr']},
+        ])
+
+
 3. Implement forward_and_backward()
 -----------------------------
 
+.. code:: python
+
+    def forward_and_backward(self, batch_data):
+        ((src, pos, neg), ) = batch_data
+
+        src_emb = self.mlp(self.emb_table(src))
+        pos_emb = self.mlp(self.emb_table(pos))
+        neg_emb = self.mlp(self.emb_table(neg))
+
+        pos_score = dot_product(src_emb, pos_emb)
+        neg_score = dot_product(src_emb, neg_emb)
+
+        loss = bpr_loss(pos_score, neg_score)
+
+        rw = self.config['L2_reg_weight']
+        L2_reg_loss = 1/2 * (1 / len(src)) * (
+            (src_emb**2).sum() + (pos_emb**2).sum() + (neg_emb**2).sum()
+        )
+        loss += rw * L2_reg_loss
+
+        opt.zero_grad()
+        loss.backward()
+        opt.step()
+
+        return loss.item()
+
+
 4. Implement on_eval_begin()
 -----------------------------
+
+
+.. code:: python
+
+    @torch.no_grad()
+    def on_eval_begin(self):
+        self.out_emb_table = torch.empty(
+            size=self.emb_table.weight.shape, dtype=torch.float32
+        )
+        dl = torch.utils.data.DataLoader(
+            dataset=torch.arange(self.info['num_nodes']), 
+            batch_size=256
+        )
+        for nids in tqdm(dl, desc="infer output emb"):
+            self.out_emb_table[nids] = self.mlp(self.emb_table(nids))
+        
+        if self.graph_type == 'user-item':
+            self.target_emb_table = self.out_emb_table[self.info['num_users'] : ]
+        else:
+            self.target_emb_table = self.out_emb_table
+
 
 5. Add model to build_Model()
 -----------------------------

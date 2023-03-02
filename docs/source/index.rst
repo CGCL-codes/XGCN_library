@@ -8,6 +8,8 @@ Welcome to XGCN's documentation!
 ===================================
 
 XGCN is a light-weight and easy-to-use library for large-scale graph-based recommendation. 
+It provides an implementation for our 
+TheWebConf 2023 paper: **xGCN: An Extreme Graph Convolutional Network for Large-scale Social Link Prediction**.
 
 
 .. toctree::
