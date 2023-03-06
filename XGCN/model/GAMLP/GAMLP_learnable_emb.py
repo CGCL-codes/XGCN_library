@@ -4,6 +4,7 @@ from XGCN.model.base import BaseGNN
 
 import torch
 import dgl
+from tqdm import tqdm
 
 
 class GAMLP_learnable_emb_Module(torch.nn.Module):
@@ -70,3 +71,23 @@ class GAMLP_learnable_emb(BaseGNN):
             torch.optim.Adam([{'params': self.gnn.parameters(),
                                 'lr': self.config['gnn_lr']}])
         )
+
+    @torch.no_grad()
+    def on_eval_begin(self):
+        block_sampler = self.data['block_sampler']
+        self.out_emb_table = torch.empty(self.emb_table.weight.shape, dtype=torch.float32).to(self.config['out_emb_table_device'])
+        dl = torch.utils.data.DataLoader(dataset=torch.arange(self.info['num_nodes']), 
+                                         batch_size=8192)
+        
+        for nids in tqdm(dl, desc="get all gnn output embs"):
+            input_nids, _, blocks = block_sampler.sample_blocks(self.g, nids.to(self.g.device))
+            blocks = [block.to(self.config['gnn_device']) for block in blocks]
+            output_embs = self.gnn(
+                blocks, self.emb_table(input_nids.to(self.config['emb_table_device']))
+            )
+            self.out_emb_table[nids] = output_embs
+        
+        if self.graph_type == 'user-item':
+            self.target_emb_table = self.out_emb_table[self.num_users:]
+        else:
+            self.target_emb_table = self.out_emb_table

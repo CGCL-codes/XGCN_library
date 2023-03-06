@@ -37,6 +37,9 @@ def build_BlockSampler(config, data):
     else:
         assert config['num_gcn_layers'] == len(num_layer_sample)
         block_sampler = dgl.dataloading.NeighborSampler(num_layer_sample)
+        
+    data['block_sampler'] = block_sampler
+    
     return block_sampler
 
 

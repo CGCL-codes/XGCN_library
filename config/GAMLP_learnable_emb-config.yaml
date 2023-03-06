@@ -30,27 +30,36 @@ test_batch_size: 256
 file_test_set: ""
 
 # Model configuration
-model: GraphSAGE
+model: GAMLP_learnable_emb
 seed: 1999
 
-graph_device: cuda
-emb_table_device: cuda
-gnn_device: cuda
-out_emb_table_device: cuda
+graph_device: "cuda:0"
+emb_table_device: "cuda:0"
+gnn_device: "cuda:0"
+out_emb_table_device: "cuda:0"
 
 forward_mode: sample
 infer_num_layer_sample: "[]"
 
-from_pretrained: 0
-file_pretrained_emb: ""
-freeze_emb: 0
-use_sparse: 0
-emb_dim: 64 
+emb_dim: 64
+emb_lr: 0.005
+GAMLP_type: GAMLP_JK
+gnn_lr: 0.001
 emb_init_std: 0.1
-emb_lr: 0.01
+use_sparse: 0
+freeze_emb: 0
+from_pretrained: 1
+file_pretrained_emb: ''
 
-gnn_arch: "[{'in_feats': 64, 'out_feats': 64, 'aggregator_type': 'pool', 'activation': torch.tanh}, {'in_feats': 64, 'out_feats': 64, 'aggregator_type': 'pool'}]"
-gnn_lr: 0.01
+GAMLP_type: GAMLP_JK
+num_gcn_layers: 2
+hidden: 512
+n_layers_1: 4
+n_layers_2: 4
+pre_process: 0
+residual: 0
+bns: 0
+dnn_lr: 0.001
 
-loss_type: bpr
 L2_reg_weight: 0.0
+loss_type: bpr
