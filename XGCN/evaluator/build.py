@@ -23,16 +23,3 @@ def build_test_Evaluator(config, data, model):
                           file_eval_set=config['file_test_set'],
                           batch_size=config['test_batch_size'])
     return evaluator
-
-
-# def build_Evaluator(config, data, model):
-#     Evaluator = {
-#         'WholeGraph_MultiPos_Evaluator': WholeGraph_MultiPos_Evaluator,
-#         'WholeGraph_OnePos_Evaluator': WholeGraph_OnePos_Evaluator,
-#     }[config['Evaluator_type']]
-#     evaluator = Evaluator(
-#         model,
-#         file_eval_set=config['file_eval_set'],
-#         batch_size=config['batch_size']
-#     )
-#     return evaluator

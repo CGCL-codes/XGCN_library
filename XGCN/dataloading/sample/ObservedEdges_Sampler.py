@@ -29,7 +29,12 @@ class ObservedEdges_Sampler(BaseSampler):
         self.E_src = E_src
         self.E_dst = E_dst
         
-    def __call__(self, nid):
-        src = self.E_src[nid]
-        pos = self.E_dst[nid]
+    def __call__(self, eid):
+        src = self.E_src[eid]
+        pos = self.E_dst[eid]
         return src, pos
+
+
+def build_PPREdges_Sampler(BaseSampler):
+    
+    def __init__(self, )

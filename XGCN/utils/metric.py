@@ -87,7 +87,7 @@ def one_pos_metrics(S):
 
 
 def whole_graph_multi_pos_metrics(pos: list, all_target_score):
-    results_dict_list = _new_multi_pos_all_metrics(pos, all_target_score)
+    results_dict_list = _multi_pos_all_metrics(pos, all_target_score)
     results = combine_dict_list_and_calc_mean(results_dict_list)
     return results
 
@@ -102,7 +102,7 @@ def argtopk(a, k):
 
 
 # @numba.jit(nopython=True, parallel=True)
-def _new_multi_pos_all_metrics(pos_list, all_target_score):
+def _multi_pos_all_metrics(pos_list, all_target_score):
     results_dict_list = [
         Dict.empty(key_type=types.unicode_type, value_type=types.float32)
         for _ in range(len(pos_list))
