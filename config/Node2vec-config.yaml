@@ -1,0 +1,34 @@
+# Dataset/Results root
+data_root: ""
+results_root: ""
+
+# DataLoader configuration
+train_batch_size: 2048
+num_workers: 4
+
+# Trainer configuration
+epochs: 200
+val_freq: 1
+key_score_metric: r100
+convergence_threshold: 20
+
+# Evaluator configuration
+val_evaluator: WholeGraph_MultiPos_Evaluator
+val_batch_size: 256
+file_val_set: ""
+test_evaluator: WholeGraph_MultiPos_Evaluator
+test_batch_size: 256
+file_test_set: ""
+
+# Model configuration
+model: Node2vec
+seed: 1999
+device: cpu
+emb_dim: 64
+emb_lr: 0.005
+num_neg: 5
+walk_length: 16
+num_walks: 8
+context_size: 5
+p: 1.0
+q: 10.0
