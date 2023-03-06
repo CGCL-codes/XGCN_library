@@ -1,9 +1,9 @@
 from .model import JK_GAMLP, R_GAMLP
 
-from model.BaseEmbeddingModel import BaseEmbeddingModel, init_emb_table
-from model.module import dot_product, bpr_loss
-from utils import io
-from data.csr_graph_helper import numba_csr_mult_dense
+from XGCN.model.base import BaseEmbeddingModel
+from XGCN.model.module import init_emb_table, dot_product, bpr_loss
+from XGCN.utils import io
+from XGCN.utils import csr
 
 import numpy as np
 import torch
@@ -21,10 +21,18 @@ class GAMLP(BaseEmbeddingModel):
 
         data_root = self.config['data_root']
         print("# load graph")
-        E_src = io.load_pickle(osp.join(data_root, 'train_undi_csr_src_indices.pkl'))
-        E_dst = io.load_pickle(osp.join(data_root, 'train_undi_csr_indices.pkl'))
-        indptr = io.load_pickle(osp.join(data_root, 'train_undi_csr_indptr.pkl'))
-        indices = E_dst
+        if 'indptr' in data:
+            indptr = data['indptr']
+            indices = data['indices']
+        else:
+            data_root = config['data_root']
+            indptr = io.load_pickle(osp.join(data_root, 'indptr.pkl'))
+            indices = io.load_pickle(osp.join(data_root, 'indices.pkl'))
+            data['indptr'] = indptr
+            data['indices'] = indices
+        indptr, indices = csr.get_undirected(indptr, indices)
+        E_src = csr.get_src_indices(indptr)
+        E_dst = indices
         
         print("# calc edge_weights")
         all_degrees = indptr[1:] - indptr[:-1]
@@ -43,7 +51,7 @@ class GAMLP(BaseEmbeddingModel):
         emb_list = [X_0]
         for i in tqdm(range(self.config['num_gcn_layers'])):
             X_out = np.zeros(X_0.shape, dtype=np.float32)
-            numba_csr_mult_dense(
+            csr.csr_mult_dense(
                 indptr, indices, edge_weights, emb_list[i].numpy(), X_out
             )
             emb_list.append(torch.FloatTensor(X_out).to(self.device))
@@ -75,9 +83,9 @@ class GAMLP(BaseEmbeddingModel):
         
         self.mlp = self.build_mlp()
         
-        self.param_list = {
-            'Adam': [{'params': self.mlp.parameters(), 'lr': self.config['dnn_lr']}],
-        }
+        self.opt = torch.optim.Adam([
+            {'params': self.mlp.parameters(), 'lr': self.config['dnn_lr']}
+        ])
     
     def build_mlp(self):
         if self.config['GAMLP_type'] == 'GAMLP_JK':
@@ -112,11 +120,8 @@ class GAMLP(BaseEmbeddingModel):
         batch_emb_list = [X[nids] for X in self.emb_table_list]
         return self.mlp(batch_emb_list)
     
-    def __call__(self, batch_data):
-        return self.forward(batch_data)
-        
-    def forward(self, batch_data):
-        src, pos, neg = batch_data
+    def forward_and_backward(self, batch_data):
+        ((src, pos, neg), ) = batch_data
         
         src_emb = self.get_output_emb(src)
         pos_emb = self.get_output_emb(pos)
@@ -149,12 +154,17 @@ class GAMLP(BaseEmbeddingModel):
             )
             loss += rw * L2_reg_loss
         
-        return loss
+        self.opt.zero_grad()
+        loss.backward()
+        self.opt.step()
+        
+        return loss.item()
     
-    def prepare_for_train(self):
+    def on_epoch_begin(self):
         self.mlp.train()
     
-    def prepare_for_eval(self):
+    @torch.no_grad()
+    def on_eval_begin(self):
         self.mlp.eval()
         dl = torch.utils.data.DataLoader(dataset=torch.arange(self.info['num_nodes']), 
                                          batch_size=8192)
