@@ -19,4 +19,3 @@ python -m XGCN.main.run_model \
     --file_test_set $data_root/test_set.pkl \
     --from_pretrained: 1 \
     --file_pretrained_emb $file_pretrained_emb \
-    --freez_emb 0 \

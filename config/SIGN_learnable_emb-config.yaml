@@ -30,7 +30,7 @@ test_batch_size: 256
 file_test_set: ""
 
 # Model configuration
-model: GAMLP_learnable_emb
+model: SIGN_learnable_emb
 seed: 1999
 
 graph_device: "cuda:0"
@@ -42,7 +42,6 @@ forward_mode: sample
 
 emb_dim: 64
 emb_lr: 0.005
-GAMLP_type: GAMLP_JK
 gnn_lr: 0.001
 emb_init_std: 0.1
 use_sparse: 0
@@ -50,13 +49,7 @@ freeze_emb: 0
 from_pretrained: 1
 file_pretrained_emb: ''
 
-GAMLP_type: GAMLP_JK
-hidden: 512
-n_layers_1: 4
-n_layers_2: 4
-pre_process: 0
-residual: 0
-bns: 0
+num_dnn_layers: 2
 dnn_lr: 0.001
 
 L2_reg_weight: 0.0
