@@ -1,4 +1,4 @@
-from model.BaseGNNModel import BaseGNNModel
+from XGCN.model.base import BaseGNN
 from .SIGN import MLP
 
 import torch
@@ -34,7 +34,7 @@ class SIGN_learnable_emb_Module(torch.nn.Module):
         return self.mlp(xs_cat)
 
     
-class SIGN_learnable_emb(BaseGNNModel):
+class SIGN_learnable_emb(BaseGNN):
     
     def __init__(self, config, data):
         super().__init__(config, data)

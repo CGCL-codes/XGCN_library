@@ -1,7 +1,9 @@
-from model.BaseEmbeddingModel import BaseEmbeddingModel, init_emb_table
-from model.module import dot_product, bpr_loss
-from utils import io
+from XGCN.model.base import BaseEmbeddingModel
+from XGCN.model.module import init_emb_table, dot_product, bpr_loss
+from XGCN.utils import io
+from XGCN.utils import csr
 
+import numpy as np
 import torch
 import torch.nn.functional as F
 import dgl
@@ -55,24 +57,35 @@ class SIGN(BaseEmbeddingModel):
         self.device = self.config['device']
 
         assert self.config['from_pretrained'] and self.config['freeze_emb']
-        self.base_emb_table = init_emb_table(config, self.info['num_nodes'])
-        self.out_emb_table = torch.empty(self.base_emb_table.weight.shape, dtype=torch.float32)
+        self.emb_table = init_emb_table(config, self.info['num_nodes'])
+        self.out_emb_table = torch.empty(self.emb_table.weight.shape, dtype=torch.float32)
         
         data_root = self.config['data_root']
-        E_src = io.load_pickle(osp.join(data_root, 'train_undi_csr_src_indices.pkl'))
-        E_dst = io.load_pickle(osp.join(data_root, 'train_undi_csr_indices.pkl'))
-        indptr = io.load_pickle(osp.join(data_root, 'train_undi_csr_indptr.pkl'))
+        print("# load graph")
+        if 'indptr' in data:
+            indptr = data['indptr']
+            indices = data['indices']
+        else:
+            data_root = config['data_root']
+            indptr = io.load_pickle(osp.join(data_root, 'indptr.pkl'))
+            indices = io.load_pickle(osp.join(data_root, 'indices.pkl'))
+            data['indptr'] = indptr
+            data['indices'] = indices
+        indptr, indices = csr.get_undirected(indptr, indices)
+        E_src = csr.get_src_indices(indptr)
+        E_dst = indices
         
+        print("# calc edge_weights")
         all_degrees = indptr[1:] - indptr[:-1]
         d_src = all_degrees[E_src]
         d_dst = all_degrees[E_dst]
         
-        edge_weights = torch.FloatTensor(1 / (d_src * d_dst)).sqrt().to(self.device)
-        del indptr, all_degrees, d_src, d_dst
+        edge_weights = np.sqrt((1 / (d_src * d_dst)))
+        del all_degrees, d_src, d_dst
         
         g = dgl.graph((E_src, E_dst)).to(self.device)
-        g.edata['ew'] = edge_weights
-        g.ndata['X_0'] = self.base_emb_table.weight
+        g.edata['ew'] = torch.FloatTensor(edge_weights).to(self.device)
+        g.ndata['X_0'] = self.emb_table.weight
         
         transform = dgl.SIGNDiffusion(
             k=self.config['num_gcn_layers'],
@@ -88,10 +101,10 @@ class SIGN(BaseEmbeddingModel):
             emb_list.append(
                 g.ndata['X_' + str(i)]
             )
-        self.base_emb_table = torch.cat(emb_list, dim=1)
+        self.emb_table = torch.cat(emb_list, dim=1)
         
         self.mlp = MLP(
-            in_channels=self.base_emb_table.shape[-1],
+            in_channels=self.emb_table.shape[-1],
             hidden_channels=64,
             out_channels=64,
             num_layers=self.config['num_dnn_layers'],
@@ -99,18 +112,15 @@ class SIGN(BaseEmbeddingModel):
             activation='torch.tanh'
         ).to(self.device)
         
-        self.param_list = {
-            'Adam': [{'params': self.mlp.parameters(), 'lr': self.config['dnn_lr']}],
-        }
+        self.opt = torch.optim.Adam([
+            {'params': self.mlp.parameters(), 'lr': self.config['dnn_lr']}
+        ])
     
     def get_output_emb(self, nids):
-        return self.mlp(self.base_emb_table[nids])
+        return self.mlp(self.emb_table[nids])
     
-    def __call__(self, batch_data):
-        return self.forward(batch_data)
-        
-    def forward(self, batch_data):
-        src, pos, neg = batch_data
+    def forward_and_backward(self, batch_data):
+        ((src, pos, neg), ) = batch_data
         
         src_emb = self.get_output_emb(src)
         pos_emb = self.get_output_emb(pos)
@@ -120,11 +130,9 @@ class SIGN(BaseEmbeddingModel):
         neg_score = dot_product(src_emb, neg_emb)
         
         loss_fn_type = self.config['loss_fn']
-        if loss_fn_type == 'bpr_loss':
-            
+        if loss_fn_type == 'bpr':
             loss = bpr_loss(pos_score, neg_score)
-        
-        elif loss_fn_type == 'bce_loss':
+        elif loss_fn_type == 'bce':
             pos_loss = F.binary_cross_entropy_with_logits(
                 pos_score, 
                 torch.ones(pos_score.shape).to(self.device),
@@ -135,28 +143,30 @@ class SIGN(BaseEmbeddingModel):
             ).mean()
             
             loss = pos_loss + neg_loss
-            
-        rw = self.config['l2_reg_weight']
+        else:
+            assert 0
+        
+        rw = self.config['L2_reg_weight']
         if rw > 0:
             L2_reg_loss = 1/2 * (1 / len(src)) * (
                 (src_emb**2).sum() + (pos_emb**2).sum() + (neg_emb**2).sum()
             )
             loss += rw * L2_reg_loss
         
-        return loss
+        self.opt.zero_grad()
+        loss.backward()
+        self.opt.step()
+        
+        return loss.item()
     
-    def prepare_for_train(self):
+    def on_epoch_begin(self):
         self.mlp.train()
     
-    def prepare_for_eval(self):
+    @torch.no_grad()
+    def on_eval_begin(self):
         self.mlp.eval()
         dl = torch.utils.data.DataLoader(dataset=torch.arange(self.info['num_nodes']), 
                                          batch_size=8192)
         for nids in tqdm(dl, desc="infer all output embs"):
             self.out_emb_table[nids] = self.get_output_emb(nids).cpu()
         self.target_emb_table = self.out_emb_table
-        
-    def save(self, root, file_out_emb_table=None):
-        if file_out_emb_table is None:
-            file_out_emb_table = "out_emb_table.pt"
-        torch.save(self.out_emb_table, osp.join(root, file_out_emb_table))

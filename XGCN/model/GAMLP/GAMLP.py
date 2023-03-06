@@ -132,11 +132,11 @@ class GAMLP(BaseEmbeddingModel):
         neg_score = dot_product(src_emb, neg_emb)
         
         loss_fn_type = self.config['loss_fn']
-        if loss_fn_type == 'bpr_loss':
+        if loss_fn_type == 'bpr':
             
             loss = bpr_loss(pos_score, neg_score)
         
-        elif loss_fn_type == 'bce_loss':
+        elif loss_fn_type == 'bce':
             pos_loss = F.binary_cross_entropy_with_logits(
                 pos_score, 
                 torch.ones(pos_score.shape).to(self.device),

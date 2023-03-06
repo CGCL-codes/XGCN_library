@@ -28,7 +28,7 @@ test_batch_size: 256
 file_test_set: ""
 
 # Model configuration
-model: GAMLP
+model: SIGN
 seed: 1999
 device: 'cuda:0'
 
@@ -39,13 +39,7 @@ freeze_emb: 1
 L2_reg_weight: 0.0
 dnn_lr: 0.001
 
-GAMLP_type: GAMLP_JK
 num_gcn_layers: 2
-hidden: 512
-n_layers_1: 4
-n_layers_2: 4
-pre_process: 0
-residual: 0
-bns: 0
+num_dnn_layers: 2
 
 loss_fn: bpr
