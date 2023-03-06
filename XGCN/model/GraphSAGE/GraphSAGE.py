@@ -1,4 +1,4 @@
-from ..base import BaseGNN
+from XGCN.model.base import BaseGNN
 
 import torch
 import dgl
