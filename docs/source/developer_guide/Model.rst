@@ -35,47 +35,9 @@ by ``eval()``.
 and the testing is to begin. The function should load the saved best parameters. 
 
 
-Specifically, these functions are described by the ``BaseModel`` class 
+Specifically, these functions are described by the ``BaseModel`` class (see ``XGCN/base/BaseModel.py``) 
 which must be inherited by a new model. 
-The code of the ``BaseModel`` class is as follows: 
-
-.. code:: python
-
-    class BaseModel:
-        
-        def __init__(self, config, data):
-            # init model parameters
-            # init optimizer
-            pass
-        
-        def forward_and_backward(self, batch_data):
-            # This function is called by Trainer during the training loop. 
-            # Given a batch of training data,
-            # perform forward process to calculate loss, 
-            # and then perform backward process to update model parameters.
-            # The form of batch_data depends on the configuration of DataLoader. 
-
-            # Return loss value.
-            loss = 0.0
-            return loss
-        
-        def eval(self, batch_data):
-            # This function will be called by the Evaluator.
-            # The form of batch_data depends on the configuration of Evaluator, 
-            # and the return value should also correspond to the Evaluator.
-            output = None
-            return output
-        
-        def save(self, root=None):
-            # This function is called by Trainer to save the best model parameters during training. 
-            pass
-        
-        def load(self, root=None):
-            # After the training process converges, this function is called by Trainer 
-            # to load the saved best model for testing.
-            pass
-
-XGCN provides a ``BaseEmbeddingModel`` class which is inherited from ``BaseModel`` 
+XGCN also provides a ``BaseEmbeddingModel`` class which is inherited from ``BaseModel`` 
 and implements some useful functions for model evaluation 
 (see ``XGCN/model/base/BaseEmbeddingModel.py``). 
 It's easier to start from the ``BaseEmbeddingModel`` class. 
@@ -136,6 +98,10 @@ For simplicity, here we just create an embedding table, an MLP, and a Adam optim
 3. Implement forward_and_backward()
 -----------------------------
 
+The ``forward_and_backward()`` function receives batch training data, 
+executes forward calculation, and performs backward propagation. 
+Here we use the BPR loss and the L2 regularization: 
+
 .. code:: python
 
     def forward_and_backward(self, batch_data):
@@ -166,6 +132,16 @@ For simplicity, here we just create an embedding table, an MLP, and a Adam optim
 4. Implement on_eval_begin()
 -----------------------------
 
+``Trainer`` supports using ``Model`` to execute some auxiliary functions,
+such as ``on_epoch_begin()``, at several key points 
+of the training process (see ``XGCN\train\Trainer.py``). 
+
+Usually, we need to implement the ``on_eval_begin()`` function in order to 
+infer the whole output embedding table before the evaluation. 
+``BaseEmbeddingModel`` specify a ``self.out_emb_table`` and a ``self.target_emb_table`` 
+that must be inferred in ``on_eval_begin()``. The former contains the output embeddings for 
+all the nodes. And the latter is the embedding table for target nodes (e.g. in user-item graphs, 
+the target nodes are items). 
 
 .. code:: python
 
@@ -187,5 +163,98 @@ For simplicity, here we just create an embedding table, an MLP, and a Adam optim
             self.target_emb_table = self.out_emb_table
 
 
-5. Add model to build_Model()
+5. Add to build_Model()
+---------------------------------
+
+Once the model is complete, it is supposed to be added into ``XGCN.build_Model()`` 
+so that XGCN is able to find it: 
+
+.. code:: python
+
+    # XGCN/model/build.py
+
+    from XGCN.model.xGCN import xGCN
+    ...
+    from XGCN.model.NewModel import NewModel
+
+    def build_Model(config, data):
+        if config['model'] == 'Node2vec':
+            from XGCN.model.Node2vec import Node2vec
+            model = Node2vec(config, data)
+        else:
+            model = {
+                'NewModel': NewModel,  # <-- add your NewModel here
+                'xGCN': xGCN,
+                ...
+            }[config['model']](config, data)
+        return model
+
+
+5. Config and Run!
 -----------------------------
+
+Now we are ready to run the model, but before that, let's first 
+make a template configuration file to make the configuration arguments clear 
+for others. For example, add a file - ``NewModel-config.yaml`` - in ``XGCN/config`` 
+with the following contents: 
+
+.. code:: yaml
+
+    # in XGCN/config/NewModel-config.yaml
+
+    # Dataset/Results root
+    data_root: ""
+    results_root: ""
+    
+    # Trainer configuration
+    epochs: 200
+    val_freq: 1
+    key_score_metric: r100
+    convergence_threshold: 20
+    
+    # DataLoader configuration
+    Dataset_type: NodeListDataset
+    num_workers: 1
+    NodeListDataset_type: LinkDataset
+    pos_sampler: ObservedEdges_Sampler
+    neg_sampler: RandomNeg_Sampler
+    num_neg: 1
+    BatchSampleIndicesGenerator_type: SampleIndicesWithReplacement
+    train_batch_size: 2048
+    train_edge_sample_ratio: 0.1
+    
+    # Evaluator configuration
+    val_evaluator: "WholeGraph_MultiPos_Evaluator"
+    val_batch_size: 256
+    file_val_set: ""
+    test_evaluator: "WholeGraph_MultiPos_Evaluator"
+    test_batch_size: 256
+    file_test_set: ""
+
+    # Model configuration
+    seed: 1999
+    model: NewModel
+    from_pretrained: 0
+    file_pretrained_emb: ""
+    freeze_emb: 0
+    use_sparse: 0
+    emb_dim: 64 
+    emb_init_std: 0.1
+    emb_lr: 0.01
+    loss_type: bpr
+    L2_reg_weight: 0.0
+
+With the ``.yaml`` file, we can run the new model with the following script:
+
+.. code:: bash
+
+    # write your own paths here:
+    all_data_root='/.../XGCN_data'
+    config_file='../config/NewModel-config.yaml'
+    
+    python -m XGCN.main.run_model \
+        --config_file  \
+        --data_root $all_data_root/dataset/instance_facebook \
+        --results_root $all_data_root/model_output/NewModel \
+        --file_val_set $all_data_root/dataset/val_set.pkl \
+        --file_test_set $all_data_root/dataset/test_set.pkl \
