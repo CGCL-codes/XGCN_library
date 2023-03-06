@@ -92,6 +92,13 @@ def _parse_arguments():
     parser.add_argument("--lambda", type=float)
     parser.add_argument("--gamma", type=float)
 
+    parser.add_argument("--hidden", type=int)
+    parser.add_argument("--n_layers_1", type=int)
+    parser.add_argument("--n_layers_2", type=int)
+    parser.add_argument("--pre_process", type=int)
+    parser.add_argument("--residual", type=int)
+    parser.add_argument("--bns", type=int)
+    
     (args, unknown) = parser.parse_known_args()
     parsed_results = {}
     for arg in sorted(vars(args)):

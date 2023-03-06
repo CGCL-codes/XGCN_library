@@ -28,26 +28,24 @@ test_batch_size: 256
 file_test_set: ""
 
 # Model configuration
-model: PPRGo
+model: GAMLP
 seed: 1999
+device: 'cuda:0'
 
-ppr_data_root: ""
+from_pretrained: 1
+file_pretrained_emb: ''
+freeze_emb: 1
 
-ppr_data_device: cuda
-emb_table_device: cuda
-forward_device: cuda
-out_emb_table_device: cuda
-
-from_pretrained: 0
-file_pretrained_emb: ""
-freeze_emb: 0
-use_sparse: 0
-emb_dim: 64 
-emb_init_std: 0.1
-emb_lr: 0.01
-
-topk: 32
-use_uniform_weight: 1
-
-loss_type: bpr
 L2_reg_weight: 0.0
+dnn_lr: 0.001
+
+GAMLP_type: GAMLP_JK
+num_gcn_layers: 2
+hidden: 512
+n_layers_1: 4
+n_layers_2: 4
+pre_process: 0
+residual: 0
+bns: 0
+
+loss_fn: bpr_loss

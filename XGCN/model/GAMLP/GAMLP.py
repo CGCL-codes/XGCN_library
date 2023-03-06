@@ -43,19 +43,20 @@ class GAMLP(BaseEmbeddingModel):
         del all_degrees, d_src, d_dst, E_src, E_dst
         
         assert self.config['from_pretrained'] and self.config['freeze_emb']
-        self.base_emb_table = init_emb_table(config, self.info['num_nodes'])
-        self.out_emb_table = torch.empty(self.base_emb_table.weight.shape, dtype=torch.float32)
+        self.emb_table = init_emb_table(config, self.info['num_nodes'])
+        self.out_emb_table = torch.empty(self.emb_table.weight.shape, dtype=torch.float32)
         
         print("# propagation ...")
-        X_0 = self.base_emb_table.weight
+        X_0 = self.emb_table.weight.cpu().numpy()
         emb_list = [X_0]
         for i in tqdm(range(self.config['num_gcn_layers'])):
             X_out = np.zeros(X_0.shape, dtype=np.float32)
             csr.csr_mult_dense(
-                indptr, indices, edge_weights, emb_list[i].numpy(), X_out
+                indptr, indices, edge_weights, emb_list[i], X_out
             )
-            emb_list.append(torch.FloatTensor(X_out).to(self.device))
+            emb_list.append(X_out)
         del indptr, indices, edge_weights
+        emb_list = [torch.FloatTensor(X).to(self.device) for X in emb_list]
         print("# propagation done")
         
         # edge_weights = torch.FloatTensor(1 / (d_src * d_dst)).sqrt().to(self.device)
@@ -63,7 +64,7 @@ class GAMLP(BaseEmbeddingModel):
         
         # g = dgl.graph((E_src, E_dst)).to(self.device)
         # g.edata['ew'] = edge_weights
-        # g.ndata['X_0'] = self.base_emb_table.weight
+        # g.ndata['X_0'] = self.emb_table.weight
         
         # transform = dgl.SIGNDiffusion(
         #     k=self.config['num_gcn_layers'],
@@ -147,7 +148,7 @@ class GAMLP(BaseEmbeddingModel):
             
             loss = pos_loss + neg_loss
             
-        rw = self.config['l2_reg_weight']
+        rw = self.config['L2_reg_weight']
         if rw > 0:
             L2_reg_loss = 1/2 * (1 / len(src)) * (
                 (src_emb**2).sum() + (pos_emb**2).sum() + (neg_emb**2).sum()
@@ -171,8 +172,3 @@ class GAMLP(BaseEmbeddingModel):
         for nids in tqdm(dl, desc="infer all output embs"):
             self.out_emb_table[nids] = self.get_output_emb(nids).cpu()
         self.target_emb_table = self.out_emb_table
-        
-    def save(self, root, file_out_emb_table=None):
-        if file_out_emb_table is None:
-            file_out_emb_table = "out_emb_table.pt"
-        torch.save(self.out_emb_table, osp.join(root, file_out_emb_table))

@@ -2,15 +2,18 @@ import torch
 
 
 def init_emb_table(config, num_nodes=None, return_tensor=False):
+    if 'emb_table_device' in config:
+        device = config['emb_table_device']
+    else:
+        device = config['device']
     
     if 'from_pretrained' in config and config['from_pretrained']:
         file_pretrained_emb = config['file_pretrained_emb']
         print('## load pretrained embedding:', file_pretrained_emb)
-        emb_table = torch.load(file_pretrained_emb, 
-                               map_location=config['emb_table_device'])
+        emb_table = torch.load(file_pretrained_emb, map_location=device)
     else:
         emb_table = torch.empty(size=(num_nodes, config['emb_dim']), dtype=torch.float32,
-                                device=config['emb_table_device'])
+                                device=device)
         torch.nn.init.normal_(emb_table, mean=0.0, std=config['emb_init_std'])
     
     freeze_emb = bool('freeze_emb' in config and config['freeze_emb'])

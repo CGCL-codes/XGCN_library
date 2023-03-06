@@ -6,6 +6,7 @@ from XGCN.model.GIN import GIN
 from XGCN.model.LightGCN import LightGCN
 from XGCN.model.PPRGo import PPRGo
 from XGCN.model.UltraGCN import UltraGCN
+from XGCN.model.GAMLP import GAMLP
 
 
 def build_Model(config, data):
@@ -22,5 +23,6 @@ def build_Model(config, data):
             'LightGCN': LightGCN,
             'PPRGo': PPRGo,
             'UltraGCN': UltraGCN,
+            'GAMLP': GAMLP,
         }[config['model']](config, data)
     return model
