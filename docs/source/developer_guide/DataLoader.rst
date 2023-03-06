@@ -1,80 +1,36 @@
 DataLoader
 =========================
 
+In XGCN, the dataloader is called by ``Trainer`` during the batch training, 
+and basically it only needs to be an iterable object. 
+To add a new dataloader, you can simply implement it as an iterable object
+on your own and add it to ``XGCN.build_DataLoader()`` 
+(see ``build_DataLoader()`` in ``XGCN/dataloading/build.py``),  
+or you can use the infrastructure provided by XGCN. 
 
-1. Interface Classes of the DataLoader
-----------------------------------------
-
-The UML class diagram of the dataloader designing is shown in the figure below.
+In this section, we focus on introducing main components of
+the XGCN dataloader infrastructure. 
+The UML class diagram is shown in the figure below. 
 
 .. image:: ../asset/dataloader_arch.jpg
   :width: 600
-  :alt: UML class diagram of DataLoader designing
+  :alt: UML class diagram of DataLoader
 
+The interface classes are defined in ``XGCN/dataloading/base.py``, they describe 
+a series of interface functions. 
+The ``BaseDataset`` class requires three functions: ``__len__()``, ``__getitem__()``, 
+and ``on_epoch_start()``. 
+Note that the ``__getitem__()`` function is supposed to return a batch of training sample 
+given the batch index. 
+``NodeListDataset`` further requires the returned data in ``__getitem__()`` 
+should include a list of tensors of node IDs. 
+The ``Sampler`` is used to generate positive/negative training samples 
+given the sample index. And the ``BatchSampleIndicesGenerator`` is used to 
+generate sample indices given the batch index. 
 
-2. LinkDataset
-----------------------------------------
+To train large-scale message-passing GNNs, mini-graph sampling is often needed. 
+In XGCN, the ``BlockDataset`` class utilize the ``NodeListDataset``
+and DGL's ``BlockSampler`` to conduct mini-graph sampling. 
 
-
-.. code:: python
-
-    class LinkDataset(NodeListDataset):
-        
-        def __init__(self,
-                    pos_sampler: BaseSampler,
-                    neg_sampler: BaseSampler,
-                    batch_sample_indices_generator: BatchSampleIndicesGenerator):
-            self.pos_sampler = pos_sampler
-            self.neg_sampler = neg_sampler
-            self.batch_sample_indices_generator = batch_sample_indices_generator
-
-        def __len__(self):
-            return len(self.batch_sample_indices_generator)
-        
-        def __getitem__(self, batch_idx):
-            batch_sample_indices = self.batch_sample_indices_generator[batch_idx]
-            
-            src, pos = self.pos_sampler(batch_sample_indices)
-            neg = self.neg_sampler({'src': src, 'pos': pos})
-            
-            node_list = [src, pos, neg]
-            return [node_list, ]
-        
-        def on_epoch_start(self):
-            self.batch_sample_indices_generator.on_epoch_start()
-
-
-3. BlockDataset
-----------------------------------------
-
-.. code:: python
-
-    class BlockDataset(BaseDataset):
-        
-        def __init__(self, g, block_sampler,
-                    dataset: NodeListDataset):
-            self.g = g
-            self.block_sampler = block_sampler
-            self.dataset = dataset
-            
-        def __len__(self):
-            return len(self.dataset)
-        
-        def __getitem__(self, batch_idx):
-            re = self.dataset[batch_idx]
-            node_list = re[0]
-            
-            flat_batch_nid = torch.cat([nid.flatten() for nid in node_list])
-            
-            unique_nid, idx_mapping = get_unique(flat_batch_nid)
-            # unique_nid: 1d-tensor, remove repeated nid in batch_nid
-            # idx_mapping: map a nid into the index of the unique_nid tensor
-
-            input_nid, output_nid, blocks = self.block_sampler.sample_blocks(
-                self.g, unique_nid.to(self.g.device), exclude_eids=None
-            )
-            
-            return re, (input_nid, output_nid, blocks, idx_mapping)
-
-        def on_epoch_start(self):
-            self.dataset.on_epoch_start()
+The function ``XGCN.build_DataLoader()`` is used to initialize a dataloader. 
+You can refer to the functions in ``XGCN/dataloading/build.py``. 
