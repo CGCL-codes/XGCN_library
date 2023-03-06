@@ -30,7 +30,7 @@ test_batch_size: 256
 file_test_set: ""
 
 # Model configuration
-model: SIGN_learnable_emb
+model: SSGC_learnable_emb
 seed: 1999
 
 graph_device: "cuda:0"
@@ -48,8 +48,6 @@ use_sparse: 0
 freeze_emb: 0
 from_pretrained: 1
 file_pretrained_emb: ''
-
-num_dnn_layers: 2
 
 L2_reg_weight: 0.0
 loss_type: bpr

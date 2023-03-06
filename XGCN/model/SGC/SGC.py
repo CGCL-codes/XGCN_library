@@ -66,9 +66,6 @@ class SGC(BaseEmbeddingModel):
     
     def get_output_emb(self, nids):
         return self.mlp(self.emb_table[nids])
-    
-    def __call__(self, batch_data):
-        return self.forward(batch_data)
         
     def forward_and_backward(self, batch_data):
         ((src, pos, neg), ) = batch_data

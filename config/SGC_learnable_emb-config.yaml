@@ -49,7 +49,5 @@ freeze_emb: 0
 from_pretrained: 1
 file_pretrained_emb: ''
 
-dnn_lr: 0.001
-
 L2_reg_weight: 0.0
 loss_type: bpr

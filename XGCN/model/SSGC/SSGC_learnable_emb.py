@@ -1,7 +1,8 @@
-from model.BaseGNNModel import BaseGNNModel
+from XGCN.model.base import BaseGNN
 
 import torch
 import dgl
+from tqdm import tqdm
 
 
 class SSGC_learnable_emb_Module(torch.nn.Module):
@@ -26,21 +27,40 @@ class SSGC_learnable_emb_Module(torch.nn.Module):
         return self.mlp(x)
 
     
-class SSGC_learnable_emb(BaseGNNModel):
+class SSGC_learnable_emb(BaseGNN):
     
-    def __init__(self, config, data):
-        super().__init__(config, data)
-        
-        # add edge_weights to the graph
-        g = data['node_collate_graph']  # undirected
-        src, dst = g.edges()
-        degrees = g.out_degrees()
+    def build_gnn(self):
+        src, dst = self.g.edges()
+        degrees = self.g.out_degrees()
         d1 = degrees[src]
         d2 = degrees[dst]
         edge_weights = (1 / (d1 * d2)).sqrt()
-        g.edata['ew'] = edge_weights
+        self.g.edata['ew'] = edge_weights
               
         self.gnn = SSGC_learnable_emb_Module(
             emb_dim=self.config['emb_dim'],
-        ).to(self.device)
-        self.param_list.append({'params': self.gnn.parameters(), 'lr': config['gnn_lr']})
+        ).to(self.config['gnn_device'])
+        self.opt_list.append(
+            torch.optim.Adam([{'params': self.gnn.parameters(),
+                                'lr': self.config['gnn_lr']}])
+        )
+
+    @torch.no_grad()
+    def on_eval_begin(self):
+        block_sampler = self.data['block_sampler']
+        self.out_emb_table = torch.empty(self.emb_table.weight.shape, dtype=torch.float32).to(self.config['out_emb_table_device'])
+        dl = torch.utils.data.DataLoader(dataset=torch.arange(self.info['num_nodes']), 
+                                         batch_size=8192)
+        
+        for nids in tqdm(dl, desc="get all gnn output embs"):
+            input_nids, _, blocks = block_sampler.sample_blocks(self.g, nids.to(self.g.device))
+            blocks = [block.to(self.config['gnn_device']) for block in blocks]
+            output_embs = self.gnn(
+                blocks, self.emb_table(input_nids.to(self.config['emb_table_device']))
+            )
+            self.out_emb_table[nids] = output_embs
+        
+        if self.graph_type == 'user-item':
+            self.target_emb_table = self.out_emb_table[self.num_users:]
+        else:
+            self.target_emb_table = self.out_emb_table
