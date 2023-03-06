@@ -6,6 +6,7 @@ from XGCN.model.GIN import GIN
 from XGCN.model.LightGCN import LightGCN
 from XGCN.model.PPRGo import PPRGo
 from XGCN.model.UltraGCN import UltraGCN
+from XGCN.model.SGC import SGC, SGC_learnable_emb
 from XGCN.model.SIGN import SIGN, SIGN_learnable_emb
 from XGCN.model.GAMLP import GAMLP, GAMLP_learnable_emb
 
@@ -24,6 +25,8 @@ def build_Model(config, data):
             'LightGCN': LightGCN,
             'PPRGo': PPRGo,
             'UltraGCN': UltraGCN,
+            'SGC': SGC,
+            'SGC_learnable_emb': SGC_learnable_emb,
             'SIGN': SIGN,
             'SIGN_learnable_emb': SIGN_learnable_emb,
             'GAMLP': GAMLP,

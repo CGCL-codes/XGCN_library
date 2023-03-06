@@ -2,7 +2,7 @@ all_data_root=/media/xreco/DEV/xiran/code/XGCN_package_dev/XGCN_data
 config_file_root=/media/xreco/DEV/xiran/code/XGCN_package_dev/xGCN/config
 
 dataset=facebook
-model=SIGN
+model=SGC_learnable_emb
 seed=0
 
 data_root=$all_data_root/dataset/instance_$dataset
