@@ -171,4 +171,8 @@ class GAMLP(BaseEmbeddingModel):
                                          batch_size=8192)
         for nids in tqdm(dl, desc="infer all output embs"):
             self.out_emb_table[nids] = self.get_output_emb(nids).cpu()
-        self.target_emb_table = self.out_emb_table
+        
+        if self.graph_type == 'user-item':
+            self.target_emb_table = self.out_emb_table[self.info['num_users'] : ]
+        else:
+            self.target_emb_table = self.out_emb_table

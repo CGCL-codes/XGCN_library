@@ -1,10 +1,13 @@
 from .propagation_scale import GBP_propagation
-from model.BaseEmbeddingModel import BaseEmbeddingModel, init_emb_table
-from model.module import dot_product, bpr_loss
-from utils import io
+
+from XGCN.model.base import BaseEmbeddingModel
+from XGCN.model.module import init_emb_table, dot_product, bpr_loss
+from XGCN.utils import io
+from XGCN.utils import csr
 
 import numpy as np
 import torch
+from torch import nn
 import torch.nn.functional as F
 import os.path as osp
 from tqdm import tqdm
@@ -22,8 +25,17 @@ class GBP(BaseEmbeddingModel):
         self.out_emb_table = torch.empty(self.base_emb_table.shape, dtype=torch.float32)
         
         data_root = self.config['data_root']
-        indices = io.load_pickle(osp.join(data_root, 'train_undi_csr_indices.pkl'))
-        indptr = io.load_pickle(osp.join(data_root, 'train_undi_csr_indptr.pkl'))
+        print("# load graph")
+        if 'indptr' in data:
+            indptr = data['indptr']
+            indices = data['indices']
+        else:
+            data_root = config['data_root']
+            indptr = io.load_pickle(osp.join(data_root, 'indptr.pkl'))
+            indices = io.load_pickle(osp.join(data_root, 'indices.pkl'))
+            data['indptr'] = indptr
+            data['indices'] = indices
+        indptr, indices = csr.get_undirected(indptr, indices)
         
         alpha = self.config['alpha']  # 0.1
         w = np.array([(alpha*(1 - alpha))**l for l in range(self.config['walk_length'] + 1)])
@@ -42,18 +54,15 @@ class GBP(BaseEmbeddingModel):
             *eval(self.config['dnn_arch'])
         ).to(self.device)
         
-        self.param_list = {
-            'Adam': [{'params': self.mlp.parameters(), 'lr': self.config['dnn_lr']}],
-        }
+        self.opt = torch.optim.Adam([
+            {'params': self.mlp.parameters(), 'lr': self.config['dnn_lr']}
+        ])
     
     def get_output_emb(self, nids):
         return self.mlp(self.base_emb_table[nids])
-    
-    def __call__(self, batch_data):
-        return self.forward(batch_data)
         
-    def forward(self, batch_data):
-        src, pos, neg = batch_data
+    def forward_and_backward(self, batch_data):
+        ((src, pos, neg), ) = batch_data
         
         src_emb = self.get_output_emb(src)
         pos_emb = self.get_output_emb(pos)
@@ -63,11 +72,9 @@ class GBP(BaseEmbeddingModel):
         neg_score = dot_product(src_emb, neg_emb)
         
         loss_fn_type = self.config['loss_fn']
-        if loss_fn_type == 'bpr_loss':
-            
+        if loss_fn_type == 'bpr':
             loss = bpr_loss(pos_score, neg_score)
-        
-        elif loss_fn_type == 'bce_loss':
+        elif loss_fn_type == 'bce':
             pos_loss = F.binary_cross_entropy_with_logits(
                 pos_score, 
                 torch.ones(pos_score.shape).to(self.device),
@@ -78,28 +85,34 @@ class GBP(BaseEmbeddingModel):
             ).mean()
             
             loss = pos_loss + neg_loss
+        else:
+            assert 0
             
-        rw = self.config['l2_reg_weight']
+        rw = self.config['L2_reg_weight']
         if rw > 0:
             L2_reg_loss = 1/2 * (1 / len(src)) * (
                 (src_emb**2).sum() + (pos_emb**2).sum() + (neg_emb**2).sum()
             )
             loss += rw * L2_reg_loss
         
-        return loss
+        self.opt.zero_grad()
+        loss.backward()
+        self.opt.step()
+        
+        return loss.item()
     
-    def prepare_for_train(self):
+    def on_epoch_begin(self):
         self.mlp.train()
     
-    def prepare_for_eval(self):
+    @torch.no_grad()
+    def on_eval_begin(self):
         self.mlp.eval()
         dl = torch.utils.data.DataLoader(dataset=torch.arange(self.info['num_nodes']), 
                                          batch_size=8192)
         for nids in tqdm(dl, desc="infer all output embs"):
             self.out_emb_table[nids] = self.get_output_emb(nids).cpu()
-        self.target_emb_table = self.out_emb_table
-        
-    def save(self, root, file_out_emb_table=None):
-        if file_out_emb_table is None:
-            file_out_emb_table = "out_emb_table.pt"
-        torch.save(self.out_emb_table, osp.join(root, file_out_emb_table))
+
+        if self.graph_type == 'user-item':
+            self.target_emb_table = self.out_emb_table[self.info['num_users'] : ]
+        else:
+            self.target_emb_table = self.out_emb_table

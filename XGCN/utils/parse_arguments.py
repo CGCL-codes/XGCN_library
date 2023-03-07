@@ -101,6 +101,8 @@ def _parse_arguments():
     
     parser.add_argument("--num_dnn_layers", type=int)
     
+    parser.add_argument("--rmax_ratio", type=float)
+    
     (args, unknown) = parser.parse_known_args()
     parsed_results = {}
     for arg in sorted(vars(args)):

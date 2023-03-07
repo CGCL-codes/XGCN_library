@@ -3,7 +3,7 @@ import numba
 import torch
 from tqdm import tqdm
 
-from data.csr_graph_helper import numba_csr_mult_dense_and_add
+from XGCN.utils import csr
 
 
 def GBP_propagation(indptr, indices, X: torch.FloatTensor, L, w, r, rmax, nr):
@@ -40,7 +40,7 @@ def GBP_propagation(indptr, indices, X: torch.FloatTensor, L, w, r, rmax, nr):
         for t in range(L):
             # sum_SR += S[l-t] @ R[t]
             s_indptr, s_indices, values = S[l-t]
-            numba_csr_mult_dense_and_add(
+            csr.csr_mult_dense_and_add(
                 indptr=s_indptr, indices=s_indices, data=values,
                 X_in=R[t], X_out=sum_SR
             )
