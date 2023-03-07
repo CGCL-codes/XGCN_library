@@ -26,9 +26,9 @@ seed: 1999
 device: cpu
 emb_dim: 64
 emb_lr: 0.005
-num_neg: 5
-walk_length: 16
+walk_length: 12
 num_walks: 8
 context_size: 5
 p: 1.0
-q: 10.0
+q: 1.0
+num_neg: 4
