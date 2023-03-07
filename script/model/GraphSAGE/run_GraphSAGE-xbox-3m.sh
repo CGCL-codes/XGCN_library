@@ -1,7 +1,7 @@
 all_data_root=/media/xreco/DEV/xiran/code/XGCN_package_dev/XGCN_data
 config_file_root=/media/xreco/DEV/xiran/code/XGCN_package_dev/xGCN/config
 
-dataset=pokec
+dataset=xbox-3m
 model=GraphSAGE
 seed=0
 
