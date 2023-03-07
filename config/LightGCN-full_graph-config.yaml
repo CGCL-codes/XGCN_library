@@ -9,10 +9,8 @@ key_score_metric: r100
 convergence_threshold: 20
 
 # DataLoader configuration
-Dataset_type: BlockDataset
+Dataset_type: NodeListDataset
 num_workers: 0
-num_gcn_layers: 2
-train_num_layer_sample: "[10, 20]"
 NodeListDataset_type: LinkDataset
 pos_sampler: ObservedEdges_Sampler
 neg_sampler: RandomNeg_Sampler
@@ -30,7 +28,7 @@ test_batch_size: 256
 file_test_set: ""
 
 # Model configuration
-model: GraphSAGE
+model: LightGCN
 seed: 1999
 
 graph_device: "cuda:0"
@@ -38,8 +36,7 @@ emb_table_device: "cuda:0"
 gnn_device: "cuda:0"
 out_emb_table_device: "cuda:0"
 
-forward_mode: sample
-infer_num_layer_sample: "[10, 20]"
+forward_mode: full_graph
 
 from_pretrained: 0
 file_pretrained_emb: ""
@@ -49,8 +46,7 @@ emb_dim: 64
 emb_init_std: 0.1
 emb_lr: 0.005
 
-gnn_arch: "[{'in_feats': 64, 'out_feats': 64, 'aggregator_type': 'pool', 'activation': torch.tanh}, {'in_feats': 64, 'out_feats': 64, 'aggregator_type': 'pool'}]"
-gnn_lr: 0.01
+stack_layers: 1
 
 loss_type: bpr
 L2_reg_weight: 0.0

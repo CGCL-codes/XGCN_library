@@ -33,7 +33,6 @@ file_test_set: ""
 model: GIN
 seed: 1999
 
-forward_mode: sample
 graph_device: "cuda:0"
 emb_table_device: "cuda:0"
 gnn_device: "cuda:0"
