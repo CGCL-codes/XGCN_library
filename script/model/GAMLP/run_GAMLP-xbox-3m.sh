@@ -1,8 +1,8 @@
 all_data_root=/media/xreco/DEV/xiran/code/XGCN_package_dev/XGCN_data
 config_file_root=/media/xreco/DEV/xiran/code/XGCN_package_dev/xGCN/config
 
-dataset=pokec
-model=GAT
+dataset=xbox-3m
+model=GAMLP
 seed=0
 
 data_root=$all_data_root/dataset/instance_$dataset
@@ -17,11 +17,9 @@ python -m XGCN.main.run_model \
     --file_val_set $data_root/val_edges.pkl \
     --test_evaluator WholeGraph_MultiPos_Evaluator --test_batch_size 256 \
     --file_test_set $data_root/test_set.pkl \
-    --from_pretrained 1 --file_pretrained_emb $file_pretrained_emb \
-    --freeze_emb 0 \
-    --num_gcn_layers 2 --train_num_layer_sample '[10, 20]' --infer_num_layer_sample '[10, 20]' \
-    --gnn_arch "[{'in_feats': 64, 'out_feats': 64, 'num_heads': 4, 'activation': torch.tanh}, {'in_feats': 64, 'out_feats': 64, 'num_heads': 4}]" \
-
-    --freeze_emb 1 \
-    --num_gcn_layers 1 --num_layer_sample '[20]' \
-    --gnn_arch "[{'in_feats': 64, 'out_feats': 64, 'num_heads': 4}]" \
+    --file_pretrained_emb $file_pretrained_emb \
+    --GAMLP_type GAMLP_JK \
+    --num_gcn_layers 2 \
+    --hidden 512 \
+    --n_layers_1 2 --n_layers_2 2 \
+    --pre_process 0 --residual 0 --bns 0 \

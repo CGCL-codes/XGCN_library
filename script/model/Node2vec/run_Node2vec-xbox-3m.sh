@@ -1,14 +1,13 @@
 all_data_root=/media/xreco/DEV/xiran/code/XGCN_package_dev/XGCN_data
 config_file_root=/media/xreco/DEV/xiran/code/XGCN_package_dev/xGCN/config
 
-dataset=pokec
-model=GAT
+dataset=xbox-3m
+model=Node2vec
 seed=0
+device="cuda:0"
 
 data_root=$all_data_root/dataset/instance_$dataset
 results_root=$all_data_root/model_output/$dataset/$model/[seed$seed]
-
-file_pretrained_emb=$all_data_root/model_output/$dataset/Node2vec/[seed$seed]/out_emb_table.pt
 
 python -m XGCN.main.run_model \
     --config_file $config_file_root/$model-config.yaml \
@@ -17,11 +16,7 @@ python -m XGCN.main.run_model \
     --file_val_set $data_root/val_edges.pkl \
     --test_evaluator WholeGraph_MultiPos_Evaluator --test_batch_size 256 \
     --file_test_set $data_root/test_set.pkl \
-    --from_pretrained 1 --file_pretrained_emb $file_pretrained_emb \
-    --freeze_emb 0 \
-    --num_gcn_layers 2 --train_num_layer_sample '[10, 20]' --infer_num_layer_sample '[10, 20]' \
-    --gnn_arch "[{'in_feats': 64, 'out_feats': 64, 'num_heads': 4, 'activation': torch.tanh}, {'in_feats': 64, 'out_feats': 64, 'num_heads': 4}]" \
-
-    --freeze_emb 1 \
-    --num_gcn_layers 1 --num_layer_sample '[20]' \
-    --gnn_arch "[{'in_feats': 64, 'out_feats': 64, 'num_heads': 4}]" \
+    --seed $seed \
+    --device $device \
+    --p 1.0 --q 10.0 \
+    --context_size 7 \
