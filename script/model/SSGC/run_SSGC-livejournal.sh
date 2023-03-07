@@ -1,8 +1,8 @@
 all_data_root=/media/xreco/DEV/xiran/code/XGCN_package_dev/XGCN_data
 config_file_root=/media/xreco/DEV/xiran/code/XGCN_package_dev/xGCN/config
 
-dataset=facebook
-model=SSGC_learnable_emb
+dataset=livejournal
+model=SSGC
 seed=0
 
 data_root=$all_data_root/dataset/instance_$dataset
@@ -13,8 +13,9 @@ file_pretrained_emb=$all_data_root/model_output/$dataset/Node2vec/[seed$seed]/ou
 python -m XGCN.main.run_model \
     --config_file $config_file_root/$model-config.yaml \
     --data_root $data_root --results_root $results_root \
-    --val_evaluator WholeGraph_MultiPos_Evaluator --val_batch_size 256 \
-    --file_val_set $data_root/val_set.pkl \
+    --val_evaluator WholeGraph_OnePos_Evaluator --val_batch_size 256 \
+    --file_val_set $data_root/val_edges.pkl \
     --test_evaluator WholeGraph_MultiPos_Evaluator --test_batch_size 256 \
     --file_test_set $data_root/test_set.pkl \
     --from_pretrained 1 --file_pretrained_emb $file_pretrained_emb \
+    --num_gcn_layers 1 \
