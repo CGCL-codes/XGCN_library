@@ -17,5 +17,4 @@ python -m XGCN.main.run_model \
     --file_val_set $data_root/val_set.pkl \
     --test_evaluator WholeGraph_MultiPos_Evaluator --test_batch_size 256 \
     --file_test_set $data_root/test_set.pkl \
-    --from_pretrained: 1 \
     --file_pretrained_emb $file_pretrained_emb \
