@@ -30,10 +30,9 @@ test_batch_size: 256
 file_test_set: ""
 
 # Model configuration
-seed: 1999
 model: GAT
+seed: 1999
 
-forward_mode: sample
 graph_device: "cuda:0"
 emb_table_device: "cuda:0"
 gnn_device: "cuda:0"

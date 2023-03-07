@@ -19,5 +19,5 @@ python -m XGCN.main.run_model \
     --file_test_set $data_root/test_set.pkl \
     --from_pretrained 1 --file_pretrained_emb $file_pretrained_emb \
     --freeze_emb 0 \
-    --num_gcn_layers 2 --num_layer_sample '[10, 20]' --infer_num_layer_sample '[10, 20]' \
+    --num_gcn_layers 2 --train_num_layer_sample '[10, 20]' --infer_num_layer_sample '[10, 20]' \
     --gnn_arch "[{'in_feats': 64, 'out_feats': 64, 'num_heads': 4, 'activation': torch.tanh}, {'in_feats': 64, 'out_feats': 64, 'num_heads': 4}]" \

@@ -1,39 +1,22 @@
-project_root="/media/xreco/DEV/xiran/code/XGCN"
-all_data_root="/media/xreco/DEV/xiran/data/XGCN"
+all_data_root=/media/xreco/DEV/xiran/code/XGCN_package_dev/XGCN_data
+config_file_root=/media/xreco/DEV/xiran/code/XGCN_package_dev/xGCN/config
 
-dataset="facebook"
-model="GIN"
+dataset=facebook
+model=GIN
+seed=0
 
-data_root=$all_data_root"/dataset/instance_"$dataset
+data_root=$all_data_root/dataset/instance_$dataset
+results_root=$all_data_root/model_output/$dataset/$model/[seed$seed]
 
-seed=1999
+file_pretrained_emb=$all_data_root/model_output/$dataset/Node2vec/[seed$seed]/out_emb_table.pt
 
-graph_device="cuda:0"
-emb_table_device="cuda:0"
-gnn_device="cuda:0"
-out_emb_table_device="cuda:0"
-
-results_root=$all_data_root"/model_output/"$dataset"/"$model"/[seed$seed]"
-
-python $project_root/main/main.py $project_root \
-    --config_file $project_root"/model/"$model"/config.yaml" \
-    --seed $seed \
+python -m XGCN.main.run_model \
+    --config_file $config_file_root/$model-config.yaml \
     --data_root $data_root --results_root $results_root \
-    --num_gcn_layers 2 --train_num_layer_sample "[10, 10]" \
-    --val_evaluator "WholeGraph_MultiPos_Evaluator" --val_batch_size 256 \
-    --file_val_set $data_root"/val_set.pkl" \
-    --test_evaluator "WholeGraph_MultiPos_Evaluator" --test_batch_size 256 \
-    --file_test_set $data_root"/test_set.pkl" \
-    --epochs 200 --val_freq 1 \
-    --forward_mode "sample" \
-    --graph_device $graph_device --num_workers 0 \
-    --emb_table_device $emb_table_device \
-    --gnn_device $gnn_device \
-    --out_emb_table_device $out_emb_table_device \
-    --from_pretrained 0 --file_pretrained_emb "" \
-    --freeze_emb 0 --use_sparse 0 \
-    --emb_lr 0.01 \
-    --gnn_lr 0.01 \
-    --loss_type "bpr" \
-    --L2_reg_weight 1e-4 \
-    --infer_num_layer_sample "[]" \
+    --val_evaluator WholeGraph_MultiPos_Evaluator --val_batch_size 256 \
+    --file_val_set $data_root/val_set.pkl \
+    --test_evaluator WholeGraph_MultiPos_Evaluator --test_batch_size 256 \
+    --file_test_set $data_root/test_set.pkl \
+    --from_pretrained 1 \
+    --file_pretrained_emb $file_pretrained_emb \
+    --freeze_emb 0 \
