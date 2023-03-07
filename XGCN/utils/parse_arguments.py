@@ -104,6 +104,15 @@ def _parse_arguments():
     
     parser.add_argument("--rmax_ratio", type=float)
     
+    parser.add_argument("--dnn_lr", type=float)
+    parser.add_argument("--dnn_arch", type=str)
+    parser.add_argument("--use_scale_net", type=int)
+    parser.add_argument("--scale_net_arch", type=str)
+    parser.add_argument("--renew_by_loading_best", type=int)
+    parser.add_argument("--K", type=int)
+    parser.add_argument("--T", type=int)
+    parser.add_argument("--tolerance", type=int)
+    
     (args, unknown) = parser.parse_known_args()
     parsed_results = {}
     for arg in sorted(vars(args)):
