@@ -13,6 +13,7 @@ def _parse_arguments():
     parser.add_argument("--results_root", type=str)
     
     parser.add_argument("--file_input", type=str)
+    parser.add_argument("--file_output", type=str)
     parser.add_argument("--is_adj_list", type=int)
     parser.add_argument("--graph_type", type=str)
     
