@@ -1,6 +1,6 @@
+from XGCN.model.base import BaseEmbeddingModel
+from XGCN.model.module import init_emb_table, dot_product
 from XGCN.utils import io
-from ..base import BaseEmbeddingModel
-from ..module import dot_product, init_emb_table
 
 import torch
 import torch.nn.functional as F
@@ -98,12 +98,13 @@ class UltraGCN(BaseEmbeddingModel):
             loss += self.config['gamma'] * loss_I
         
         # L2 regularization loss
-        if self.config['l2_reg_weight'] > 0:
+        rw = self.config['L2_reg_weight']
+        if rw > 0:
             L2_reg_loss = 1/2 * ((src_emb**2).sum() + (pos_emb**2).sum() + (neg_emb**2).sum())
             if self.config['gamma'] > 0:
                 L2_reg_loss += 1/2 * (ii_emb**2).sum()
             
-            loss += self.config['l2_reg_weight'] * L2_reg_loss
+            loss += rw * L2_reg_loss
             
         self.backward(loss)
         return loss.item()
