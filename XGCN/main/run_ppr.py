@@ -2,7 +2,7 @@ from XGCN.model.PPR.ppr_helper import ppr_for_batch_nodes
 from XGCN.utils import io
 from XGCN.utils import csr
 from XGCN.utils.parse_arguments import parse_arguments
-from XGCN.utils.utils import print_dict, ensure_dir
+from XGCN.utils.utils import print_dict, ensure_dir, set_random_seed
 
 import numpy as np
 import os.path as osp
@@ -18,6 +18,9 @@ def main():
     results_root = config['results_root']
     ensure_dir(results_root)
     io.save_yaml(osp.join(results_root, 'config.yaml'), config)
+    
+    seed = config['seed'] if 'seed' in config else 1999
+    set_random_seed(seed)
     
     info = io.load_yaml(osp.join(data_root, 'info.yaml'))
     num_nodes = info['num_nodes']
