@@ -18,7 +18,7 @@ using the facebook dataset created in the previous subsection
 and the common model GraphSAGE as an example.
 
 
-Configuration Parsing
+Configuration parsing
 ----------------------------
 
 The ``XGCN.main.run_model`` module supports parsing model configurations 
@@ -40,7 +40,7 @@ Note that a ``.yaml`` file is not a necessity of running the code and has lower
 priority when the same command line argument is given. 
 
 
-Configuration Components 
+Configuration components 
 -------------------------------
 
 A typical ``.yaml`` configuration file including all the arguments is like follows:
@@ -68,7 +68,7 @@ A typical ``.yaml`` configuration file including all the arguments is like follo
     num_neg: 1
     BatchSampleIndicesGenerator_type: SampleIndicesWithReplacement
     train_batch_size: 2048
-    train_edge_sample_ratio: 0.1
+    epoch_sample_ratio: 0.1
 
     # Evaluator configuration
     val_evaluator: WholeGraph_MultiPos_Evaluator
@@ -116,28 +116,6 @@ Specifies the evaluation method and evaluation sets.
 (5) **Model configuration**. 
 Specifies the model configuration. 
 
-.. 3. Training Data and Results
-.. -----------------------------
 
-
-.. In the last section, we process the raw facebook data and generate a dataset instance:
-
-..     XGCN_data
-..     └── dataset
-..         └── instance_facebook
-..             ├── indices.pkl
-..             ├── indptr.pkl
-..             ├── info.yaml
-..             ├── pos_edges.pkl
-..             ├── test_set.pkl
-..             └── val_set.pkl
-
-.. With these cached data, we can run all the models by specifying the ``data_root`` in the configuration, 
-.. which is ``/xxx/XGCN_data/dataset/instance_facebook`` here. 
-.. We use the
-
-
-Training Process
+Model APIs
 -----------------------
-
-

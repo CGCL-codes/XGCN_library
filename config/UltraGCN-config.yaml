@@ -16,7 +16,7 @@ pos_sampler: ObservedEdges_Sampler
 neg_sampler: RandomNeg_Sampler
 BatchSampleIndicesGenerator_type: SampleIndicesWithReplacement
 train_batch_size: 2048
-train_edge_sample_ratio: 0.1
+epoch_sample_ratio: 0.1
 
 # Evaluator configuration
 val_evaluator: ""
