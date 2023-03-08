@@ -2,6 +2,7 @@ from XGCN.dataloading import *
 from XGCN.sample.batch_sample_indices import SampleIndicesWithReplacement, SampleIndicesWithoutReplacement
 from XGCN.sample.ObservedEdges_Sampler import ObservedEdges_Sampler
 from XGCN.sample.RandomNeg_Sampler import RandomNeg_Sampler
+from XGCN.sample.WeightedNeg_Sampler import WeightedNeg_Sampler
 from XGCN.utils import io, csr
 
 import dgl
@@ -96,8 +97,9 @@ def build_LinkDataset(config, data):
 
 def build_Sampler(sampler_type, config, data):
     sampler = {
-        'ObservedEdges_Sampler': build_ObservedEdges_Sampler,
-        'RandomNeg_Sampler': build_RandomNeg_Sampler,
+        'ObservedEdges_Sampler': ObservedEdges_Sampler,
+        'RandomNeg_Sampler': RandomNeg_Sampler,
+        'WeightedNeg_Sampler': WeightedNeg_Sampler,
     }[sampler_type](config, data)
     return sampler
 

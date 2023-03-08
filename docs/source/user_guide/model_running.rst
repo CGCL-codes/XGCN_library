@@ -116,28 +116,6 @@ Specifies the evaluation method and evaluation sets.
 (5) **Model configuration**. 
 Specifies the model configuration. 
 
-.. 3. Training Data and Results
-.. -----------------------------
 
-
-.. In the last section, we process the raw facebook data and generate a dataset instance:
-
-..     XGCN_data
-..     └── dataset
-..         └── instance_facebook
-..             ├── indices.pkl
-..             ├── indptr.pkl
-..             ├── info.yaml
-..             ├── pos_edges.pkl
-..             ├── test_set.pkl
-..             └── val_set.pkl
-
-.. With these cached data, we can run all the models by specifying the ``data_root`` in the configuration, 
-.. which is ``/xxx/XGCN_data/dataset/instance_facebook`` here. 
-.. We use the
-
-
-Training Process
+Model APIs
 -----------------------
-
-
