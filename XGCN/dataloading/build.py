@@ -1,8 +1,8 @@
-from XGCN.dataloading import *
-from XGCN.sample.batch_sample_indices import SampleIndicesWithReplacement, SampleIndicesWithoutReplacement
-from XGCN.sample.ObservedEdges_Sampler import ObservedEdges_Sampler
-from XGCN.sample.RandomNeg_Sampler import RandomNeg_Sampler
-from XGCN.sample.WeightedNeg_Sampler import WeightedNeg_Sampler
+from .dataloading import *
+from XGCN.dataloading.sample.batch_sample_indices import SampleIndicesWithReplacement, SampleIndicesWithoutReplacement
+from XGCN.dataloading.sample.ObservedEdges_Sampler import ObservedEdges_Sampler
+from XGCN.dataloading.sample.RandomNeg_Sampler import RandomNeg_Sampler
+from XGCN.dataloading.sample.WeightedNeg_Sampler import WeightedNeg_Sampler
 from XGCN.utils import io, csr
 
 import dgl
@@ -84,24 +84,16 @@ def build_LinkDataset(config, data):
     
     neg_sampler = {
         'RandomNeg_Sampler': RandomNeg_Sampler,
+        'WeightedNeg_Sampler': WeightedNeg_Sampler,
     }[config['neg_sampler']](config, data)
     
     batch_sample_indices_generator = {
         'SampleIndicesWithReplacement': SampleIndicesWithReplacement,
         'SampleIndicesWithoutReplacement': SampleIndicesWithoutReplacement,
-    }['BatchSampleIndicesGenerator_type'](config, data)
+    }[config['BatchSampleIndicesGenerator_type']](config, data)
     
     dataset = LinkDataset(pos_sampler, neg_sampler, batch_sample_indices_generator)
     return dataset
-
-
-def build_Sampler(sampler_type, config, data):
-    sampler = {
-        'ObservedEdges_Sampler': ObservedEdges_Sampler,
-        'RandomNeg_Sampler': RandomNeg_Sampler,
-        'WeightedNeg_Sampler': WeightedNeg_Sampler,
-    }[sampler_type](config, data)
-    return sampler
 
 
 def build_BatchSampleIndicesGenerator(config, data):

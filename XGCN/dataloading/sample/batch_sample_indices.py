@@ -18,8 +18,8 @@ class SampleIndicesWithReplacement(BatchSampleIndicesGenerator):
         else:
             num_total_samples = info['num_edges']
         
-        batch_size=config['train_batch_size'],
-        ratio=config['epoch_sample_ratio']
+        batch_size = config['train_batch_size']
+        ratio = config['epoch_sample_ratio']
         self.num_total_samples = num_total_samples
         self.batch_size = batch_size
         self.num_batch_per_epoch = int(int(self.num_total_samples * ratio) / self.batch_size)
