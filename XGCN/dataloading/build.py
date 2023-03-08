@@ -84,7 +84,6 @@ def build_LinkDataset(config, data):
     
     neg_sampler = {
         'RandomNeg_Sampler': RandomNeg_Sampler,
-        'WeightedNeg_Sampler': WeightedNeg_Sampler,
     }[config['neg_sampler']](config, data)
     
     batch_sample_indices_generator = {
