@@ -49,5 +49,3 @@ Features:
    developer_guide/introduction
    developer_guide/Model
    developer_guide/DataLoader
-   developer_guide/Evaluator
-   developer_guide/Trainer

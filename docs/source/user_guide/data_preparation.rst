@@ -6,7 +6,7 @@ In this section, let's take a small dataset - `facebook <http://snap.stanford.ed
 as an example, start from the raw ``.txt`` file of a graph 
 and go through the whole data preparation pipeline. 
 
-The facebook data is included in our XGCN repository: ``example_data/raw_facebook/facebook_combined.txt``. 
+The facebook data is included in our XGCN repository: ``data/raw_facebook/facebook_combined.txt``. 
 You can also download it from SNAP: `facebook_combined.txt.gz <http://snap.stanford.edu/data/facebook_combined.txt.gz>`_. 
 
 .. toctree::
