@@ -1,8 +1,10 @@
 Custmize DataLoader
 =========================
 
+In this section, we'll first present an overview of the modules in DataLoader and 
+then customize a new one. 
 
-1. Interface Overview
+1. Overview
 -----------------------------
 
 In XGCN, the dataloader is called by ``Trainer`` during the batch training, 
@@ -39,6 +41,19 @@ and DGL's ``BlockSampler`` to conduct mini-graph sampling.
 The function ``XGCN.build_DataLoader()`` is used to initialize a dataloader. 
 You can refer to the functions in ``XGCN/dataloading/build.py``. 
 
-2. Implement a new Sampler
+
+2. New dataloader design
 -----------------------------
 
+In the following, let's customize a new dataloader and apply it to a GNN model. 
+Traditional graph-based training methods use the edges in the graph as positive training 
+samples, here we use the PPR neighbors instead. 
+
+
+2. Implement a Sampler
+-----------------------------
+
+
+
+3. Config and run!
+-----------------------------

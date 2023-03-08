@@ -9,11 +9,16 @@ import os.path as osp
 
 def build_SampleIndicesWithReplacement(config, data):
     info = io.load_yaml(osp.join(config['data_root'], 'info.yaml'))
-    num_edges = info['num_edges']
+    if 'str_num_total_samples' in config:
+        s = config['str_num_total_samples']
+        assert s in ['num_edges', 'num_nodes']
+        num_total_samples = info[s]
+    else:
+        num_total_samples = info['num_edges']
     batch_sample_indices_generator = SampleIndicesWithReplacement(
-        num_total_samples=num_edges,
+        num_total_samples=num_total_samples,
         batch_size=config['train_batch_size'],
-        ratio=config['train_edge_sample_ratio']
+        ratio=config['epoch_sample_ratio']
     )
     return batch_sample_indices_generator
 
@@ -48,7 +53,7 @@ def build_SampleIndicesWithoutReplacement(config, data):
     batch_sample_indices_generator = SampleIndicesWithoutReplacement(
         sample_indices=sample_indices,
         batch_size=config['train_batch_size'], 
-        ratio=config['train_edge_sample_ratio']
+        ratio=config['epoch_sample_ratio']
     )
     return batch_sample_indices_generator
 

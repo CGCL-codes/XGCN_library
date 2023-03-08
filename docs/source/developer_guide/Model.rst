@@ -7,7 +7,7 @@ We'll first introduce the interface functions of a model, and then
 give some implementation examples of them. 
 
 
-1. Interface Overview
+1. Overview
 -----------------------------
 
 .. image:: ../asset/overview.jpg
@@ -33,7 +33,6 @@ by ``eval()``.
 
 (5) ``load()``. This function is call by ``Trainer`` when the training process is converged 
 and the testing is to begin. The function should load the saved best parameters. 
-
 
 Specifically, these functions are described by the ``BaseModel`` class (see ``XGCN/base/BaseModel.py``) 
 which must be inherited by a new model. 
@@ -221,7 +220,7 @@ with the following contents:
     num_neg: 1
     BatchSampleIndicesGenerator_type: SampleIndicesWithReplacement
     train_batch_size: 2048
-    train_edge_sample_ratio: 0.1
+    epoch_sample_ratio: 0.1
     
     # Evaluator configuration
     val_evaluator: "WholeGraph_MultiPos_Evaluator"

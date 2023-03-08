@@ -18,7 +18,7 @@ using the facebook dataset created in the previous subsection
 and the common model GraphSAGE as an example.
 
 
-Configuration Parsing
+Configuration parsing
 ----------------------------
 
 The ``XGCN.main.run_model`` module supports parsing model configurations 
@@ -40,7 +40,7 @@ Note that a ``.yaml`` file is not a necessity of running the code and has lower
 priority when the same command line argument is given. 
 
 
-Configuration Components 
+Configuration components 
 -------------------------------
 
 A typical ``.yaml`` configuration file including all the arguments is like follows:
@@ -68,7 +68,7 @@ A typical ``.yaml`` configuration file including all the arguments is like follo
     num_neg: 1
     BatchSampleIndicesGenerator_type: SampleIndicesWithReplacement
     train_batch_size: 2048
-    train_edge_sample_ratio: 0.1
+    epoch_sample_ratio: 0.1
 
     # Evaluator configuration
     val_evaluator: WholeGraph_MultiPos_Evaluator
