@@ -79,7 +79,6 @@ class BaseEmbeddingModel(BaseModel):
         pos_neg_score = torch.cat((pos_score.view(-1, 1), neg_score), dim=-1).cpu().numpy()
         return pos_neg_score
     
-    @torch.no_grad()
     def infer_all_target_score(self, src, mask_nei=True):
         src_emb = self.out_emb_table[src]
         
@@ -89,13 +88,6 @@ class BaseEmbeddingModel(BaseModel):
             self.mask_neighbor_score(src, all_target_score)
         
         return all_target_score
-    
-    @torch.no_grad()
-    def infer_target_score(self, src, target):
-        src_emb = self.out_emb_table[src]
-        target_emb = self.out_emb_table[target]
-        target_score = dot_product(src_emb, target_emb).cpu().numpy()
-        return target_score
         
     def mask_neighbor_score(self, src, all_target_score):
         if self.indptr is None:
@@ -120,3 +112,14 @@ class BaseEmbeddingModel(BaseModel):
 
     def save_emb_as_txt(self, filename='out_emb_table.txt', fmt='%.6f'):
         np.savetxt(fname=filename, X=self.out_emb_table.cpu().numpy(), fmt=fmt)
+
+    def infer_target_score(self, src, target):
+        src_emb = self.out_emb_table[src]
+        target_emb = self.out_emb_table[target]
+        target_score = dot_product(src_emb, target_emb).cpu().numpy()
+        return target_score
+    
+    def infer_topk(self, k, src, mask_nei=True):
+        all_target_score = self.infer_all_target_score(src, mask_nei)
+        score, node = torch.topk(all_target_score, k, dim=-1)
+        return score, node
