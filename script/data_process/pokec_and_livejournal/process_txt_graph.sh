@@ -1,4 +1,4 @@
-all_data_root=/media/xreco/DEV/xiran/code/XGCN_package_dev/XGCN_data
+all_data_root=$1
 
 #####################
 dataset=pokec

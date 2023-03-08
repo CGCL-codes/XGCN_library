@@ -4,6 +4,8 @@ Dataset Intance Making
 Now we have the raw text data, let's start the dataset instance making! 
 Here let's assume that we don't have existing evaluation set 
 and want to split some edges for model evaluation. 
+(If you like to do the data process in JupyterNotebook, please refer to 
+``script/data_process/facebook/dataset_instance_making.ipynb``.) 
 
 Firstly, import some modules: 
 

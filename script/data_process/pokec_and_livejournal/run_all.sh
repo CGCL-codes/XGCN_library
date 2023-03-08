@@ -1,5 +1,7 @@
-bash download.sh
+all_data_root=/media/xreco/DEV/xiran/code/XGCN_package_dev/XGCN_data
 
-bash process_txt_graph.sh
+bash download.sh $all_data_root
 
-bash process_eval_sets.sh
+bash process_txt_graph.sh $all_data_root
+
+bash process_eval_sets.sh $all_data_root
