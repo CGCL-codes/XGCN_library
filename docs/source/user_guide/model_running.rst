@@ -24,7 +24,7 @@ Configuration parsing
 The ``XGCN.main.run_model`` module supports parsing model configurations 
 from command line arguments and ``.yaml`` files. 
 Directory ``config/`` includes ``.yaml`` configuration file templates for all the models, 
-and directory ``scripts/`` provides ``.sh`` shell scripts to run the models. 
+and directory ``script/`` provides ``.sh`` shell scripts to run the models. 
 
 If you want to use a ``.yaml`` configuration file, specify the path 
 with the command line argument ``--config_file`` like follows:
@@ -115,7 +115,3 @@ Specifies the evaluation method and evaluation sets.
 
 (5) **Model configuration**. 
 Specifies the model configuration. 
-
-
-Model APIs
------------------------

@@ -41,6 +41,7 @@ Features:
    user_guide/introduction
    user_guide/data_preparation
    user_guide/model_running
+   user_guide/reproduction
 
 .. toctree::
    :maxdepth: 1
