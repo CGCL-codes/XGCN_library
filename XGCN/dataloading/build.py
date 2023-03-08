@@ -1,8 +1,11 @@
-from .dataloading import *
-from .sample import *
-from XGCN.utils import csr
+from XGCN.dataloading import *
+from XGCN.sample.batch_sample_indices import SampleIndicesWithReplacement, SampleIndicesWithoutReplacement
+from XGCN.sample.ObservedEdges_Sampler import ObservedEdges_Sampler
+from XGCN.sample.RandomNeg_Sampler import RandomNeg_Sampler
+from XGCN.utils import io, csr
 
 import dgl
+import os.path as osp
 
 
 def prepare_gnn_graph(config, data):
@@ -74,9 +77,18 @@ def build_NodeListDataset(config, data):
 
 
 def build_LinkDataset(config, data):
-    pos_sampler = build_Sampler(config['pos_sampler'], config, data)
-    neg_sampler = build_Sampler(config['neg_sampler'], config, data)
-    batch_sample_indices_generator = build_BatchSampleIndicesGenerator(config, data)
+    pos_sampler = {
+        'ObservedEdges_Sampler': ObservedEdges_Sampler,
+    }[config['pos_sampler']](config, data)
+    
+    neg_sampler = {
+        'RandomNeg_Sampler': RandomNeg_Sampler,
+    }[config['neg_sampler']](config, data)
+    
+    batch_sample_indices_generator = {
+        'SampleIndicesWithReplacement': SampleIndicesWithReplacement,
+        'SampleIndicesWithoutReplacement': SampleIndicesWithoutReplacement,
+    }['BatchSampleIndicesGenerator_type'](config, data)
     
     dataset = LinkDataset(pos_sampler, neg_sampler, batch_sample_indices_generator)
     return dataset

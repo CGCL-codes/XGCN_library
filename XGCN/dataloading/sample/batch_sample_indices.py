@@ -7,25 +7,19 @@ import torch
 import os.path as osp
 
 
-def build_SampleIndicesWithReplacement(config, data):
-    info = io.load_yaml(osp.join(config['data_root'], 'info.yaml'))
-    if 'str_num_total_samples' in config:
-        s = config['str_num_total_samples']
-        assert s in ['num_edges', 'num_nodes']
-        num_total_samples = info[s]
-    else:
-        num_total_samples = info['num_edges']
-    batch_sample_indices_generator = SampleIndicesWithReplacement(
-        num_total_samples=num_total_samples,
-        batch_size=config['train_batch_size'],
-        ratio=config['epoch_sample_ratio']
-    )
-    return batch_sample_indices_generator
-
-
 class SampleIndicesWithReplacement(BatchSampleIndicesGenerator):
     
-    def __init__(self, num_total_samples, batch_size, ratio):
+    def __init__(self, config, data):
+        info = io.load_yaml(osp.join(config['data_root'], 'info.yaml'))
+        if 'str_num_total_samples' in config:
+            s = config['str_num_total_samples']
+            assert s in ['num_edges', 'num_nodes']
+            num_total_samples = info[s]
+        else:
+            num_total_samples = info['num_edges']
+        
+        batch_size=config['train_batch_size'],
+        ratio=config['epoch_sample_ratio']
         self.num_total_samples = num_total_samples
         self.batch_size = batch_size
         self.num_batch_per_epoch = int(int(self.num_total_samples * ratio) / self.batch_size)
@@ -46,21 +40,14 @@ class SampleIndicesWithReplacement(BatchSampleIndicesGenerator):
         return batch_sample_indices
 
 
-def build_SampleIndicesWithoutReplacement(config, data):
-    info = io.load_yaml(osp.join(config['data_root'], 'info.yaml'))
-    
-    sample_indices = np.arange(info['num_edges'])
-    batch_sample_indices_generator = SampleIndicesWithoutReplacement(
-        sample_indices=sample_indices,
-        batch_size=config['train_batch_size'], 
-        ratio=config['epoch_sample_ratio']
-    )
-    return batch_sample_indices_generator
-
-
 class SampleIndicesWithoutReplacement(BatchSampleIndicesGenerator):
     
-    def __init__(self, sample_indices: np.ndarray, batch_size, ratio):
+    def __init__(self, config, data):
+        info = io.load_yaml(osp.join(config['data_root'], 'info.yaml'))
+        sample_indices = np.arange(info['num_edges'])
+        batch_size=config['train_batch_size'], 
+        ratio=config['epoch_sample_ratio']
+        
         self.epoch_reducer = EpochReducer(sample_indices, ratio)
         self.batch_indexer = None
         self.batch_size = batch_size
