@@ -15,9 +15,8 @@ We provides an implementation for the TheWebConf 2023 paper:
 Features:
 
 - Large-scale GNN training
-   XGCN targets at presenting optimized GNN recommendation models that
+   XGCN targets at presenting optimized GNN recommendation models with scaling strategies that 
    can easily run on million-scale graphs. 
-   We introduce three mainstream scaling strategies: layer-sampling, graph-reshaping, and clustering. 
    We include xGCN - a brand new GNN model which can embed a 100-million graph 
    within 1 day under a single-machine environment. 
 - A complete data pipeline for large graphs
@@ -50,3 +49,5 @@ Features:
    developer_guide/introduction
    developer_guide/Model
    developer_guide/DataLoader
+   developer_guide/Evaluator
+   developer_guide/Trainer

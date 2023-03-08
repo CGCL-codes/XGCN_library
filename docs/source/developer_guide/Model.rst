@@ -1,4 +1,4 @@
-Model
+Customize Model
 =========================
 
 In this part, let's dive into the implementations of a model 
@@ -253,7 +253,7 @@ With the ``.yaml`` file, we can run the new model with the following script:
     config_file='../config/NewModel-config.yaml'
     
     python -m XGCN.main.run_model \
-        --config_file  \
+        --config_file $config_file \
         --data_root $all_data_root/dataset/instance_facebook \
         --results_root $all_data_root/model_output/NewModel \
         --file_val_set $all_data_root/dataset/val_set.pkl \

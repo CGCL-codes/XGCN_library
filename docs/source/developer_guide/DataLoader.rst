@@ -1,11 +1,15 @@
-DataLoader
+Custmize DataLoader
 =========================
+
+
+1. Interface Overview
+-----------------------------
 
 In XGCN, the dataloader is called by ``Trainer`` during the batch training, 
 and basically it only needs to be an iterable object. 
 To add a new dataloader, you can simply implement it as an iterable object
 on your own and add it to ``XGCN.build_DataLoader()`` 
-(see ``build_DataLoader()`` in ``XGCN/dataloading/build.py``),  
+(see ``build_DataLoader()`` in ``XGCN/dataloading/build.py``), 
 or you can use the infrastructure provided by XGCN. 
 
 In this section, we focus on introducing main components of
@@ -34,3 +38,7 @@ and DGL's ``BlockSampler`` to conduct mini-graph sampling.
 
 The function ``XGCN.build_DataLoader()`` is used to initialize a dataloader. 
 You can refer to the functions in ``XGCN/dataloading/build.py``. 
+
+2. Implement a new Sampler
+-----------------------------
+
