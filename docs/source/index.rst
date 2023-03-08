@@ -17,8 +17,7 @@ Features:
 - Large-scale GNN training
    XGCN targets at presenting optimized GNN recommendation models with scaling strategies that 
    can easily run on million-scale graphs. 
-   We include xGCN - a brand new GNN model which can embed a 100-million graph 
-   within 1 day under a single-machine environment. 
+   We include xGCN - a brand new GNN model which can quickly embed large graphs.
 - A complete data pipeline for large graphs
    XGCN covers a complete machine learning pipeline: from dataset making to model evaluation. 
    We provide tools to efficiently process large graphs in CSR format. 

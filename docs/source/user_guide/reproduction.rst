@@ -1,12 +1,14 @@
 Reproduction
 ===================
 
-We provide the Poke and LiveJournal datasets used in the xGCN paper: 
+We provide the data and scripts to reproduce the results in our xGCN paper.
+
+The Poke and LiveJournal datasets used in the paper are here: 
 `pokec_and_livejournal_data <https://data4public.blob.core.windows.net/xgcn/instance_pokec_and_livejournal.zip>`_. 
+(The Xbox dataset is an industrial one and is not able to be public.) 
 To download and process them, please refer to the "Data Preparation" section and 
 the scripts in ``script/data_process/pokec_and_livejournal``. 
 
-We provide all the configurations to reproduce the results in our xGCN paper. 
 Please refer to ``script/model`` which includes all the scripts for different 
 datasets (The used datasets in our paper are: Pokec, LiveJournal, and Xbox. 
 Note that we do not tune models on the facebook dataset example): 
