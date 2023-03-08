@@ -27,7 +27,7 @@ Download the source files from GitHub and install locally:
 
 .. code:: bash
 
-    git clone git@github.com:xiransong/XGCN.git -b dev
+    git clone git@github.com:xiransong/xGCN.git -b XGCN_dev
     cd XGCN
     python -m pip install -e .
 
