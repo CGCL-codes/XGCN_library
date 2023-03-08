@@ -117,3 +117,6 @@ class BaseEmbeddingModel(BaseModel):
         else:
             self.indptr = io.load_pickle(osp.join(self.data_root, 'indptr.pkl'))
             self.indices = io.load_pickle(osp.join(self.data_root, 'indices.pkl'))
+
+    def save_emb_as_txt(self, filename='out_emb_table.txt', fmt='%.6f'):
+        np.savetxt(fname=filename, X=self.out_emb_table.cpu().numpy(), fmt=fmt)
