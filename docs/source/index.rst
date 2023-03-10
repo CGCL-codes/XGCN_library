@@ -21,10 +21,12 @@ Our repository is available at: https://github.com/xiransong/xGCN .
 
 .. image:: asset/xgcn_fig1.jpg
   :width: 800
+  :align: center
   :alt: xGCN efficiency study
 
 .. image:: asset/xgcn_fig2.jpg
   :width: 400
+  :align: center
   :alt: xGCN on Xbox-100m dataset
 
 - Large-scale GNN embedding
