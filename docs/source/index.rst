@@ -7,31 +7,64 @@
 Welcome to XGCN's documentation!
 ===================================
 
-XGCN is a light-weight and easy-to-use library for large-scale graph-based recommendation, 
-aiming at helping researchers to build models that can run on million-scale graphs. 
-
+XGCN is a light-weight and easy-to-use library for large-scale Graph Neural Network (GNN) embedding, 
+aiming at helping researchers to quickly embed million-scale graphs in a single-machine environment. 
 XGCN includes xGCN - an implementation for the TheWebConf 2023 paper: 
 **xGCN: An Extreme Graph Convolutional Network for Large-scale Social Link Prediction**. 
+Our repository is available at: https://github.com/xiransong/xGCN .
 
-Features:
+**Features**:
 
-- Large-scale GNN training
-   XGCN targets at presenting optimized GNN recommendation models with scaling strategies that 
-   can easily run on million-scale graphs. 
-   We include xGCN - a brand new GNN model which can quickly embed large graphs.
+- xGCN - a brand new GNN embedding model
+   XGCN present an implementation of xGCN, which achieves best accuracy and efficiency over 
+   recent existing models on large graphs, including an industrial dataset with 100 million nodes. 
+
+.. image:: ../asset/xgcn_fig1.png
+  :width: 600
+  :alt: xGCN efficiency study
+
+.. image:: ../asset/xgcn_fig2.png
+  :width: 600
+  :alt: xGCN on Xbox-100m dataset
+
+- Large-scale GNN embedding
+   XGCN targets at presenting GNN embedding models that can easily run on million-scale graphs 
+   in a single-machine environment. 
+   Some official implementations (e.g. LightGCN, UltraGCN) 
+   mainly consider small datasets and do not scale to large graphs.  
+   We fully utilize DGL and PyTorch's mechanism and present models that scale to large graphs. 
+
 - A complete data pipeline for large graphs
    XGCN covers a complete machine learning pipeline: from dataset making to model evaluation. 
    We provide tools to efficiently process large graphs in CSR format. 
+
 - Easy-to-use infrastructure
    XGCN is friendly to those who want to create new models. 
    We provide clear interface for each module. One can easily develop a new model 
    by inheriting a base class such as ``BaseEmbeddingModel``. 
 
 
+Install
+------------------
+
+We recommend to install XGCN from source with the following command:
+(Python \>= 3.8, torch \>= 1.7.0, dgl \>= 0.9, torch_geometric \>= 2.0 are required.)
+
+.. code:: bash
+
+    git clone git@github.com:xiransong/xGCN.git -b XGCN_dev
+    cd xGCN
+    python -m pip install -e .
+   
+
+Full Documentations
+------------------------
+
 .. toctree::
    :maxdepth: 1
    :caption: Get Started
 
+   index
    get_started/install
 
 .. toctree::
