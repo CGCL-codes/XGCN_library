@@ -20,11 +20,11 @@ Our repository is available at: https://github.com/xiransong/xGCN .
    recent existing models on large graphs, including an industrial dataset with 100 million nodes. 
 
 .. image:: asset/xgcn_fig1.jpg
-  :width: 600
+  :width: 800
   :alt: xGCN efficiency study
 
 .. image:: asset/xgcn_fig2.jpg
-  :width: 600
+  :width: 400
   :alt: xGCN on Xbox-100m dataset
 
 - Large-scale GNN embedding
