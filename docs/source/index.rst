@@ -19,11 +19,11 @@ Our repository is available at: https://github.com/xiransong/xGCN .
    XGCN present an implementation of xGCN, which achieves best accuracy and efficiency over 
    recent existing models on large graphs, including an industrial dataset with 100 million nodes. 
 
-.. image:: ../asset/xgcn_fig1.png
+.. image:: asset/xgcn_fig1.jpg
   :width: 600
   :alt: xGCN efficiency study
 
-.. image:: ../asset/xgcn_fig2.png
+.. image:: asset/xgcn_fig2.jpg
   :width: 600
   :alt: xGCN on Xbox-100m dataset
 
