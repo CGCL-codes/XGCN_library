@@ -18,9 +18,10 @@ Our repository is available at: https://github.com/xiransong/xGCN .
 - xGCN - a brand new GNN embedding model
    XGCN present an implementation of xGCN, which achieves best accuracy and efficiency over 
    recent existing models on large graphs, including an industrial dataset with 100 million nodes. 
-
+   Some results are as follows:
+   
 .. image:: asset/xgcn_fig1.jpg
-  :width: 800
+  :width: 600
   :align: center
   :alt: xGCN efficiency study
 
