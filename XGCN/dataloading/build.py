@@ -2,7 +2,6 @@ from .dataloading import *
 from XGCN.dataloading.sample.batch_sample_indices import SampleIndicesWithReplacement, SampleIndicesWithoutReplacement
 from XGCN.dataloading.sample.ObservedEdges_Sampler import ObservedEdges_Sampler
 from XGCN.dataloading.sample.RandomNeg_Sampler import RandomNeg_Sampler
-from XGCN.dataloading.sample.WeightedNeg_Sampler import WeightedNeg_Sampler
 from XGCN.utils import io, csr
 
 import dgl
