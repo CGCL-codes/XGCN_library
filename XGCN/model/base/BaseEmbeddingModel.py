@@ -19,6 +19,8 @@ class BaseEmbeddingModel(BaseModel):
         
         self.info = io.load_yaml(osp.join(self.data_root, 'info.yaml'))
         self.graph_type = self.info['graph_type']
+        if self.graph_type == 'user-item':
+            self.num_users = self.info['num_users']
         
         self.indptr = None
         self.indices = None
