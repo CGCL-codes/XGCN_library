@@ -11,6 +11,7 @@ class UltraGCN(BaseEmbeddingModel):
     
     def __init__(self, config, data):
         super().__init__(config, data)
+        self.num_users = self.info['num_users']
         self.device = self.config['device']
         self.emb_table_device = self.config['emb_table_device']
         

@@ -8,8 +8,6 @@ import torch
 from scipy.sparse import csr_matrix
 import os.path as osp
 from tqdm import tqdm
-import setproctitle
-import time
 
 
 def calc_beta_from_degree(di, dj):
