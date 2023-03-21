@@ -9,16 +9,38 @@ Welcome to XGCN's documentation!
 
 XGCN is a light-weight and easy-to-use library for large-scale Graph Neural Network (GNN) embedding, 
 aiming at helping researchers to quickly embed million-scale graphs in a single-machine environment. 
+
 XGCN includes xGCN - an implementation for the TheWebConf 2023 paper: 
 **xGCN: An Extreme Graph Convolutional Network for Large-scale Social Link Prediction**. 
 Our repository is available at: https://github.com/xiransong/xGCN .
 
+XGCN now focuses on embedding models for **social link prediction** (also knows as friend recommendation) 
+and **user-item link prediction** (i.e. the classic recommendation task), 
+where each node in the graph is assigned a learnable ID embedding. Other tasks like node classification 
+can also be easily added into our framework. 
+
 **Features**:
 
+- Large-scale GNN embedding
+   XGCN targets at constructing GNN embedding models that can easily run on million-scale graphs 
+   in a single-machine environment. 
+   Many official GNN implementations (e.g. LightGCN, UltraGCN) mainly consider small datasets and have 
+   difficulties on processing large graphs. 
+   In XGCN, by fully utilizing DGL and PyTorch's mechanism, we not only 
+   reproduce a series of GNNs that have better scalability, but also provide a platform to create and train 
+   your own large-scale models. 
+   
+   We evaluate several open-source implementations by generating graphs of different scales 
+   (from 160k nodes to 2 million nodes) and recording the training speed under the same hyper-parameters. 
+   The results are shown in the figures below. 
+   We observe that XGCN have much better efficiency on million-scale graphs. 
+   **(to add figure)**
+
 - xGCN - a brand new GNN embedding model
-   XGCN present an implementation of xGCN, which achieves best accuracy and efficiency over 
-   recent existing models on large graphs, including an industrial dataset with 100 million nodes. 
-   Some results are as follows:
+   XGCN includes xGCN - an implementation for the TheWebConf 2023 paper: 
+   **xGCN: An Extreme Graph Convolutional Network for Large-scale Social Link Prediction** - 
+   which achieves remarkable accuracy and efficiency on large graphs, 
+   including an industrial dataset with 100 million nodes. Some results are as follows:
 
 .. image:: asset/xgcn_fig1.jpg
   :width: 500
@@ -30,16 +52,9 @@ Our repository is available at: https://github.com/xiransong/xGCN .
   :align: center
   :alt: xGCN on Xbox-100m dataset
 
-- Large-scale GNN embedding
-   XGCN targets at presenting GNN embedding models that can easily run on million-scale graphs 
-   in a single-machine environment. 
-   Some official implementations (e.g. LightGCN, UltraGCN) 
-   mainly consider small datasets and do not scale to large graphs.  
-   We fully utilize DGL and PyTorch's mechanism and present models that scale to large graphs. 
-
 - A complete data pipeline for large graphs
    XGCN covers a complete machine learning pipeline: from dataset making to model evaluation. 
-   We provide tools to efficiently process large graphs in CSR format. 
+   We provide APIs to efficiently process large graphs in CSR format. 
 
 - Easy-to-use infrastructure
    XGCN is friendly to those who want to create new models. 
@@ -74,7 +89,7 @@ Full Documentations
    :maxdepth: 1
    :caption: User Guide
 
-   user_guide/introduction
+   user_guide/overview
    user_guide/data_preparation
    user_guide/model_running
    user_guide/reproduction
@@ -83,6 +98,6 @@ Full Documentations
    :maxdepth: 1
    :caption: Developer Guide
 
-   developer_guide/introduction
+   developer_guide/overview
    developer_guide/Model
    developer_guide/DataLoader

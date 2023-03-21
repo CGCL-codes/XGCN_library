@@ -1,4 +1,4 @@
-Model Training
+Run from CMD
 =========================
 
 Once the data preparation is done, users can easily run a model 
