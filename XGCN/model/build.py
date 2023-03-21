@@ -5,6 +5,7 @@ from XGCN.model.GAT import GAT
 from XGCN.model.GIN import GIN
 from XGCN.model.LightGCN import LightGCN
 from XGCN.model.PPRGo import PPRGo
+from XGCN.model.SimpleX import SimpleX
 from XGCN.model.UltraGCN import UltraGCN
 from XGCN.model.SGC import SGC, SGC_learnable_emb
 from XGCN.model.SSGC import SSGC, SSGC_learnable_emb
@@ -26,6 +27,7 @@ def build_Model(config, data):
             'GIN': GIN,
             'LightGCN': LightGCN,
             'PPRGo': PPRGo,
+            'SimpleX': SimpleX,
             'UltraGCN': UltraGCN,
             'SGC': SGC,
             'SGC_learnable_emb': SGC_learnable_emb,

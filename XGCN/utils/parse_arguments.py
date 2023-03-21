@@ -69,6 +69,8 @@ def _parse_arguments():
     parser.add_argument("--num_walks", type=int)
     parser.add_argument("--walk_length", type=int)
     parser.add_argument("--alpha", type=float)
+    parser.add_argument("--theta", type=float)
+    parser.add_argument("--margin", type=float)
     
     parser.add_argument("--stack_layers", type=int)
     
