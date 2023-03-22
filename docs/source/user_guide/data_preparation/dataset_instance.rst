@@ -2,7 +2,7 @@ Dataset Instance
 =======================
 
 In XGCN, datasets must be processed into a standard format before running the models. 
-We call such processed data as **"Dataset Instance"**, 
+We call such processed data as "Dataset Instance", 
 which is basically a directory containing several formatted data files. 
 For example, a Dataset Instance of facebook may look like follows:
 
@@ -10,19 +10,61 @@ For example, a Dataset Instance of facebook may look like follows:
 
     instance_facebook
     ├── info.yaml      # some basic information such as "graph type" and "number of nodes"
-    ├── indices.pkl    # CSR format (numpy array) of the graph for training
-    ├── indptr.pkl
-    ├── test_set.pkl   # evaluation set (optional)
-    └── val_set.pkl
+    ├── g.pkl          # DGLGraph for training
+    ├── val_set.pkl    # evaluation sets
+    └── test_set.pkl
 
 XGCN has no restriction on the name of the Dataset Instance directory, 
-but we recommend to name them as ``instance_[dataset]`` for clarity. 
+but we recommend to name it as ``instance_[dataset]`` for clarity. 
+
+info.yaml
+------------------
 
 ``info.yaml`` contains some basic information such as "graph type" and "number of nodes". 
-``indices.pkl`` and ``indptr.pkl`` are CSR format of the graph for training, 
-They are numpy arrays saved using pickle. 
-The names of these three files are strictly specified. 
-With the XGCN APIs, they can easily be generated from the raw ``.txt`` graph data.
+For homogenous graphs, the contents should include:
+
+.. code:: yaml
+
+    graph_type: homo
+    num_nodes: [int value]
+    num_edges: [int value]
+
+For bipartite graphs, the contents should include:
+
+.. code:: yaml
+
+    graph_type: user-item
+    num_nodes: [int value]
+    num_edges: [int value]
+    num_users: [int value]
+    num_items: [int value]
+
+You can save/load .yaml files using ``XGCN.utils.io``:
+
+.. code:: python
+
+    from XGCN.utils import io
+
+    info = io.load_yaml('info.yaml')  # load
+    io.save_yaml('info.yaml', info)   # save
+
+g.pkl
+------------
+
+``g.pkl`` is simply a DGLGraph saved using ``pickle``. You can save/load such objects 
+using ``XGCN.utils.io``:
+
+.. code:: python
+
+    from XGCN.utils import io
+
+    g = io.load_pickle('g.pkl')  # load
+    io.save_pickle('g.pkl', g)   # save
+
+
+Evaluation sets
+---------------------
+
 
 In link prediction tasks, A single evaluation sample can be formulated as: 
 (src, pos[1], ..., pos[m], neg[1], ... neg[k]), where src, pos, neg denotes source node, 

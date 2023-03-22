@@ -4,13 +4,19 @@ Overview
 The "User Guide" section is for those who want to quickly get started 
 and run models on existing datasets or new datasets made by their own using XGCN. 
 
-An overview of XGCN's running pipeline is shown in the figure below. 
-XGCN receives text files as input, 
-processes them into cached "dataset instances", 
-and run models through CMD (command line) or APIs. 
+An overview of the running pipeline is shown in the figure below. 
+XGCN supports process raw text files or DGLGraph and 
+specifiy a "dataset instance" format which is used by the downstream models. 
+Once a dataset instance is generated, you can run models with CMD or APIs. 
 
-With XGCN's high-level APIs, users only need to focus on preparing the raw dataset input 
-and setting model configurations. 
+**(to add figure)**
+
+
+
+.. .. image:: ../asset/xgcn_fig1.jpg
+..   :width: 500
+..   :align: center
+..   :alt: xGCN efficiency study
 
 .. Once the dataset instance is generated, 
 .. one can easily run a model through the CMD:
