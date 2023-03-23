@@ -55,7 +55,7 @@ can also be easily added into our framework.
   :alt: xGCN efficiency study
 
 .. image:: asset/xgcn_fig2.jpg
-  :width: 400
+  :width: 500
   :align: center
   :alt: xGCN on Xbox-100m dataset
 
@@ -89,7 +89,7 @@ Full Documentations
    :maxdepth: 1
    :caption: Get Started
 
-   index
+   .. index
    get_started/install
 
 .. toctree::
