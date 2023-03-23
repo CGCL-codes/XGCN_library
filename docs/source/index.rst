@@ -36,7 +36,7 @@ can also be easily added into our framework.
    We observe that XGCN have much better scalability on million-scale graphs. 
    
 .. image:: asset/scalability_study.jpg
-  :width: 500
+  :width: 400
   :align: center
   :alt: Scalability study of different implementations
 
@@ -95,8 +95,8 @@ Full Documentations
 
    user_guide/overview
    user_guide/data_preparation
-   user_guide/model_running
-   user_guide/reproduction
+   user_guide/model_training
+   user_guide/model_evaluation
 
 .. toctree::
    :maxdepth: 1

@@ -1,10 +1,10 @@
 Dataset Instance
 =======================
 
-In XGCN, datasets must be processed into a standard format before running the models. 
-We call such processed data as "Dataset Instance", 
+In XGCN, before running the models, datasets must be processed into a standard format. 
+We call such processed data as "dataset instance", 
 which is basically a directory containing several formatted data files. 
-For example, a Dataset Instance of facebook may look like follows:
+For example, a dataset instance of the facebook dataset may look like follows: 
 
 .. code::
 
@@ -14,7 +14,7 @@ For example, a Dataset Instance of facebook may look like follows:
     ├── val_set.pkl    # evaluation sets
     └── test_set.pkl
 
-XGCN has no restriction on the name of the Dataset Instance directory, 
+XGCN has no restriction on the name of the dataset instance directory, 
 but we recommend to name it as ``instance_[dataset]`` for clarity. 
 
 info.yaml
@@ -150,3 +150,18 @@ where ``raw_graph.txt`` is renamed from ``facebook_combined.txt`` for consistenc
     └── dataset
         └── raw_facebook
             └── raw_graph.txt
+
+After some further data processing and model running, your directory may look like: 
+
+.. code:: 
+
+    XGCN_data
+    ├── dataset
+    |   ├── raw_facebook         # raw data
+    |   ├── instance_facebook    # dataset instance
+    |   ├── raw_xxx
+    |   ├── instance_xxx
+    └── model_output
+        └─facebook
+          ├── GraphSAEG    # saved model and evaluation results
+          └── xGCN
