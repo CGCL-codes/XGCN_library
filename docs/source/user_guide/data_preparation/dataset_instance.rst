@@ -65,7 +65,6 @@ using ``XGCN.utils.io``:
 Evaluation sets
 ---------------------
 
-
 In link prediction tasks, A single evaluation sample can be formulated as: 
 (src, pos[1], ..., pos[m], neg[1], ... neg[k]), where src, pos, neg denotes source node, 
 positive node, and negative node, respectively. 
@@ -75,7 +74,12 @@ The negative nodes are usually sampled from un-interacted nodes
 
 Considering the number of positive nodes and negative nodes for each source node, 
 XGCN supports three kinds of evaluation methods: 
-"one-pos-k-neg", "one-pos-whole-graph", and "multi-pos-whole-graph". 
+
+* "one-pos-k-neg"
+
+* "whole-graph-one-pos"
+
+* "whole-graph-multi-pos"
 
 For "one-pos-k-neg", each evaluation sample has one positive node and k negative nodes. 
 Different evaluation samples may have the same source node. 
@@ -131,3 +135,18 @@ The 'pos_list' field of the Dict is a list of numpy array of the positive nodes.
 
 We don't restrict filenames for the evaluation sets. 
 The evaluation method and the corresponding file can be specified in the model configuration.
+
+First of all, let's make an empty directory named ``XGCN_data`` (or any one you like) 
+to place all the datasets and model outputs. 
+It's recommended to put ``XGCN_data`` somewhere else than in this repository. 
+
+We recommend to arrange the data with a clear directory structure. 
+From the beginning, you may manually setup the ``XGCN_data`` directory as follows, 
+where ``raw_graph.txt`` is renamed from ``facebook_combined.txt`` for consistency. 
+
+.. code:: 
+
+    XGCN_data
+    └── dataset
+        └── raw_facebook
+            └── raw_graph.txt

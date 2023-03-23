@@ -39,6 +39,5 @@ and the scripts in ``script/data_process/pokec_and_livejournal``.
     :maxdepth: 1
    
     data_preparation/dataset_instance
-    data_preparation/exapmle_facebook
-    data_preparation/exapmle_gowalla
     data_preparation/data_process_api
+    data_preparation/data_process_examples
