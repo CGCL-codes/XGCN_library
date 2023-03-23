@@ -1,13 +1,17 @@
 Data Preparation
 ======================
 
+This section introduce how to process raw datasets into XGCN's "dataset instance" format. 
+
 XGCN supports handling both homogenous graphs (e.g. social networks) 
-and bipartite graphs (e.g. user-item graphs). 
-The processing pipeline is as follows:
+and bipartite graphs (e.g. user-item graphs). The data pipeline is as follows:
 
-**(to add figure)**
+.. image:: ../asset/data_pipeline.jpg
+  :width: 500
+  :align: center
+  :alt: data processing pipeline
 
-As shown in the figure, XGCN has three data process modules: 
+As shown in the figure, XGCN has three data processing modules: 
 
 * ``XGCN.data.io``. Handle disk-reading/writing operations, including 
 reading raw token IDs as input and re-index them into continuous integer IDs. 
@@ -21,7 +25,8 @@ nodes randomly or according to nodes' degrees.
 split a portion of edges as positive samples, which can be done by using this module. 
 
 In this section, we'll first introduce the "dataset instance" format, which is needed 
-to run a model, and then we'll provide data processing examples on two small datasets: 
+to run a model, 
+and then we'll provide data processing examples on two small datasets: 
 
 * **facebook**. The facebook data is included in our XGCN repository: 
 ``data/raw_facebook/``. You can also download it from SNAP: 

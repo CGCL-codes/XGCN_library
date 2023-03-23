@@ -7,11 +7,20 @@ and run models on existing datasets or new datasets made by their own using XGCN
 An overview of the running pipeline is shown in the figure below. 
 XGCN supports process raw text files or DGLGraph and 
 specifiy a "dataset instance" format which is used by the downstream models. 
-Once a dataset instance is generated, you can run models with CMD or APIs. 
+Once a dataset instance is generated, you can run models with CMD or API functions. 
 
-**(to add figure)**
+.. image:: ../asset/user_guide-overview.jpg
+  :width: 500
+  :align: center
+  :alt: XGCN data process and model running pipeline
 
+In the following, we'll introduce how to use XGCN from three aspects:
 
+* Data Preparation
+
+* Model Training
+
+* Model Evaluation
 
 .. .. image:: ../asset/xgcn_fig1.jpg
 ..   :width: 500

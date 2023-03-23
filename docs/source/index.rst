@@ -14,7 +14,7 @@ XGCN includes xGCN - an implementation for the TheWebConf 2023 paper:
 **xGCN: An Extreme Graph Convolutional Network for Large-scale Social Link Prediction**. 
 Our repository is available at: https://github.com/xiransong/xGCN .
 
-XGCN now focuses on embedding models for **social link prediction** (also knows as friend recommendation) 
+We now focus on embedding models for **social link prediction** (also knows as friend recommendation) 
 and **user-item link prediction** (i.e. the classic recommendation task), 
 where each node in the graph is assigned a learnable ID embedding. Other tasks like node classification 
 can also be easily added into our framework. 
@@ -31,10 +31,14 @@ can also be easily added into our framework.
    your own large-scale models. 
    
    We evaluate several open-source implementations by generating graphs of different scales 
-   (from 160k nodes to 2 million nodes) and recording the training speed under the same hyper-parameters. 
+   (from 0.15 million nodes to 3 million nodes) and recording the training speed under the same hyper-parameters. 
    The results are shown in the figures below. 
-   We observe that XGCN have much better efficiency on million-scale graphs. 
-   **(to add figure)**
+   We observe that XGCN have much better scalability on million-scale graphs. 
+   
+.. image:: asset/scalability_study.jpg
+  :width: 500
+  :align: center
+  :alt: Scalability study of different implementations
 
 - xGCN - a brand new GNN embedding model
    XGCN includes xGCN - an implementation for the TheWebConf 2023 paper: 
@@ -53,8 +57,8 @@ can also be easily added into our framework.
   :alt: xGCN on Xbox-100m dataset
 
 - A complete data pipeline for large graphs
-   XGCN covers a complete machine learning pipeline: from dataset making to model evaluation. 
-   We provide APIs to efficiently process large graphs in CSR format. 
+   XGCN covers a complete machine learning pipeline: from raw dataset processing to model training and evaluation. 
+   We provide APIs to efficiently process large graphs. 
 
 - Easy-to-use infrastructure
    XGCN is friendly to those who want to create new models. 
