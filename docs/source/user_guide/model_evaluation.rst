@@ -1,10 +1,6 @@
 Model Evaluation
 ======================
 
-
-Evaluation sets
----------------------
-
 In link prediction tasks, A single evaluation sample can be formulated as: 
 (src, pos[1], ..., pos[m], neg[1], ... neg[k]), where src, pos, neg denotes source node, 
 positive node, and negative node, respectively. 
@@ -75,7 +71,3 @@ The 'pos_list' field of the Dict is a list of numpy array of the positive nodes.
 
 We don't restrict filenames for the evaluation sets. 
 The evaluation method and the corresponding file can be specified in the model configuration.
-
-
-Evaluation APIs
----------------------

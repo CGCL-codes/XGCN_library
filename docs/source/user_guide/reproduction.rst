@@ -1,4 +1,4 @@
-Reproduction
+Model Running Examples
 ===================
 
 We provide the data and scripts to reproduce the results in our xGCN paper.
