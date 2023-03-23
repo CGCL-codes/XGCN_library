@@ -45,8 +45,7 @@ Load the ``facebook_combined.txt`` as numpy array, and convert the edge-list to 
 .. code:: python
 
     >>> raw_data_root = osp.join(all_data_root, 'dataset/raw_' + dataset)
-    >>> file_raw_graph = osp.join(raw_data_root, 'facebook_combined.txt')
-    >>> E_src, E_dst = io.load_edges(file_raw_graph)
+    >>> E_src, E_dst = io.load_edges(osp.join(raw_data_root, 'facebook_combined.txt'))
     >>> print(E_src)
     [   0    0    0 ... 4027 4027 4031]
     >>> print(E_dst)
