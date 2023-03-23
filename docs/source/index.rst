@@ -32,8 +32,11 @@ can also be easily added into our framework.
    
    We evaluate several open-source implementations by generating graphs of different scales 
    (from 0.15 million nodes to 3 million nodes) and recording the training speed under the same hyper-parameters. 
+   The server's CPU is Intel(R) Xeon(R) CPU E5-2680 v4 @ 2.40GHz with 252GB memory. The GPU is Tesla P100-PCIE-16GB 
+   with 16GB memory. 
    The results are shown in the figures below. 
-   We observe that XGCN have much better scalability on million-scale graphs. 
+   We observe that XGCN have much better scalability on million-scale graphs. (Note that currently RecBole 
+   does not provide UltraGCN implementation.)
    
 .. image:: asset/scalability_study.jpg
   :width: 400
