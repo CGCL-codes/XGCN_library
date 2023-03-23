@@ -64,16 +64,21 @@ XGCN.data.trim
 
 Some industrial graph datasets tend to be large-scale 
 (e.g. Taobao's transaction record), and we might want to get a smaller one for model 
-development and quick evaluation. This module help users trim graphs by dropping 
-nodes randomly or according to nodes' degrees. 
+development and quick evaluation. This module has two functions, 
+helping users trim graphs by dropping nodes randomly or according to nodes' degrees: 
 
+* ``XGCN.data.trim.drop_nodes_randomly(g: dgl.DGLGraph, num_drop, node_mask=None)``
 
-
+* ``XGCN.data.trim.drop_nodes_by_degree(g: dgl.DGLGraph, node_mask=None, 
+min_out_degree=None, max_out_degree=None, min_in_degree=None, max_in_degree=None)``
 
 XGCN.data.split_edges
 -------------------------
 
 To evaluate a link prediction model, it is common to 
-split a portion of edges as positive samples, which can be done by using this module. 
+split a portion of edges as positive samples. The source node and destination node of a 
+removed edge should satisfiy some requirements about degrees, e.g., suppose we don't 
+expect a node's out-degree becoming zero after the split. 
+This can be achieved using the function:
 
-
+* ``XGCN.data.split_edges.split_edges(g, num_sample, min_src_out_degree, min_dst_in_degree)``

@@ -17,6 +17,33 @@ For example, a dataset instance of the facebook dataset may look like follows:
 XGCN has no restriction on the name of the dataset instance directory, 
 but we recommend to name it as ``instance_[dataset]`` for clarity. 
 
+We recommend to arrange the data with a clear directory structure. 
+For example, from the beginning, you may manually setup a ``XGCN_data`` directory as follows: 
+(The facebook data is included in our XGCN repository: ``data/raw_facebook/``. 
+It's recommended to put your ``XGCN_data`` somewhere else than in this repository.)
+
+.. code:: 
+
+    XGCN_data
+    └── dataset
+        └── raw_facebook
+            └── facebook_combined.txt
+
+After some further data processing and model running, your directory may look like: 
+
+.. code:: 
+
+    XGCN_data
+    ├── dataset
+    |   ├── raw_facebook         # raw data
+    |   ├── instance_facebook    # dataset instance
+    |   ├── raw_xxx
+    |   ├── instance_xxx
+    └── model_output
+        └─facebook
+          ├── GraphSAEG    # saved model and evaluation results
+          └── xGCN
+
 info.yaml
 ------------------
 
@@ -135,33 +162,3 @@ The 'pos_list' field of the Dict is a list of numpy array of the positive nodes.
 
 We don't restrict filenames for the evaluation sets. 
 The evaluation method and the corresponding file can be specified in the model configuration.
-
-First of all, let's make an empty directory named ``XGCN_data`` (or any one you like) 
-to place all the datasets and model outputs. 
-It's recommended to put ``XGCN_data`` somewhere else than in this repository. 
-
-We recommend to arrange the data with a clear directory structure. 
-From the beginning, you may manually setup the ``XGCN_data`` directory as follows, 
-where ``raw_graph.txt`` is renamed from ``facebook_combined.txt`` for consistency. 
-
-.. code:: 
-
-    XGCN_data
-    └── dataset
-        └── raw_facebook
-            └── raw_graph.txt
-
-After some further data processing and model running, your directory may look like: 
-
-.. code:: 
-
-    XGCN_data
-    ├── dataset
-    |   ├── raw_facebook         # raw data
-    |   ├── instance_facebook    # dataset instance
-    |   ├── raw_xxx
-    |   ├── instance_xxx
-    └── model_output
-        └─facebook
-          ├── GraphSAEG    # saved model and evaluation results
-          └── xGCN

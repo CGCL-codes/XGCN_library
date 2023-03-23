@@ -1,4 +1,4 @@
-Dara Processing Example 2: gowalla
+Dara Processing Example: gowalla
 =====================================
 
 
