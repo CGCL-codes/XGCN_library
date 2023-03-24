@@ -139,7 +139,7 @@ For more information, you can referance ``XGCN/main/run_model.py``.
 
 
 Model Running Examples
-_________________________
+--------------------------
 
 We provide model running examples on two large-scale social network dataset: Pokec and LiveJournal, 
 which are used in our xGCN paper.
