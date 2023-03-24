@@ -1,9 +1,10 @@
 Model Running Examples
 ===================
 
-We provide the data and scripts to reproduce the results in our xGCN paper.
+We provide model running examples on two large-scale social network dataset: Pokec and LiveJournal, 
+which are used in our xGCN paper.
 
-The Poke and LiveJournal datasets used in the paper are here: 
+The data can be downloaded from here: 
 `pokec_and_livejournal_data <https://data4public.blob.core.windows.net/xgcn/instance_pokec_and_livejournal.zip>`_. 
 (The Xbox dataset is an industrial one and is not able to be public.) 
 To download and process them, please refer to the "Data Preparation" section and 
