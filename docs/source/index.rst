@@ -89,7 +89,7 @@ Full Documentations
    :maxdepth: 1
    :caption: Get Started
 
-   .. index
+   self
    get_started/install
 
 .. toctree::
