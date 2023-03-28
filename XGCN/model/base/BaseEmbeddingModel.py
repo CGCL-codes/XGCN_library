@@ -1,7 +1,7 @@
 from .BaseModel import BaseModel
 from XGCN.model.module import dot_product
 from XGCN.model.module.mask_neighbor_score import mask_neighbor_score, mask_neighbor_score_user_item
-from XGCN.utils import io
+from XGCN.data import io
 
 import torch
 import numpy as np

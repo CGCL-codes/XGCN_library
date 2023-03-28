@@ -1,4 +1,4 @@
-from XGCN.utils import io, csr
+from XGCN.data import io, csr
 from XGCN.model.base import BaseEmbeddingModel
 from XGCN.model.module import init_emb_table, cosine_contrastive_loss
 

@@ -1,6 +1,5 @@
 from ..base import BaseSampler
-from XGCN.utils import io
-from XGCN.utils import csr
+from XGCN.data import io, csr
 
 import torch
 import os.path as osp

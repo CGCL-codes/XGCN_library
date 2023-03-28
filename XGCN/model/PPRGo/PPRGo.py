@@ -1,6 +1,6 @@
 from XGCN.model.base import BaseEmbeddingModel
 from XGCN.model.module import init_emb_table, dot_product, bpr_loss, bce_loss
-from XGCN.utils import io
+from XGCN.data import io
 
 import torch
 import os.path as osp

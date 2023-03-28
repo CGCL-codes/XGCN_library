@@ -1,5 +1,4 @@
-from XGCN.utils import io
-from XGCN.utils import csr
+from XGCN.data import io, csr
 from XGCN.model.base import BaseEmbeddingModel
 
 import torch

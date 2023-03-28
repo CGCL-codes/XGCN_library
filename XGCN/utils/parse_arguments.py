@@ -1,4 +1,4 @@
-from XGCN.utils import io
+from XGCN.data import io
 
 import argparse
 

@@ -1,5 +1,5 @@
 from .TrainTracer import TrainTracer
-from XGCN.utils import io
+from XGCN.data import io
 from XGCN.utils.Timer import Timer
 from XGCN.utils.utils import get_formatted_results
 

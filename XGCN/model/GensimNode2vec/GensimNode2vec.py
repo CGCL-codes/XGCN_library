@@ -1,7 +1,6 @@
 from XGCN.dataloading.random_walk import Node2vecRandomWalker
 from XGCN.model.base import BaseEmbeddingModel
-from XGCN.utils import io
-from XGCN.utils import csr
+from XGCN.data import io, csr
 
 from gensim.models import Word2Vec
 import torch

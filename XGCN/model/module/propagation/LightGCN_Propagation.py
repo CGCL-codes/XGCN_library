@@ -1,6 +1,5 @@
 from XGCN.model.LightGCN import get_lightgcn_out_emb
-from XGCN.utils import io
-from XGCN.utils import csr
+from XGCN.data import io, csr
 
 import numpy as np
 import torch

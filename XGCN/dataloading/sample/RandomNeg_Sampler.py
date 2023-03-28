@@ -1,5 +1,5 @@
 from ..base import BaseSampler
-from XGCN.utils import io
+from XGCN.data import io
 
 import torch
 import os.path as osp

@@ -1,7 +1,7 @@
 import XGCN
 from XGCN.utils.parse_arguments import parse_arguments
 from XGCN.utils.utils import print_dict, ensure_dir, set_random_seed
-from XGCN.utils import io
+from XGCN.data import io
 
 import os.path as osp
 

@@ -3,7 +3,7 @@ import numba
 import torch
 from tqdm import tqdm
 
-from XGCN.utils import csr
+from XGCN.data import csr
 
 
 def GBP_propagation(indptr, indices, X: torch.FloatTensor, L, w, r, rmax, nr):

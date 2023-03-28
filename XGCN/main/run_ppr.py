@@ -1,6 +1,5 @@
 from XGCN.model.PPR.ppr_helper import ppr_for_batch_nodes
-from XGCN.utils import io
-from XGCN.utils import csr
+from XGCN.data import io, csr
 from XGCN.utils.parse_arguments import parse_arguments
 from XGCN.utils.utils import print_dict, ensure_dir, set_random_seed
 

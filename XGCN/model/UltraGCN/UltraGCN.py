@@ -1,6 +1,6 @@
 from XGCN.model.base import BaseEmbeddingModel
 from XGCN.model.module import init_emb_table, dot_product
-from XGCN.utils import io
+from XGCN.data import io
 
 import torch
 import torch.nn.functional as F
