@@ -1,4 +1,4 @@
-from XGCN.utils import ReIndexDict
+from XGCN.utils.ReIndexDict import ReIndexDict
 from XGCN.utils.utils import wc_count
 
 import numpy as np
@@ -8,8 +8,8 @@ from tqdm import tqdm
 def load_and_reindex_homogeneous_graph(filename, skiprows=0, delimiter=None):
     id_mapping = ReIndexDict()
     num_edges = wc_count(filename) - skiprows
-    E_src = np.empty(num_edges, dtype=np.int32)
-    E_dst = np.empty(num_edges, dtype=np.int32)    
+    E_src = np.empty(num_edges, dtype=np.uint32)
+    E_dst = np.empty(num_edges, dtype=np.uint32)    
     with open(filename, 'r') as f:
         for _ in range(skiprows):
             f.readline()
@@ -25,8 +25,8 @@ def load_and_reindex_user_item_graph(filename, skiprows=0, delimiter=None):
     user_id_mapping = ReIndexDict()
     item_id_mapping = ReIndexDict()
     num_edges = wc_count(filename) - skiprows
-    E_src = np.empty(num_edges, dtype=np.int32)
-    E_dst = np.empty(num_edges, dtype=np.int32)
+    E_src = np.empty(num_edges, dtype=np.uint32)
+    E_dst = np.empty(num_edges, dtype=np.uint32)
     with open(filename, 'r') as f:
         for _ in range(skiprows):
             f.readline()

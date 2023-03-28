@@ -1,17 +1,15 @@
-from XGCN.utils import csr
-from XGCN.utils.csr.CSR_Graph import CSR_Graph_rev_rm_edge
+from XGCN.data import csr
 
 import numpy as np
 import torch
 import dgl
 
 
-def split_edges(g, num_sample, min_src_out_degree, min_dst_in_degree):
+def split_edges(indptr, indices, num_sample, min_src_out_degree, min_dst_in_degree):
     '''
         Note: the edges split happens in-place
     '''
-    indptr, indices, _ = g.adj_sparse('csr')
-    g = CSR_Graph_rev_rm_edge(indptr, indices)
+    g = csr.CSR_Graph_rev_rm_edge(indptr, indices)
     
     def src_degree_ok(node):
         return (min_src_out_degree < g.out_degree(node))

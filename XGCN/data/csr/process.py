@@ -3,6 +3,40 @@ import numba
 
 Nan = -1
 
+
+def from_edges_to_csr_with_info(E_src, E_dst, graph_type):
+    assert graph_type in ['homo', 'user-item', ]
+    
+    info = {}
+    info['graph_type'] = graph_type
+    
+    # assume that num_nodes = max(id) + 1
+    if graph_type == 'homo':
+        num_nodes = int(max(E_src.max(), E_dst.max()) + 1)
+    elif graph_type == 'user-item':
+        num_users = int(E_src.max() + 1)
+        num_items = int(E_dst.max() + 1)
+        info['num_users'] = num_users
+        info['num_items'] = num_items
+        num_nodes = num_users + num_items
+    info['num_nodes'] = num_nodes
+    
+    if graph_type == 'user-item':
+        E_dst += num_users
+
+    print("# from_edges_to_csr ...")
+    indptr, indices = from_edges_to_csr(E_src, E_dst, num_nodes)
+    _num_edges = len(indices)
+    
+    print("# remove_repeated_edges ...")
+    indptr, indices = remove_repeated_edges_in_csr(indptr, indices)
+    num_edges = len(indices)
+    print("## {} edges are removed".format(_num_edges - num_edges))
+    info['num_edges'] = num_edges
+
+    return info, indptr, indices
+
+
 @numba.jit(nopython=True)
 def from_edges_to_csr(E_src, E_dst, num_nodes):
     num_edges = len(E_src)

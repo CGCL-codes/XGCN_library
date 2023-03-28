@@ -1,5 +1,5 @@
 from XGCN.utils.parse_arguments import parse_arguments
-from XGCN.utils import io
+from XGCN.data import io
 
 import numpy as np
 import os.path as osp
