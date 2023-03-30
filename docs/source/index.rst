@@ -10,7 +10,7 @@ Welcome to XGCN's documentation!
 XGCN is a light-weight and easy-to-use library for large-scale Graph Neural Network (GNN) embedding, 
 aiming at helping researchers to quickly embed million-scale graphs in a single-machine environment. 
 
-XGCN includes xGCN - an implementation for the TheWebConf 2023 paper: 
+XGCN includes **xGCN** - an implementation for the TheWebConf 2023 paper: 
 **xGCN: An Extreme Graph Convolutional Network for Large-scale Social Link Prediction**. 
 Our repository is available at: https://github.com/xiransong/xGCN .
 
