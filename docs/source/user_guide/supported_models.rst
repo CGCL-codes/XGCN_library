@@ -22,3 +22,16 @@ the full model list is as follows:
     :maxdepth: 1
 
     supported_models/GAMLP.rst
+    supported_models/GAT.rst
+    supported_models/GBP.rst
+    supported_models/GIN.rst
+    supported_models/GraphSAGE.rst
+    supported_models/LightGCN.rst
+    supported_models/Node2vec.rst
+    supported_models/PPRGo.rst
+    supported_models/SGC.rst
+    supported_models/SIGN.rst
+    supported_models/SimpleX.rst
+    supported_models/SSGC.rst
+    supported_models/UltraGCN.rst
+    supported_models/xGCN.rst

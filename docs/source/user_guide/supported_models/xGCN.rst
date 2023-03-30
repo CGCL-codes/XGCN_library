@@ -1,6 +1,13 @@
 xGCN
 =========
 
+`\[paper\] <>`_
+
+**Title:** 
+
+**Authors:** 
+
+**Abstract:** 
 
 .. code:: yaml
 

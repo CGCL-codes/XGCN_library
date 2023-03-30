@@ -1,6 +1,14 @@
 SSGC
 ===========
 
+`\[paper\] <>`_
+
+**Title:** 
+
+**Authors:** 
+
+**Abstract:** 
+
 .. code:: yaml
 
     # SSGC-config.yaml
