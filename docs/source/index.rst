@@ -98,8 +98,9 @@ Full Documentations
 
    user_guide/overview
    user_guide/data_preparation
-   user_guide/model_training
-   user_guide/model_evaluation
+   user_guide/training_and_evaluation
+   user_guide/supported_models
+   user_guide/usage_examples
 
 .. toctree::
    :maxdepth: 1

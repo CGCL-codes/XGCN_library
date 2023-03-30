@@ -1,4 +1,4 @@
-Model Running Examples
+Running Examples
 ===================
 
 We provide model running examples on two large-scale social network dataset: Pokec and LiveJournal, 

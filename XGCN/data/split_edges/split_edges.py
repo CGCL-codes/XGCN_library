@@ -39,9 +39,8 @@ def split_edges(indptr, indices, num_sample, min_src_out_degree, min_dst_in_degr
         if len(pos_edges) >= num_sample or not exists_ok_node:
             break
     print("\nnum sampled edges:", len(pos_edges))
-    pos_edges = torch.LongTensor(pos_edges)
+    pos_edges = np.array(pos_edges)
     
     indptr, indices = csr.to_compact(g.indptr, g.indices)
-    g = dgl.graph(('csr', indptr, indices, []))
     
-    return g, pos_edges
+    return indptr, indices, pos_edges

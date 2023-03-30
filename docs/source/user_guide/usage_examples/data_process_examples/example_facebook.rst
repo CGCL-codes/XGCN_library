@@ -76,7 +76,7 @@ positive samples. To do this, you can use the function ``XGCN.data.split_edges.s
     # csr.to_compact(g.indptr, g.indices)...
 
 Now we have all the positive edges: ``pos_edges``, let's divide them for 
-validation set and test set, and we use the "multi-pos-whole-graph" evaluation method:
+validation set and test set, and we'll use the "whole-graph-multi-pos" evaluation method:
 
 .. code:: python
 
@@ -106,7 +106,7 @@ Now we have already generated a complete dataset instance, let's save it:
     >>> io.save_pickle(osp.join(data_root, 'test_set.pkl'), test_set)
 
 Here we also save the ``pos_edges``, so you can use it to make evaluation sets for 
-"one-pos-k-neg" or "one-pos-whole-graph" method by concatenating some randomly 
+"one-pos-k-neg" or "whole-graph-one-pos" method by concatenating some randomly 
 sampled negative nodes. 
 
 If you have done the above steps successfully, your data directory will be like follows: 
