@@ -1,6 +1,9 @@
 SGC
 =========
 
+Introduction
+-----------------
+
 `\[paper\] <https://arxiv.org/abs/1902.07153>`_
 
 **Title:** Simplifying Graph Convolutional Networks
@@ -9,9 +12,14 @@ SGC
 
 **Abstract:** Graph Convolutional Networks (GCNs) and their variants have experienced significant attention and have become the de facto methods for learning graph representations. GCNs derive inspiration primarily from recent deep learning approaches, and as a result, may inherit unnecessary complexity and redundant computation. In this paper, we reduce this excess complexity through successively removing nonlinearities and collapsing weight matrices between consecutive layers. We theoretically analyze the resulting linear model and show that it corresponds to a fixed low-pass filter followed by a linear classifier. Notably, our experimental evaluation demonstrates that these simplifications do not negatively impact accuracy in many downstream applications. Moreover, the resulting model scales to larger datasets, is naturally interpretable, and yields up to two orders of magnitude speedup over FastGCN.
 
+Running with XGCN
+----------------------
+
+**Configuration template for SGC:**
+
 .. code:: yaml
 
-    # SGC-config.yaml
+    ####### SGC-config.yaml #######
 
     # Dataset/Results root
     data_root: ""
@@ -59,10 +67,37 @@ SGC
 
     loss_fn: bpr
 
+**Run SGC from CMD:**
+
+.. code:: bash
+    
+    all_data_root=""       # fill your own paths here
+    config_file_root=""
+
+    dataset=facebook
+    model=SGC
+    seed=0
+
+    data_root=$all_data_root/dataset/instance_$dataset
+    results_root=$all_data_root/model_output/$dataset/$model/[seed$seed]
+
+    file_pretrained_emb=$all_data_root/model_output/$dataset/Node2vec/[seed$seed]/out_emb_table.pt
+
+    python -m XGCN.main.run_model --seed $seed \
+        --config_file $config_file_root/$model-config.yaml \
+        --data_root $data_root --results_root $results_root \
+        --val_evaluator WholeGraph_MultiPos_Evaluator --val_batch_size 256 \
+        --file_val_set $data_root/val_set.pkl \
+        --test_evaluator WholeGraph_MultiPos_Evaluator --test_batch_size 256 \
+        --file_test_set $data_root/test_set.pkl \
+        --from_pretrained 1 --file_pretrained_emb $file_pretrained_emb \
+
+
+**Configuration template for SGC_learnable_emb:**
 
 .. code:: yaml
 
-    # SGC_learnable_emb-config.yaml
+    ####### SGC_learnable_emb-config.yaml #######
 
     # Dataset/Results root
     data_root: ""
@@ -117,3 +152,29 @@ SGC
 
     L2_reg_weight: 0.0
     loss_type: bpr
+
+
+**Run SGC_learnable_emb from CMD:**
+
+.. code:: bash
+    
+    all_data_root=""       # fill your own paths here
+    config_file_root=""
+    
+    dataset=facebook
+    model=SGC_learnable_emb
+    seed=0
+
+    data_root=$all_data_root/dataset/instance_$dataset
+    results_root=$all_data_root/model_output/$dataset/$model/[seed$seed]
+
+    file_pretrained_emb=$all_data_root/model_output/$dataset/Node2vec/[seed$seed]/out_emb_table.pt
+
+    python -m XGCN.main.run_model --seed $seed \
+        --config_file $config_file_root/$model-config.yaml \
+        --data_root $data_root --results_root $results_root \
+        --val_evaluator WholeGraph_MultiPos_Evaluator --val_batch_size 256 \
+        --file_val_set $data_root/val_set.pkl \
+        --test_evaluator WholeGraph_MultiPos_Evaluator --test_batch_size 256 \
+        --file_test_set $data_root/test_set.pkl \
+        --from_pretrained 1 --file_pretrained_emb $file_pretrained_emb \

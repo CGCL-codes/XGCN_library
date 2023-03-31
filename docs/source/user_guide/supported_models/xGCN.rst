@@ -1,15 +1,25 @@
 xGCN
 =========
 
-`\[paper\] <>`_
+Introduction
+-----------------
+.. `\[paper\] <>`_
 
-**Title:** 
+**Title:** xGCN: An Extreme Graph Convolutional Network for Large-scale Social Link Prediction
 
-**Authors:** 
+**Authors:** Xiran Song, Jianxun Lian, Hong Huang, Zihan Luo, Wei Zhou, Xue Lin, Mingqi Wu, Chaozhuo Li, Xing Xie, Hai Jin
 
-**Abstract:** 
+**Abstract:** Graph neural networks (GNNs) have been widely used in various real-world applications, thanks to their flexibility and effectiveness in learning graph-structure data. However, when it comes to large-scale transductive network embedding, which is a practical solution for link predictions, existing GNNs still face some accuracy, efficiency, and scalability issues due to the huge trainable parameters in the embedding table and the paradigm of stacking neighborhood aggregations. In this paper, we propose a novel model xGCN, which encodes graph-structure data in an extreme convolutional manner and has the potential to push the performance of graph embedding-based link predictions to a new record. Instead of assigning each node with a directly learnable embedding vector, xGCN regards node embeddings as static features. It uses a propagation operation to smooth node embeddings and relies on a Refinement neural Network (RefNet) to transform the coarse embeddings derived from the unsupervised propagation into new ones that optimize a training objective. The output of RefNet, which are well refined embeddings, will replace the original node embeddings. This process is repeated
+iteratively until the model converges to a satisfying status. We conduct experiments on three social network datasets with link prediction tasks. Results demonstrate that xGCN not only achieves the best accuracy compared with a series of competitive baselines, but also is highly efficient and scalable.
+
+Running with XGCN
+----------------------
+
+**Configuration template:**
 
 .. code:: yaml
+
+    ####### xGCN-config.yaml #######
 
     # Dataset/Results root
     data_root: ""
@@ -69,3 +79,28 @@ xGCN
     K: 10
     T: 3
     tolerance: 3
+
+
+**Run from CMD:**
+
+.. code:: bash
+    
+    all_data_root=""       # fill your own paths here
+    config_file_root=""
+
+    dataset=facebook
+    model=xGCN
+    seed=0
+
+    data_root=$all_data_root/dataset/instance_$dataset
+    results_root=$all_data_root/model_output/$dataset/$model/[seed$seed]
+
+    file_pretrained_emb=$all_data_root/model_output/$dataset/Node2vec/[seed$seed]/out_emb_table.pt
+
+    python -m XGCN.main.run_model --seed $seed \
+        --config_file $config_file_root/$model-config.yaml \
+        --data_root $data_root --results_root $results_root \
+        --val_evaluator WholeGraph_MultiPos_Evaluator --val_batch_size 256 \
+        --file_val_set $data_root/val_set.pkl \
+        --test_evaluator WholeGraph_MultiPos_Evaluator --test_batch_size 256 \
+        --file_test_set $data_root/test_set.pkl \

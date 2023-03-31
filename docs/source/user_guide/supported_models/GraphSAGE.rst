@@ -1,6 +1,9 @@
 GraphSAGE
 ===================
 
+Introduction
+-----------------
+
 `\[paper\] <https://arxiv.org/abs/1706.02216>`_
 
 **Title:** Inductive Representation Learning on Large Graphs
@@ -9,7 +12,14 @@ GraphSAGE
 
 **Abstract:** Low-dimensional embeddings of nodes in large graphs have proved extremely useful in a variety of prediction tasks, from content recommendation to identifying protein functions. However, most existing approaches require that all nodes in the graph are present during training of the embeddings; these previous approaches are inherently transductive and do not naturally generalize to unseen nodes. Here we present GraphSAGE, a general, inductive framework that leverages node feature information (e.g., text attributes) to efficiently generate node embeddings for previously unseen data. Instead of training individual embeddings for each node, we learn a function that generates embeddings by sampling and aggregating features from a node's local neighborhood. Our algorithm outperforms strong baselines on three inductive node-classification benchmarks: we classify the category of unseen nodes in evolving information graphs based on citation and Reddit post data, and we show that our algorithm generalizes to completely unseen graphs using a multi-graph dataset of protein-protein interactions.
 
+Running with XGCN
+----------------------
+
+**Configuration template:**
+
 .. code:: yaml
+
+    ####### GraphSAGE-config.yaml #######
 
     # Dataset/Results root
     data_root: ""
@@ -67,3 +77,31 @@ GraphSAGE
 
     loss_type: bpr
     L2_reg_weight: 0.0
+
+
+**Run from CMD:**
+
+.. code:: bash
+    
+    all_data_root=""       # fill your own paths here
+    config_file_root=""
+
+    dataset=facebook
+    model=GraphSAGE
+    seed=0
+
+    data_root=$all_data_root/dataset/instance_$dataset
+    results_root=$all_data_root/model_output/$dataset/$model/[seed$seed]
+
+    file_pretrained_emb=$all_data_root/model_output/$dataset/Node2vec/[seed$seed]/out_emb_table.pt
+
+    python -m XGCN.main.run_model --seed $seed \
+        --config_file $config_file_root/$model-config.yaml \
+        --data_root $data_root --results_root $results_root \
+        --val_evaluator WholeGraph_MultiPos_Evaluator --val_batch_size 256 \
+        --file_val_set $data_root/val_set.pkl \
+        --test_evaluator WholeGraph_MultiPos_Evaluator --test_batch_size 256 \
+        --file_test_set $data_root/test_set.pkl \
+        --from_pretrained 1 \
+        --file_pretrained_emb $file_pretrained_emb \
+        --freeze_emb 0 \
