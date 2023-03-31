@@ -1,5 +1,5 @@
-Model Training
-===================
+Training and Evaluation
+============================
 
 Once the dataset instance is generated (for dataset preprocessing, please refer to previous sections), 
 you can run models in ``XGCN/model`` from two ways: command line (CMD) and API functions. 
