@@ -9,18 +9,17 @@ For example, a dataset instance of the facebook dataset may look like follows:
 .. code::
 
     instance_facebook
-    ├── info.yaml      # some basic information such as "graph type" and "number of nodes"
-    ├── g.pkl          # DGLGraph for training
+    ├── info.yaml      # contains some basic information such as "graph type" and "number of nodes"
+    ├── indptr.pkl     # graph for training in CSR format
+    ├── indices.pkl
     ├── val_set.pkl    # evaluation sets
     └── test_set.pkl
 
 XGCN has no restriction on the name of the dataset instance directory, 
 but we recommend to name it as ``instance_[dataset]`` for clarity. 
 
-We recommend to arrange the data with a clear directory structure. 
+We also recommend to arrange all the data (datasets and model outputs) with a clear directory structure. 
 For example, from the beginning, you may manually setup a ``XGCN_data`` directory as follows: 
-(The facebook data is included in our XGCN repository: ``data/raw_facebook/``. 
-It's recommended to put your ``XGCN_data`` somewhere else than in this repository.)
 
 .. code:: 
 
@@ -44,11 +43,14 @@ After some further data processing and model running, your directory may look li
           ├── GraphSAEG    # saved model and evaluation results
           └── xGCN
 
+You can find some detailed data processing and model running examples in the 
+Running Examples section. In our examples, we'll follow the above directory structure. 
+
 info.yaml
 ------------------
 
 ``info.yaml`` contains some basic information such as "graph type" and "number of nodes". 
-For homogenous graphs, the contents should include:
+For homogenous graphs (e.g. social networks), the contents should include:
 
 .. code:: yaml
 
@@ -56,7 +58,7 @@ For homogenous graphs, the contents should include:
     num_nodes: [int value]
     num_edges: [int value]
 
-For bipartite graphs, the contents should include:
+For bipartite graphs (e.g. user-item graphs), the contents should include:
 
 .. code:: yaml
 
@@ -66,30 +68,46 @@ For bipartite graphs, the contents should include:
     num_users: [int value]
     num_items: [int value]
 
-You can save/load .yaml files using ``XGCN.utils.io``:
+You can save/load .yaml files using ``XGCN.data.io``:
 
 .. code:: python
 
-    from XGCN.utils import io
+    from XGCN.data import io
 
     info = io.load_yaml('info.yaml')  # load
     io.save_yaml('info.yaml', info)   # save
 
-g.pkl
-------------
+CSR Graph
+------------------------------
 
-``g.pkl`` is simply a DGLGraph saved using ``pickle``. You can save/load such objects 
-using ``XGCN.utils.io``:
+``indptr.pkl`` and ``indices.pkl`` is the graph for training in CSR format. 
+They are numpy arrays saved using ``pickle``. You can save/load objects with ``pickle`` 
+by using ``XGCN.data.io``: 
 
 .. code:: python
 
-    from XGCN.utils import io
+    indptr = io.load_pickle('indptr.pkl')  # load
+    io.save_pickle('indptr.pkl', indptr)   # save
 
-    g = io.load_pickle('g.pkl')  # load
-    io.save_pickle('g.pkl', g)   # save
+`CSR <https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.csr_matrix.html>`_ 
+is a compact format for sparse metrices. XGCN use this structure to save 
+graphs' adjacency matrices and implements some algorithoms. The reasons 
+for us to use this format are:
 
+* (1) Good efficency. CSR format has high efficency on some key graph/matrix operations 
+such as "querying node neighbors" (O(1) time complexity). 
+By using `Numba <https://numba.pydata.org/>`_ for acceleration, 
+XGCN provides efficient implements of some graph/matrix algorithoms such as random walk, 
+PPR (Personalized PageRank), and ItemCF. 
 
-Evaluation sets
+* (2) Memory-saving. The existing open-source packages for sparse matrix multiplication 
+tend to use too much memory. Though slower than PyTorch's implementation, 
+XGCN implements a Numba-based CSR-matrix-with-dense-matrix multiplication, which consumes 
+fewer memory. **(To add some experiment here)**
+
+* (3) DGLGraph can easily be initialized from the CSR format. 
+
+Evaluation Sets
 ---------------------
 
 In link prediction tasks, A single evaluation sample can be formulated as: 
