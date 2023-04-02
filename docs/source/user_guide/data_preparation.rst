@@ -13,20 +13,15 @@ and bipartite graphs (e.g. user-item graphs). The data pipeline is as follows:
 
 As shown in the figure, XGCN has three data processing modules: 
 
-* ``XGCN.data.io``. Handle disk-reading/writing operations, including 
-reading raw token IDs as input and re-index them into continuous integer IDs. 
+* ``XGCN.data.io``. Handle disk-reading/writing operations, including reading raw token IDs as input and re-index them into continuous integer IDs. 
 
-* ``XGCN.data.trim``. Some industrial graph datasets tend to be large-scale 
-(e.g. Taobao's transaction record), and we might want to get a smaller one for model 
-development and quick evaluation. This module help users trim graphs by dropping 
-nodes randomly or according to nodes' degrees. 
+* ``XGCN.data.trim``. Some industrial graph datasets tend to be large-scale (e.g. Taobao's transaction record), and we might want to get a smaller one for model development and quick evaluation. This module help users trim graphs by dropping nodes randomly or according to nodes' degrees. 
 
-* ``XGCN.data.split_edges``. To evaluate a link prediction model, it is common to 
-split a portion of edges as positive samples, which can be done by using this module. 
+* ``XGCN.data.split_edges``. To evaluate a link prediction model, it is common to split a portion of edges as positive samples, which can be done by using this module. 
 
 In this section, we'll first introduce the "dataset instance" format, which is needed 
 to run a model. Next, we'll present the data processing APIs in the three modules above. 
-Finally, we provide several code examples on different dataset cases. 
+As for data processing examples, please refer to the Running Examples section. 
 
 .. * **facebook**. The facebook data is included in our XGCN repository: 
 .. ``data/raw_facebook/``. You can also download it from SNAP: 
