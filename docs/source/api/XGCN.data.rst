@@ -3,24 +3,24 @@
 XGCN.data
 =================
 
-.. currentmodule:: XGCN.data
+.. currentmodule:: XGCN.data.io
 
 XGCN.data.io
 -----------------
 
 .. autosummary::
     :toctree: ../generated/
-    :nosignatures:
 
-    io.save_pickle
-    io.load_pickle
+    save_pickle
+    load_pickle
 
+
+.. currentmodule:: XGCN.data.split
 
 XGCN.data.split
 -----------------
 
 .. autosummary::
     :toctree: ../generated/
-    :nosignatures:
 
-    split.split_edges
+    split_edges
