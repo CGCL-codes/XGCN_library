@@ -10,6 +10,7 @@ XGCN.data.io
 
 .. autosummary::
     :toctree: ../generated/
+    :nosignatures:
 
     save_pickle
     load_pickle
@@ -22,5 +23,6 @@ XGCN.data.split
 
 .. autosummary::
     :toctree: ../generated/
-
+    :nosignatures:
+    
     split_edges

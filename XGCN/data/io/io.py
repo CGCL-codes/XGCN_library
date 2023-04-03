@@ -27,7 +27,7 @@ def load_pickle(filename):
     
     Parameters
     ------------
-    filename: str
+    filename : str
         File path of the object.
     
     Returns

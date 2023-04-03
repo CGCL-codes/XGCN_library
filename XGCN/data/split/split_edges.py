@@ -12,18 +12,26 @@ def split_edges(indptr, indices, num_sample, min_src_out_degree, min_dst_in_degr
     **Note: the edges split happens in-place**
     
     Parameters
-    ------------
+    ----------
     indptr : numpy.ndarray
+        The indptr of the CSR graph.
     indices : numpy.ndarray
+        The indices of the CSR graph.
+        
     num_sample : int
+    
     min_src_out_degree : int
+    
     min_dst_in_degree : int
     
     Returns
-    ---------
+    -------
     indptr : numpy.ndarray
+    
     indices : numpy.ndarray
+    
     pos_edges : numpy.ndarray
+    
     """
     g = csr.CSR_Graph_rev_rm_edge(indptr, indices)
     
