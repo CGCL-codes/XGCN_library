@@ -17,7 +17,7 @@ As shown in the figure, XGCN has three data processing modules:
 
 * ``XGCN.data.trim``. Some industrial graph datasets tend to be large-scale (e.g. Taobao's transaction record), and we might want to get a smaller one for model development and quick evaluation. This module help users trim graphs by dropping nodes randomly or according to nodes' degrees. 
 
-* ``XGCN.data.split_edges``. To evaluate a link prediction model, it is common to split a portion of edges as positive samples, which can be done by using this module. 
+* ``XGCN.data.split``. To evaluate a link prediction model, it is common to split a portion of edges as positive samples, which can be done by using this module. 
 
 In this section, we'll first introduce the "dataset instance" format, which is needed 
 to run a model. Next, we'll present the data processing APIs in the three modules above. 

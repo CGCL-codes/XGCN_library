@@ -5,11 +5,35 @@ import gc
 
 
 def save_pickle(filename, obj):
+    """ Save objects using pickle. 
+    
+    Parameters
+    ------------
+    filename: str
+        File path of the object.
+    
+    obj : the object to save
+    
+    Returns
+    ---------
+    None
+    """
     with open(filename, "wb") as f:
         pkl.dump(obj, f)
 
 
 def load_pickle(filename):
+    """ load objects saved using pickle. 
+    
+    Parameters
+    ------------
+    filename: str
+        File path of the object.
+    
+    Returns
+    ---------
+    The saved object.
+    """
     with open(filename, "rb") as f:
         gc.disable()
         obj = pkl.load(f)

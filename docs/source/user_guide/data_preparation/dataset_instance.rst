@@ -94,18 +94,11 @@ is a compact format for sparse metrices. XGCN use this structure to save
 graphs' adjacency matrices and implements some algorithoms. The reasons 
 for us to use this format are:
 
-* (1) Good efficency. CSR format has high efficency on some key graph/matrix operations 
-such as "querying node neighbors" (O(1) time complexity). 
-By using `Numba <https://numba.pydata.org/>`_ for acceleration, 
-XGCN provides efficient implements of some graph/matrix algorithoms such as random walk, 
-PPR (Personalized PageRank), and ItemCF. 
+* (1) High-efficency. CSR format is efficient on some key graph/matrix operations such as "querying node neighbors" (O(1) time complexity). By using `Numba <https://numba.pydata.org/>`_ for acceleration based on the CSR data structure, XGCN provides some efficient implements such as random walk, PPR (Personalized PageRank), and ItemCF. 
 
-* (2) Memory-saving. The existing open-source packages for sparse matrix multiplication 
-tend to use too much memory. Though slower than PyTorch's implementation, 
-XGCN implements a Numba-based CSR-matrix-with-dense-matrix multiplication, which consumes 
-fewer memory. **(To add some experiment here)**
+* (2) Memory-saving. The existing open-source packages for sparse matrix multiplication tend to use too much memory. Though slower than PyTorch's implementation, XGCN implements a Numba-based CSR-matrix-with-dense-matrix multiplication, which consumes lesser memory. **(To add some experiments here)**
 
-* (3) DGLGraph can easily be initialized from the CSR format. 
+* (3) Friendly with DGL's API. DGLGraph can be initialized directly from the CSR format.
 
 Evaluation Sets
 ---------------------

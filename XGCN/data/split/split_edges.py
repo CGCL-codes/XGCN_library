@@ -6,9 +6,25 @@ import dgl
 
 
 def split_edges(indptr, indices, num_sample, min_src_out_degree, min_dst_in_degree):
-    '''
-        Note: the edges split happens in-place
-    '''
+    """Given a CSR graph, split a number of edges according to the requirements 
+    of the source/destination node's degrees. 
+    
+    **Note: the edges split happens in-place**
+    
+    Parameters
+    ------------
+    indptr : numpy.ndarray
+    indices : numpy.ndarray
+    num_sample : int
+    min_src_out_degree : int
+    min_dst_in_degree : int
+    
+    Returns
+    ---------
+    indptr : numpy.ndarray
+    indices : numpy.ndarray
+    pos_edges : numpy.ndarray
+    """
     g = csr.CSR_Graph_rev_rm_edge(indptr, indices)
     
     def src_degree_ok(node):

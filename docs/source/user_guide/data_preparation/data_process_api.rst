@@ -69,8 +69,7 @@ helping users trim graphs by dropping nodes randomly or according to nodes' degr
 
 * ``XGCN.data.trim.drop_nodes_randomly(g: dgl.DGLGraph, num_drop, node_mask=None)``
 
-* ``XGCN.data.trim.drop_nodes_by_degree(g: dgl.DGLGraph, node_mask=None, 
-min_out_degree=None, max_out_degree=None, min_in_degree=None, max_in_degree=None)``
+* ``XGCN.data.trim.drop_nodes_by_degree(g: dgl.DGLGraph, node_mask=None, min_out_degree=None, max_out_degree=None, min_in_degree=None, max_in_degree=None)``
 
 XGCN.data.split_edges
 -------------------------
