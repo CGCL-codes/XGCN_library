@@ -109,3 +109,9 @@ Full Documentations
    developer_guide/overview
    developer_guide/Model
    developer_guide/DataLoader
+
+.. toctree::
+   :maxdepth: 2
+   :caption: API Reference
+
+   api/XGCN.data
