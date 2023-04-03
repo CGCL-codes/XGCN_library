@@ -1,5 +1,4 @@
-from XGCN.utils import io
-from XGCN.utils import csr
+from XGCN.data import io, csr
 from XGCN.utils.parse_arguments import parse_arguments
 from XGCN.utils.utils import ensure_dir
 
