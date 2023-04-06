@@ -7,4 +7,4 @@ We provide examples of data processing and model running:
 .. toctree::
     :maxdepth: 1
 
-    usage_eamples/example_facebook
+    usage_examples/nb_example_facebook
