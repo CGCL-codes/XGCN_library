@@ -1,10 +1,10 @@
-from . import data
-from . import dataloading
-from . import evaluator
-from . import main
-from . import model
-from . import train
-from . import utils
+from XGCN import data
+from XGCN import dataloading
+from XGCN import evaluator
+from XGCN import main
+from XGCN import model
+from XGCN import train
+from XGCN import utils
 
 from XGCN.model.build import build_Model
 from XGCN.dataloading.build import build_DataLoader
