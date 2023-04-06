@@ -46,6 +46,7 @@ emb_dim: 64
 emb_init_std: 0.1
 emb_lr: 0.005
 
+num_gcn_layers: 2
 stack_layers: 1
 
 loss_type: bpr
