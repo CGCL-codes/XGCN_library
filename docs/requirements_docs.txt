@@ -3,3 +3,4 @@ sphinx-autobuild
 sphinx-rtd-theme
 sphinx-copybutton
 sphinx-toggleprompt
+nbsphinx
