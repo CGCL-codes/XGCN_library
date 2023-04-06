@@ -9,10 +9,9 @@ Welcome to XGCN's documentation!
 
 XGCN is a light-weight and easy-to-use library for large-scale Graph Neural Network (GNN) embedding, 
 aiming at helping researchers to quickly embed million-scale graphs in a single-machine environment. 
-
 XGCN includes **xGCN** - an implementation for the TheWebConf 2023 paper: 
 **xGCN: An Extreme Graph Convolutional Network for Large-scale Social Link Prediction**. 
-Our repository is available at: https://github.com/xiransong/xGCN .
+Our repository is available at: https://github.com/xiransong/XGCN_library .
 
 We now focus on embedding models for **social link prediction** (also knows as friend recommendation) 
 and **user-item link prediction** (i.e. the classic recommendation task), 
@@ -35,13 +34,17 @@ can also be easily added into our framework.
    The server's CPU is Intel(R) Xeon(R) CPU E5-2680 v4 @ 2.40GHz with 252GB memory. The GPU is Tesla P100-PCIE-16GB 
    with 16GB memory. 
    The results are shown in the figures below. 
-   We observe that XGCN have much better scalability on million-scale graphs. (Note that currently RecBole 
-   does not provide UltraGCN implementation.)
    
 .. image:: asset/scalability_study.jpg
   :width: 400
   :align: center
   :alt: Scalability study of different implementations
+
+   We observe that XGCN have much better scalability on million-scale graphs. 
+   The tested RecBole version is v1.1.1. 
+   The LightGCN's code is from https\://github.com/gusye1234/LightGCN-PyTorch.git (commit SHA\: 947ca2b). 
+   The UltraGCN's code is from https\://github.com/xue-pai/UltraGCN.git (commit SHA\: c460a05). 
+   (Note that currently RecBole v1.1.1 does not provide UltraGCN implementation.)
 
 - xGCN - a brand new GNN embedding model
    XGCN includes xGCN - an implementation for the TheWebConf 2023 paper: 
@@ -77,7 +80,7 @@ We recommend to install XGCN from source with the following command:
 
 .. code:: bash
 
-    git clone git@github.com:xiransong/xGCN.git -b XGCN_dev
+    git clone git@github.com:xiransong/XGCN_library.git -b dev
     cd xGCN
     python -m pip install -e .
    
