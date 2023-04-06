@@ -113,7 +113,7 @@ class BaseGNN(BaseEmbeddingModel):
         if self.forward_mode == 'full_graph':
             # full graph infer
             input_emb = self.emb_table.weight
-            self.out_emb_table = self.gnn(self.g, input_emb).to(self.out_emb_table)
+            self.out_emb_table = self.gnn(self.g, input_emb).to(self.out_emb_table_device)
         else:
             # infer on blocks
             self.out_emb_table = self.block_infer_out_emb_table()
@@ -137,7 +137,7 @@ class BaseGNN(BaseEmbeddingModel):
             else:
                 sampler = dgl.dataloading.NeighborSampler([num_layer_sample[i],])
             
-            dl = dgl.dataloading.NodeDataLoader(
+            dl = dgl.dataloading.DataLoader(
                 self.g, torch.arange(self.info['num_nodes']).to(self.g.device),
                 sampler, batch_size=8192, shuffle=False
             )
