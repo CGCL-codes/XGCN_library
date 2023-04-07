@@ -12,7 +12,7 @@ aiming at helping researchers to quickly embed million-scale graphs in a single-
 XGCN includes **xGCN** - an implementation for the TheWebConf 2023 paper: 
 **xGCN: An Extreme Graph Convolutional Network for Large-scale Social Link Prediction**. 
 
-Full documentation: <https://xgcn.readthedocs.io/en/latest/index.html>`_
+Full documentation: https\://xgcn.readthedocs.io/en/latest/index.html
 
 We now focus on embedding models for **social link prediction** (also knows as friend recommendation) 
 and **user-item link prediction** (i.e. the classic recommendation task), 
@@ -34,15 +34,15 @@ can also be easily added into our framework.
    (from 0.15 million nodes to 3 million nodes) and recording the training speed under the same hyper-parameters. 
    The server's CPU is Intel(R) Xeon(R) CPU E5-2680 v4 @ 2.40GHz with 252GB memory. The GPU is Tesla P100-PCIE-16GB 
    with 16GB memory. The tested RecBole version is v1.1.1. 
-   The LightGCN's code is from https\://github.com/gusye1234/LightGCN-PyTorch.git (commit SHA\: 947ca2b). 
-   The UltraGCN's code is from https\://github.com/xue-pai/UltraGCN.git (commit SHA\: c460a05). 
+   The LightGCN's code is from https\://github.com/gusye1234/LightGCN-PyTorch.git (branch: master, commit SHA\: 947ca2b). 
+   The UltraGCN's code is from https\://github.com/xue-pai/UltraGCN.git (branch: main, commit SHA\: c460a05). 
    (Note that currently RecBole v1.1.1 does not provide UltraGCN implementation.)
 
    The results are shown in the figures below. We observe that XGCN have much better scalability on million-scale graphs. 
    
 .. image:: docs/source/asset/scalability_study.jpg
-  :width: 400
   :align: center
+  :width: 400
   :alt: Scalability study of different implementations
 
 
@@ -52,14 +52,14 @@ can also be easily added into our framework.
    which achieves remarkable accuracy and efficiency on large graphs, 
    including an industrial dataset with 100 million nodes. Some results are as follows:
 
-.. image:: docs/source/xgcn_fig1.jpg
-  :width: 500
+.. image:: docs/source/asset/xgcn_fig1.jpg
   :align: center
+  :width: 500
   :alt: xGCN efficiency study
 
-.. image:: docs/source/xgcn_fig2.jpg
-  :width: 500
+.. image:: docs/source/asset/xgcn_fig2.jpg
   :align: center
+  :width: 500
   :alt: xGCN on Xbox-100m dataset
 
 - A complete data pipeline for large graphs
