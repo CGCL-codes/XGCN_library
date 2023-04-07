@@ -4,14 +4,15 @@
    contain the root `toctree` directive.
 .. title:: XGCN v0.0.0
 
-Welcome to XGCN's documentation!
+Welcome to XGCN!
 ===================================
 
 XGCN is a light-weight and easy-to-use library for large-scale Graph Neural Network (GNN) embedding, 
 aiming at helping researchers to quickly embed million-scale graphs in a single-machine environment. 
 XGCN includes **xGCN** - an implementation for the TheWebConf 2023 paper: 
 **xGCN: An Extreme Graph Convolutional Network for Large-scale Social Link Prediction**. 
-XGCN's repository is available at: https://github.com/xiransong/XGCN_library .
+
+Full documentation: <https://xgcn.readthedocs.io/en/latest/index.html>`_
 
 We now focus on embedding models for **social link prediction** (also knows as friend recommendation) 
 and **user-item link prediction** (i.e. the classic recommendation task), 
@@ -39,7 +40,7 @@ can also be easily added into our framework.
 
    The results are shown in the figures below. We observe that XGCN have much better scalability on million-scale graphs. 
    
-.. image:: asset/scalability_study.jpg
+.. image:: docs/source/asset/scalability_study.jpg
   :width: 400
   :align: center
   :alt: Scalability study of different implementations
@@ -51,12 +52,12 @@ can also be easily added into our framework.
    which achieves remarkable accuracy and efficiency on large graphs, 
    including an industrial dataset with 100 million nodes. Some results are as follows:
 
-.. image:: asset/xgcn_fig1.jpg
+.. image:: docs/source/xgcn_fig1.jpg
   :width: 500
   :align: center
   :alt: xGCN efficiency study
 
-.. image:: asset/xgcn_fig2.jpg
+.. image:: docs/source/xgcn_fig2.jpg
   :width: 500
   :align: center
   :alt: xGCN on Xbox-100m dataset
@@ -82,38 +83,3 @@ We recommend to install XGCN from source with the following command:
     git clone git@github.com:xiransong/XGCN_library.git -b dev
     cd xGCN
     python -m pip install -e .
-   
-
-Full Documentations
-------------------------
-
-.. toctree::
-   :maxdepth: 1
-   :caption: Get Started
-
-   self
-   get_started/install
-
-.. toctree::
-   :maxdepth: 1
-   :caption: User Guide
-
-   user_guide/overview
-   user_guide/data_preparation
-   user_guide/training_and_evaluation
-   user_guide/supported_models
-   user_guide/usage_examples
-
-.. toctree::
-   :maxdepth: 1
-   :caption: Developer Guide
-
-   developer_guide/overview
-   developer_guide/Model
-   developer_guide/DataLoader
-
-.. toctree::
-   :maxdepth: 1
-   :caption: API Reference
-
-   api/XGCN.data
