@@ -53,12 +53,12 @@ can also be easily added into our framework.
    including an industrial dataset with 100 million nodes. Some results are as follows:
 
 .. image:: docs/source/asset/xgcn_fig1.jpg
-  :align: center
+  :align: right
   :width: 500
   :alt: xGCN efficiency study
 
 .. image:: docs/source/asset/xgcn_fig2.jpg
-  :align: center
+  :align: left
   :width: 500
   :alt: xGCN on Xbox-100m dataset
 
