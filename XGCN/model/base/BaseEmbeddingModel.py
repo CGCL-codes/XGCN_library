@@ -1,4 +1,5 @@
 from .BaseModel import BaseModel
+import XGCN
 from XGCN.model.module import dot_product
 from XGCN.model.module.mask_neighbor_score import mask_neighbor_score, mask_neighbor_score_user_item
 from XGCN.data import io
@@ -10,10 +11,13 @@ import os.path as osp
 
 class BaseEmbeddingModel(BaseModel):
     
-    def __init__(self, config, data):
+    def __init__(self, config):
         self.config = config
-        self.data = data
-        
+        self.data = {}
+        self._init_BaseEmbeddingModel()
+        self._init_Trainer()
+    
+    def _init_BaseEmbeddingModel(self):
         self.data_root = self.config['data_root']
         self.results_root = self.config['results_root']
         
@@ -24,6 +28,23 @@ class BaseEmbeddingModel(BaseModel):
         
         self.indptr = None
         self.indices = None
+    
+    def _init_Trainer(self):
+        model = self
+        config = self.config
+        data = self.data
+        
+        train_dl = XGCN.build_DataLoader(config, data)
+        val_evaluator = XGCN.build_val_Evaluator(config, data, model)
+        test_evaluator = XGCN.build_test_Evaluator(config, data, model)
+    
+        self.trainer = XGCN.build_Trainer(
+            config, data, model, train_dl,
+            val_evaluator, test_evaluator
+        )
+    
+    def fit(self):
+        self.trainer.train_and_test()
     
     def eval(self, batch_data, eval_type):
         return {
