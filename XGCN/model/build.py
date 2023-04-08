@@ -14,7 +14,7 @@ from XGCN.model.GBP import GBP
 from XGCN.model.GAMLP import GAMLP, GAMLP_learnable_emb
 
 
-def build_Model(config, data):
+def create_Model(config, data):
     if config['model'] == 'Node2vec':
         from XGCN.model.Node2vec import Node2vec
         model = Node2vec(config, data)

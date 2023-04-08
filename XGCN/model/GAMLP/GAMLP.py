@@ -81,13 +81,13 @@ class GAMLP(BaseEmbeddingModel):
         #     )
         self.emb_table_list = emb_list  # embeddings of different times of propagation
         
-        self.mlp = self.build_mlp()
+        self.mlp = self.create_mlp()
         
         self.opt = torch.optim.Adam([
             {'params': self.mlp.parameters(), 'lr': self.config['dnn_lr']}
         ])
     
-    def build_mlp(self):
+    def create_mlp(self):
         if self.config['GAMLP_type'] == 'GAMLP_JK':
             MLP = JK_GAMLP
         elif self.config['GAMLP_type'] == 'GAMLP_R':

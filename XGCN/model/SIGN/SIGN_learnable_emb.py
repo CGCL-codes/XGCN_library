@@ -37,7 +37,7 @@ class SIGN_learnable_emb_Module(torch.nn.Module):
     
 class SIGN_learnable_emb(BaseGNN):
     
-    def build_gnn(self):
+    def create_gnn(self):
         src, dst = self.g.edges()
         degrees = self.g.out_degrees()
         d1 = degrees[src]

@@ -34,11 +34,11 @@ class BaseEmbeddingModel(BaseModel):
         config = self.config
         data = self.data
         
-        train_dl = XGCN.build_DataLoader(config, data)
-        val_evaluator = XGCN.build_val_Evaluator(config, data, model)
-        test_evaluator = XGCN.build_test_Evaluator(config, data, model)
+        train_dl = XGCN.create_DataLoader(config, data)
+        val_evaluator = XGCN.create_val_Evaluator(config, data, model)
+        test_evaluator = XGCN.create_test_Evaluator(config, data, model)
     
-        self.trainer = XGCN.build_Trainer(
+        self.trainer = XGCN.create_Trainer(
             config, data, model, train_dl,
             val_evaluator, test_evaluator
         )

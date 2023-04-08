@@ -29,7 +29,7 @@ def prepare_gnn_graph(config, data):
     return g
 
 
-def build_BlockSampler(config, data):
+def create_BlockSampler(config, data):
     num_layer_sample = eval(config['train_num_layer_sample'])
     # e.g. num_layer_sample = [5, 10]: sample 5 nodes for the first layer, 10 for the second layer
     # num_layer_sample = []: do not sample for each layer
@@ -46,37 +46,37 @@ def build_BlockSampler(config, data):
     return block_sampler
 
 
-def build_DataLoader(config, data):
+def create_DataLoader(config, data):
     if config['model'] == 'Node2vec':
         train_dl = data['pyg_node2vec_train_dl']
     elif config['model'] == 'GensimNode2vec':
         train_dl = None
     elif 'forward_mode' in config and config['forward_mode'] == 'sub_graph':
-        train_dl = build_ClusterDataLoader(config, data)
+        train_dl = create_ClusterDataLoader(config, data)
     else:
-        dataset = build_Dataset(config, data)
+        dataset = create_Dataset(config, data)
         train_dl = DataLoader(dataset, config['num_workers'])
     return train_dl
 
 
-def build_Dataset(config, data):
+def create_Dataset(config, data):
     Dataset_type = config['Dataset_type']
     dataset = {
-        'BlockDataset': build_BlockDataset,
-        'NodeListDataset': build_NodeListDataset,
+        'BlockDataset': create_BlockDataset,
+        'NodeListDataset': create_NodeListDataset,
     }[Dataset_type](config, data)
     return dataset
 
 
-def build_NodeListDataset(config, data):
+def create_NodeListDataset(config, data):
     NodeListDataset_type =  config['NodeListDataset_type']
     dataset = {
-        'LinkDataset': build_LinkDataset,
+        'LinkDataset': create_LinkDataset,
     }[NodeListDataset_type](config, data)
     return dataset
 
 
-def build_LinkDataset(config, data):
+def create_LinkDataset(config, data):
     pos_sampler = {
         'ObservedEdges_Sampler': ObservedEdges_Sampler,
     }[config['pos_sampler']](config, data)
@@ -94,24 +94,24 @@ def build_LinkDataset(config, data):
     return dataset
 
 
-def build_BatchSampleIndicesGenerator(config, data):
+def create_BatchSampleIndicesGenerator(config, data):
     BatchSampleIndicesGenerator_type = config['BatchSampleIndicesGenerator_type']
     batch_sample_indices_generator = {
-        'SampleIndicesWithReplacement': build_SampleIndicesWithReplacement,
-        'SampleIndicesWithoutReplacement': build_SampleIndicesWithoutReplacement
+        'SampleIndicesWithReplacement': create_SampleIndicesWithReplacement,
+        'SampleIndicesWithoutReplacement': create_SampleIndicesWithoutReplacement
     }[BatchSampleIndicesGenerator_type](config, data)
     return batch_sample_indices_generator
 
 
-def build_BlockDataset(config, data):
-    node_list_dataset = build_NodeListDataset(config, data)
-    block_sampler = build_BlockSampler(config, data)
+def create_BlockDataset(config, data):
+    node_list_dataset = create_NodeListDataset(config, data)
+    block_sampler = create_BlockSampler(config, data)
     g = prepare_gnn_graph(config, data)
     dataset = BlockDataset(g, block_sampler, node_list_dataset)
     return dataset
 
 
-def build_ClusterDataLoader(config, data):
+def create_ClusterDataLoader(config, data):
     if 'indptr' in data:
         indptr = data['indptr']
         indices = data['indices']

@@ -9,7 +9,7 @@ def select_evaluator(evaluator_type):
     }[evaluator_type]
 
 
-def build_val_Evaluator(config, data, model):
+def create_val_Evaluator(config, data, model):
     Evaluator = select_evaluator(config['val_evaluator'])
     evaluator = Evaluator(model, 
                           file_eval_set=config['file_val_set'],
@@ -17,7 +17,7 @@ def build_val_Evaluator(config, data, model):
     return evaluator
 
 
-def build_test_Evaluator(config, data, model):
+def create_test_Evaluator(config, data, model):
     Evaluator = select_evaluator(config['test_evaluator'])
     evaluator = Evaluator(model, 
                           file_eval_set=config['file_test_set'],

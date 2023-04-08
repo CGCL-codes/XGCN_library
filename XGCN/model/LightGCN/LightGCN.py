@@ -66,7 +66,7 @@ class LightGCN(BaseGNN):
     def __init__(self, config, data):
         super().__init__(config, data)
         
-    def build_gnn(self):
+    def create_gnn(self):
         all_degrees = self.g.out_degrees()
         E_src, E_dst = self.g.edges()
         d_src = all_degrees[E_src]

@@ -32,7 +32,7 @@ class GAT_Module(torch.nn.Module):
 
 class GAT(BaseGNN):
     
-    def build_gnn(self):
+    def create_gnn(self):
         self.gnn = GAT_Module(arch=self.config['gnn_arch']).to(self.config['gnn_device'])
         self.opt_list.append(
             torch.optim.Adam([{'params': self.gnn.parameters(),

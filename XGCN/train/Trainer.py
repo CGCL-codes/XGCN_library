@@ -8,7 +8,7 @@ import os.path as osp
 from tqdm import tqdm
 
 
-def build_Trainer(config, data, model, train_dl,
+def create_Trainer(config, data, model, train_dl,
                   val_evaluator, test_evaluator):
     trainer = Trainer(
         data, model, train_dl,

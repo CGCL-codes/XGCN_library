@@ -18,14 +18,14 @@ def train_model(config):
     
     data = {}  # containing some global data objects
     
-    model = XGCN.build_Model(config, data)
+    model = XGCN.create_Model(config, data)
     
-    train_dl = XGCN.build_DataLoader(config, data)
+    train_dl = XGCN.create_DataLoader(config, data)
     
-    val_evaluator = XGCN.build_val_Evaluator(config, data, model)
-    test_evaluator = XGCN.build_test_Evaluator(config, data, model)
+    val_evaluator = XGCN.create_val_Evaluator(config, data, model)
+    test_evaluator = XGCN.create_test_Evaluator(config, data, model)
     
-    trainer = XGCN.build_Trainer(config, data, model, train_dl,
+    trainer = XGCN.create_Trainer(config, data, model, train_dl,
                                  val_evaluator, test_evaluator)
     
     trainer.train_and_test()

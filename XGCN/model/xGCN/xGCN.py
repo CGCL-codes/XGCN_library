@@ -21,7 +21,7 @@ class xGCN(BaseEmbeddingModel):
         self.emb_table = init_emb_table(self.config, 
                                         self.info['num_nodes'],
                                         return_tensor=True)  # on self.emb_table_device
-        self.build_refnet()  # on self.forward_device
+        self.create_refnet()  # on self.forward_device
         
         self.out_emb_table = torch.empty(
             self.emb_table.shape, dtype=torch.float32).to(self.out_emb_table_device)
@@ -46,7 +46,7 @@ class xGCN(BaseEmbeddingModel):
         self.opt.step()
         return loss.item()
         
-    def build_refnet(self):
+    def create_refnet(self):
         dnn_arch = self.config['dnn_arch']
         if self.config['use_scale_net']:
             scale_net_arch = self.config['scale_net_arch']

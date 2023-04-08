@@ -51,8 +51,8 @@ class GensimNode2vec(BaseEmbeddingModel):
         )
         
         print("build vocab...")
-        self.model.build_vocab(self.sentences)
-        # self.model.build_vocab_from_freq(indptr[1:] - indptr[:-1])
+        self.model.create_vocab(self.sentences)
+        # self.model.create_vocab_from_freq(indptr[1:] - indptr[:-1])
 
     def train_an_epoch(self):
         lr = self.config['emb_lr']

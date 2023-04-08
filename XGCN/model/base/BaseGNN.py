@@ -43,9 +43,9 @@ class BaseGNN(BaseEmbeddingModel):
                                        'lr': self.config['emb_lr']}])
                 )
         
-        self.build_gnn()
+        self.create_gnn()
         
-    def build_gnn(self):
+    def create_gnn(self):
         # self.gnn = ...
         # self.opt_list.append(
         #     torch.optim.Adam([{'params': self.gnn.parameters(),
