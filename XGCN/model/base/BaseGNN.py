@@ -1,7 +1,7 @@
 from .BaseEmbeddingModel import BaseEmbeddingModel
 from ..module import init_emb_table
 from ..module import dot_product, bpr_loss, bce_loss
-from XGCN.dataloading.build import prepare_gnn_graph
+from code.XGCN_and_data.XGCN_library.XGCN.dataloading.create import prepare_gnn_graph
 from XGCN.utils.utils import id_map
 
 import torch
