@@ -1,14 +1,12 @@
 import XGCN
-from XGCN.utils.parse_arguments import parse_arguments
 from XGCN.utils.utils import print_dict, ensure_dir, set_random_seed
 from XGCN.data import io
 
 import os.path as osp
 
 
-def main():
-    
-    config = parse_arguments()
+def train_model(config):
+    print("##### Model Config #####")
     print_dict(config)
     
     results_root = config['results_root']
@@ -31,8 +29,5 @@ def main():
                                  val_evaluator, test_evaluator)
     
     trainer.train_and_test()
-
-
-if __name__ == '__main__':
     
-    main()
+    return model

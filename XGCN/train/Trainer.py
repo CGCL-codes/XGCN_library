@@ -108,12 +108,12 @@ class Trainer:
             self.timer.end("epoch")
         
     def _train_an_epoch(self):
-        print('train epoch {0}'.format(self.data['epoch'] + 1))
+        print('epoch {0}'.format(self.data['epoch'] + 1))
         if hasattr(self.model, 'train_an_epoch'):
             epoch_loss = self.model.train_an_epoch()
         else:
             loss_list = []
-            for batch_data in tqdm(self.train_dl):
+            for batch_data in tqdm(self.train_dl, desc='train'):
                 self.timer.start("batch")
                 
                 loss = self.model.forward_and_backward(batch_data)
