@@ -3,6 +3,7 @@ import XGCN
 from XGCN.model.module import dot_product
 from XGCN.model.module.mask_neighbor_score import mask_neighbor_score, mask_neighbor_score_user_item
 from XGCN.data import io
+from XGCN.utils.utils import ensure_dir
 
 import torch
 import numpy as np
@@ -19,7 +20,11 @@ class BaseEmbeddingModel(BaseModel):
     
     def _init_BaseEmbeddingModel(self):
         self.data_root = self.config['data_root']
+        assert osp.exists(self.data_root)
+        
         self.results_root = self.config['results_root']
+        ensure_dir(self.results_root)
+        io.save_yaml(osp.join(self.results_root, 'config.yaml'), self.config)
         
         self.info = io.load_yaml(osp.join(self.data_root, 'info.yaml'))
         self.graph_type = self.info['graph_type']

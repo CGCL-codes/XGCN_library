@@ -63,8 +63,8 @@ class LightGCNConv(torch.nn.Module):
 
 class LightGCN(BaseGNN):
     
-    def __init__(self, config, data):
-        super().__init__(config, data)
+    def __init__(self, config):
+        super().__init__(config)
         
     def create_gnn(self):
         all_degrees = self.g.out_degrees()

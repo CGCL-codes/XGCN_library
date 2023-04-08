@@ -9,8 +9,8 @@ from tqdm import tqdm
 
 class PPRGo(BaseEmbeddingModel):
     
-    def __init__(self, config, data):
-        super().__init__(config, data)
+    def __init__(self, config):
+        super().__init__(config)
         self.ppr_data_device = self.config['ppr_data_device']
         self.emb_table_device = self.config['emb_table_device']
         self.forward_device = self.config['forward_device']

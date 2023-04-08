@@ -10,8 +10,8 @@ import os.path as osp
 
 class SimpleX(BaseEmbeddingModel):
     
-    def __init__(self, config, data):
-        super().__init__(config, data)
+    def __init__(self, config):
+        super().__init__(config)
         self.device = self.config['device']
         
         self.emb_table = init_emb_table(config, self.info['num_nodes'])

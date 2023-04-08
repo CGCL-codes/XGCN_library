@@ -6,7 +6,9 @@ def main():
     
     config = parse_arguments()
 
-    model = XGCN.train_model(config)
+    model = XGCN.create_model(config)
+    
+    model.fit()
 
 
 if __name__ == '__main__':

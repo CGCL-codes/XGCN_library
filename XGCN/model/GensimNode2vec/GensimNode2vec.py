@@ -10,16 +10,16 @@ from tqdm import tqdm
 
 class GensimNode2vec(BaseEmbeddingModel):
     
-    def __init__(self, config, data):
-        super().__init__(config, data)
+    def __init__(self, config):
+        super().__init__(config)
         
         # load random walk csr graph
         print("load csr graph...")
         data_root = self.config['data_root']
         indptr = io.load_pickle(osp.join(data_root, 'indptr.pkl'))
         indices = io.load_pickle(osp.join(data_root, 'indices.pkl'))
-        data['indptr'] = indptr
-        data['indices'] = indices
+        self.data['indptr'] = indptr
+        self.data['indices'] = indices
         
         indptr, indices = csr.get_undirected(indptr, indices)
         

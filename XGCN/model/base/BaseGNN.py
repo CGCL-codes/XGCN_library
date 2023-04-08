@@ -1,7 +1,7 @@
 from .BaseEmbeddingModel import BaseEmbeddingModel
 from ..module import init_emb_table
 from ..module import dot_product, bpr_loss, bce_loss
-from code.XGCN_and_data.XGCN_library.XGCN.dataloading.create import prepare_gnn_graph
+from XGCN.dataloading.create import prepare_gnn_graph
 from XGCN.utils.utils import id_map
 
 import torch
@@ -10,8 +10,8 @@ import dgl
 
 class BaseGNN(BaseEmbeddingModel):
     
-    def __init__(self, config, data):
-        super().__init__(config, data)
+    def __init__(self, config):
+        super().__init__(config)
         self.graph_device = self.config['graph_device']
         self.emb_table_device = self.config['emb_table_device']
         self.gnn_device = self.config['gnn_device']

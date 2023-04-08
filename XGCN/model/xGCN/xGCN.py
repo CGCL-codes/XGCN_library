@@ -9,8 +9,8 @@ import os.path as osp
 
 class xGCN(BaseEmbeddingModel):
     
-    def __init__(self, config, data):
-        super().__init__(config, data)
+    def __init__(self, config):
+        super().__init__(config)
         self.emb_table_device = self.config['emb_table_device']
         self.forward_device = self.config['forward_device']
         self.out_emb_table_device = self.config['out_emb_table_device']

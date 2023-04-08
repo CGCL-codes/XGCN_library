@@ -9,8 +9,8 @@ import os.path as osp
 
 class UltraGCN(BaseEmbeddingModel):
     
-    def __init__(self, config, data):
-        super().__init__(config, data)
+    def __init__(self, config):
+        super().__init__(config)
         self.num_users = self.info['num_users']
         self.device = self.config['device']
         self.emb_table_device = self.config['emb_table_device']

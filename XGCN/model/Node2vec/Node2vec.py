@@ -8,8 +8,8 @@ from torch_geometric.nn import Node2Vec as pyg_Node2vec
 
 class Node2vec(BaseEmbeddingModel):
     
-    def __init__(self, config, data):
-        super().__init__(config, data)
+    def __init__(self, config):
+        super().__init__(config)
         self.device = self.config['device']
 
         data_root = self.config['data_root']

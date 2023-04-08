@@ -12,8 +12,8 @@ from tqdm import tqdm
 
 class SGC(BaseEmbeddingModel):
     
-    def __init__(self, config, data):
-        super().__init__(config, data)
+    def __init__(self, config):
+        super().__init__(config)
         self.device = self.config['device']
 
         assert self.config['from_pretrained'] and self.config['freeze_emb']
@@ -22,15 +22,15 @@ class SGC(BaseEmbeddingModel):
         
         data_root = self.config['data_root']
         print("# load graph")
-        if 'indptr' in data:
-            indptr = data['indptr']
-            indices = data['indices']
+        if 'indptr' in self.data:
+            indptr = self.data['indptr']
+            indices = self.data['indices']
         else:
             data_root = config['data_root']
             indptr = io.load_pickle(osp.join(data_root, 'indptr.pkl'))
             indices = io.load_pickle(osp.join(data_root, 'indices.pkl'))
-            data['indptr'] = indptr
-            data['indices'] = indices
+            self.data['indptr'] = indptr
+            self.data['indices'] = indices
         indptr, indices = csr.get_undirected(indptr, indices)
         E_src = csr.get_src_indices(indptr)
         E_dst = indices
