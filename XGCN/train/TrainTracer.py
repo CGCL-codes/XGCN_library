@@ -1,4 +1,5 @@
 from XGCN.data import io
+from XGCN.utils.utils import get_formatted_results
 
 import os.path as osp
 
@@ -56,6 +57,7 @@ class TrainTracer:
             self.best_key_score = key_score
             self.epoch_best = epoch
             
+            val_results['formatted'] = get_formatted_results(val_results)
             # save the best validation score up till now
             io.save_json(self.best_record_file, val_results)
             

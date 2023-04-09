@@ -1,4 +1,5 @@
 from .TrainTracer import TrainTracer
+import XGCN
 from XGCN.data import io
 from XGCN.utils.Timer import Timer
 from XGCN.utils.utils import get_formatted_results
@@ -8,45 +9,33 @@ import os.path as osp
 from tqdm import tqdm
 
 
-def create_Trainer(config, data, model, train_dl,
-                  val_evaluator, test_evaluator):
+def create_Trainer(config, data, model, train_dl):
     trainer = Trainer(
-        data, model, train_dl,
-        epochs=config['epochs'],
-        results_root=config['results_root'],
-        val_evaluator=val_evaluator,
-        test_evaluator=test_evaluator,
-        val_freq=config['val_freq'],
-        key_score_metric=config['key_score_metric'],
-        convergence_threshold=config['convergence_threshold']
+        config, data, model, train_dl,
     )
     return trainer
 
 
 class Trainer:
     
-    def __init__(self, data, model, train_dl,
-                 epochs, results_root,
-                 test_evaluator=None,
-                 val_evaluator=None,
-                 val_freq=None, key_score_metric=None, convergence_threshold=None):
+    def __init__(self, config, data, model, train_dl):
+        self.config = config
         self.data = data
         self.model = model
         self.train_dl = train_dl
-        self.epochs = epochs
-        self.results_root = results_root
-        self.val_evaluator = val_evaluator
-        self.test_evaluator = test_evaluator
         
-        self.do_val = self.val_evaluator is not None
+        self.epochs = self.config['epochs']
+        self.results_root = self.config['results_root']
         
+        self.do_val = self.config['use_validation_for_early_stop']
         if self.do_val:
-            self.val_freq = val_freq
+            self.val_evaluator = XGCN.create_val_Evaluator(self.config, self.data, self.model)
+            self.val_freq = self.config['val_freq']
             self.train_tracer = TrainTracer(
                 data, model,
-                key_score_metric=key_score_metric,
-                convergence_threshold=convergence_threshold,
-                results_root=results_root
+                key_score_metric=self.config['key_score_metric'],
+                convergence_threshold=self.config['convergence_threshold'],
+                results_root=self.results_root
             )
         
         self.timer = Timer(record_root=self.results_root)
@@ -124,23 +113,19 @@ class Trainer:
             epoch_loss = np.array(loss_list).mean()
         return epoch_loss
         
-    def test(self):
-        self.model.load()  # load the best model on validation set
-        self.timer.start("test")
-        if hasattr(self.model, 'on_eval_begin'):
-            self.model.on_eval_begin()
+    # def test(self):
+    #     self.model.load()  # load the best model on validation set
+    #     self.timer.start("test")
+    #     if hasattr(self.model, 'on_eval_begin'):
+    #         self.model.on_eval_begin()
 
-        results = self.test_evaluator.eval(desc='test')
+    #     results = self.test_evaluator.eval(desc='test')
                 
-        if hasattr(self.model, 'on_eval_end'):
-            self.model.on_eval_end()
-        self.timer.end("test")
-        self.timer.save_record()
+    #     if hasattr(self.model, 'on_eval_end'):
+    #         self.model.on_eval_end()
+    #     self.timer.end("test")
+    #     self.timer.save_record()
         
-        results['formatted'] = get_formatted_results(results)
-        print("test:", results)
-        io.save_json(osp.join(self.results_root, "test_results.json"), results)
-
-    def train_and_test(self):
-        self.train()
-        self.test()
+    #     results['formatted'] = get_formatted_results(results)
+    #     print("test:", results)
+    #     io.save_json(osp.join(self.results_root, "test_results.json"), results)

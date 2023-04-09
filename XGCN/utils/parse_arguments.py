@@ -41,11 +41,12 @@ def _parse_arguments():
     parser.add_argument("--test_batch_size", type=int)
     parser.add_argument("--file_test_set", type=str)
     parser.add_argument("--epochs", type=int)
+    
+    parser.add_argument("--use_validation_for_early_stop", type=int)
     parser.add_argument("--val_freq", type=int)
     parser.add_argument("--key_score_metric", type=str)
     parser.add_argument("--convergence_threshold", type=int)
     parser.add_argument("--forward_mode", type=str)
-    parser.add_argument("--use_ego_emb_L2_reg", type=int)
     
     parser.add_argument("--device", type=str)
     parser.add_argument("--graph_device", type=str)
@@ -64,6 +65,7 @@ def _parse_arguments():
     parser.add_argument("--gnn_lr", type=float)
     parser.add_argument("--loss_type", type=str)
     parser.add_argument("--L2_reg_weight", type=float)
+    parser.add_argument("--use_ego_emb_L2_reg", type=int)
     parser.add_argument("--infer_num_layer_sample", type=str)
     
     parser.add_argument("--topk", type=int)

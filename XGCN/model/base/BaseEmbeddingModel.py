@@ -3,7 +3,7 @@ import XGCN
 from XGCN.model.module import dot_product
 from XGCN.model.module.mask_neighbor_score import mask_neighbor_score, mask_neighbor_score_user_item
 from XGCN.data import io
-from XGCN.utils.utils import ensure_dir
+from XGCN.utils.utils import ensure_dir, print_dict, get_formatted_results
 
 import torch
 import numpy as np
@@ -13,10 +13,10 @@ import os.path as osp
 class BaseEmbeddingModel(BaseModel):
     
     def __init__(self, config):
+        print_dict(config)
         self.config = config
         self.data = {}
         self._init_BaseEmbeddingModel()
-        self._init_Trainer()
     
     def _init_BaseEmbeddingModel(self):
         self.data_root = self.config['data_root']
@@ -34,28 +34,41 @@ class BaseEmbeddingModel(BaseModel):
         self.indptr = None
         self.indices = None
     
-    def _init_Trainer(self):
-        model = self
+    def fit(self):
         config = self.config
         data = self.data
-        
+        model = self
         train_dl = XGCN.create_DataLoader(config, data)
-        val_evaluator = XGCN.create_val_Evaluator(config, data, model)
-        test_evaluator = XGCN.create_test_Evaluator(config, data, model)
-    
+        
         self.trainer = XGCN.create_Trainer(
-            config, data, model, train_dl,
-            val_evaluator, test_evaluator
+            config, data, model, train_dl
         )
+        self.trainer.train()
+        
+        if self.config['use_validation_for_early_stop']:
+            self.load()  # load the best model on the validation set
+        
+    def test(self, test_config):
+        test_evaluator = XGCN.create_test_Evaluator(
+            config=test_config, data=self.data, model=self
+        )
+        
+        if hasattr(self, 'on_eval_begin'):
+            self.on_eval_begin()
+        
+        results = test_evaluator.eval(desc='test')
+        
+        if hasattr(self, 'on_eval_end'):
+            self.model.on_eval_end()
+
+        results['formatted'] = get_formatted_results(results)
+        return results
     
-    def fit(self):
-        self.trainer.train_and_test()
-    
-    def eval(self, batch_data, eval_type):
+    def _eval_a_batch(self, batch_data, eval_type):
         return {
-            'whole_graph_multi_pos': self.eval_whole_graph_multi_pos,
-            'whole_graph_one_pos': self.eval_whole_graph_one_pos,
-            'one_pos_k_neg': self.eval_one_pos_k_neg
+            'whole_graph_multi_pos': self._eval_whole_graph_multi_pos,
+            'whole_graph_one_pos': self._eval_whole_graph_one_pos,
+            'one_pos_k_neg': self._eval_one_pos_k_neg
         }[eval_type](batch_data)
         
     def save(self, root=None):
@@ -73,7 +86,7 @@ class BaseEmbeddingModel(BaseModel):
             self.target_emb_table = self.out_emb_table
     
     @torch.no_grad()
-    def eval_whole_graph_multi_pos(self, batch_data):
+    def _eval_whole_graph_multi_pos(self, batch_data):
         src, _ = batch_data
         
         all_target_score = self.infer_all_target_score(src, mask_nei=True)
@@ -81,7 +94,7 @@ class BaseEmbeddingModel(BaseModel):
         return all_target_score
     
     @torch.no_grad()
-    def eval_whole_graph_one_pos(self, batch_data):
+    def _eval_whole_graph_one_pos(self, batch_data):
         src, pos = batch_data
 
         all_target_score = self.infer_all_target_score(src, mask_nei=True)
@@ -94,7 +107,7 @@ class BaseEmbeddingModel(BaseModel):
         return pos_neg_score
     
     @torch.no_grad()
-    def eval_one_pos_k_neg(self, batch_data):
+    def _eval_one_pos_k_neg(self, batch_data):
         src, pos, neg = batch_data
         
         src_emb = self.out_emb_table[src]
@@ -119,7 +132,7 @@ class BaseEmbeddingModel(BaseModel):
         
     def mask_neighbor_score(self, src, all_target_score):
         if self.indptr is None:
-            self.prepare_train_graph_for_mask()
+            self._prepare_train_graph_for_mask()
             
         if self.graph_type == 'user-item':
             mask_neighbor_score_user_item(self.indptr, self.indices,
@@ -130,7 +143,7 @@ class BaseEmbeddingModel(BaseModel):
                 src, all_target_score
             )
     
-    def prepare_train_graph_for_mask(self):
+    def _prepare_train_graph_for_mask(self):
         if 'indptr' in self.data:
             self.indptr = self.data['indptr']
             self.indices = self.data['indices']

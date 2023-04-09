@@ -22,7 +22,7 @@ class WholeGraph_MultiPos_Evaluator:
             src, pos = batch_data
             num_batch_samples = len(src)
             
-            all_target_score = self.model.eval(
+            all_target_score = self.model._eval_a_batch(
                 batch_data, eval_type='whole_graph_multi_pos'
             )
             batch_results = whole_graph_multi_pos_metrics(pos, all_target_score)

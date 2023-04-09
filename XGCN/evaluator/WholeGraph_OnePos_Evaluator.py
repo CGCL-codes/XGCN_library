@@ -22,7 +22,7 @@ class WholeGraph_OnePos_Evaluator:
             src, pos = batch_data
             num_batch_samples = len(src)
             
-            pos_neg_score = self.model.eval(
+            pos_neg_score = self.model._eval_a_batch(
                 batch_data, eval_type='whole_graph_one_pos'
             )
             batch_results = one_pos_metrics(pos_neg_score)

@@ -22,7 +22,7 @@ class OnePosKNeg_Evaluator:
             src, pos, neg = batch_data
             num_batch_samples = len(src)
             
-            pos_neg_score = self.model.eval(
+            pos_neg_score = self.model._eval_a_batch(
                 batch_data, eval_type='one_pos_k_neg'
             )
             batch_results = one_pos_metrics(pos_neg_score)
