@@ -100,9 +100,17 @@ class BaseGNN(BaseEmbeddingModel):
         
         rw = self.config['L2_reg_weight']
         if rw > 0:
-            L2_reg_loss = 1/2 * (1 / len(src)) * (
-                (src_emb**2).sum() + (pos_emb**2).sum() + (neg_emb**2).sum()
-            )
+            if 'use_ego_emb_L2_reg' in self.config and self.config['use_ego_emb_L2_reg']:
+                src_ego_emb = self.emb_table(src.to(self.emb_table_device))
+                pos_ego_emb = self.emb_table(pos.to(self.emb_table_device))
+                neg_ego_emb = self.emb_table(neg.to(self.emb_table_device))
+                L2_reg_loss = 1/2 * (1 / len(src)) * (
+                    (src_ego_emb**2).sum() + (pos_ego_emb**2).sum() + (neg_ego_emb**2).sum()
+                )
+            else:
+                L2_reg_loss = 1/2 * (1 / len(src)) * (
+                    (src_emb**2).sum() + (pos_emb**2).sum() + (neg_emb**2).sum()
+                )
             loss += rw * L2_reg_loss
         
         self.backward(loss)

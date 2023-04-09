@@ -53,3 +53,4 @@ stack_layers: 1
 
 loss_type: bpr
 L2_reg_weight: 0.0
+use_ego_emb_L2_reg: 0

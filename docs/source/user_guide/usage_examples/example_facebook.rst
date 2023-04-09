@@ -22,14 +22,14 @@ We recommend to arrange the data with a clear directory structure.
 To get started, you may manually setup an ``XGCN_data`` (or other names you like) directory as follows: 
 (It's recommended to put your ``XGCN_data`` somewhere else than in this repository.)
 
-```
-XGCN_data
-└── dataset
-    └── raw_facebook
-        └── facebook_combined.txt
-```
+.. code:: 
 
-From now on, we'll use this directory to hold all the different datasets 
+    XGCN_data
+    └── dataset
+        └── raw_facebook
+            └── facebook_combined.txt
+
+We'll use this directory to hold all the different datasets 
 and models outputs. 
 We refer to its path as ``all_data_root`` in our python code and shell scripts: 
 
@@ -245,7 +245,7 @@ To run it, for convenience, we also create a shell script ``run.sh``
 Then you can run your Python code with ``bash run.sh``. 
 
 XGCN's ``BaseEmbeddingModel`` class provides some useful functions for model inference, 
-you can call these functions when the training is done. 
+you can call these functions when the training is done, for example: 
 
 .. code:: python
 

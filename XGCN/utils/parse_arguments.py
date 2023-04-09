@@ -45,6 +45,7 @@ def _parse_arguments():
     parser.add_argument("--key_score_metric", type=str)
     parser.add_argument("--convergence_threshold", type=int)
     parser.add_argument("--forward_mode", type=str)
+    parser.add_argument("--use_ego_emb_L2_reg", type=int)
     
     parser.add_argument("--device", type=str)
     parser.add_argument("--graph_device", type=str)

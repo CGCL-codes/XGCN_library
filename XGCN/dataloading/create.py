@@ -1,7 +1,7 @@
 from .dataloading import *
-from XGCN.dataloading.sample.batch_sample_indices import SampleIndicesWithReplacement, SampleIndicesWithoutReplacement
-from XGCN.dataloading.sample.ObservedEdges_Sampler import ObservedEdges_Sampler
-from XGCN.dataloading.sample.RandomNeg_Sampler import RandomNeg_Sampler
+from XGCN.dataloading.sample import SampleIndicesWithReplacement, SampleIndicesWithoutReplacement
+from XGCN.dataloading.sample import ObservedEdges_Sampler, NodeBased_ObservedEdges_Sampler
+from XGCN.dataloading.sample import RandomNeg_Sampler, StrictNeg_Sampler
 from XGCN.data import io, csr
 
 import dgl
@@ -79,10 +79,12 @@ def create_NodeListDataset(config, data):
 def create_LinkDataset(config, data):
     pos_sampler = {
         'ObservedEdges_Sampler': ObservedEdges_Sampler,
+        'NodeBased_ObservedEdges_Sampler': NodeBased_ObservedEdges_Sampler,
     }[config['pos_sampler']](config, data)
     
     neg_sampler = {
         'RandomNeg_Sampler': RandomNeg_Sampler,
+        'StrictNeg_Sampler': StrictNeg_Sampler,
     }[config['neg_sampler']](config, data)
     
     batch_sample_indices_generator = {
@@ -92,15 +94,6 @@ def create_LinkDataset(config, data):
     
     dataset = LinkDataset(pos_sampler, neg_sampler, batch_sample_indices_generator)
     return dataset
-
-
-def create_BatchSampleIndicesGenerator(config, data):
-    BatchSampleIndicesGenerator_type = config['BatchSampleIndicesGenerator_type']
-    batch_sample_indices_generator = {
-        'SampleIndicesWithReplacement': create_SampleIndicesWithReplacement,
-        'SampleIndicesWithoutReplacement': create_SampleIndicesWithoutReplacement
-    }[BatchSampleIndicesGenerator_type](config, data)
-    return batch_sample_indices_generator
 
 
 def create_BlockDataset(config, data):
