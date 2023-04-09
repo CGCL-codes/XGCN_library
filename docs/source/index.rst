@@ -116,4 +116,5 @@ Full Documentations
    :maxdepth: 1
    :caption: API Reference
 
+   api/XGCN
    api/XGCN.data
