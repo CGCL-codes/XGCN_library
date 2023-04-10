@@ -81,6 +81,8 @@ Save the complete dataset instance (the validation set is not provided, so we ju
 Run LightGCN
 -----------------
 
+The follow shell script run a LightGCN model with ``XGCN.main.run_model`` module and 
+reproduce the results on the gowalla dataset: 
 
 .. code:: shell
 
@@ -102,11 +104,14 @@ Run LightGCN
         --file_val_set $data_root/test_set.pkl \
         --test_evaluator WholeGraph_MultiPos_Evaluator \
         --file_test_set $data_root/test_set.pkl \
-        --epoch_sample_ratio 1.0 \
-        --num_gcn_layers 3 \
+        --str_num_total_samples num_users \
+        --pos_sampler NodeBased_ObservedEdges_Sampler \
+        --neg_sampler StrictNeg_Sampler \
+        --epoch_sample_ratio 27.13 \
+        --num_gcn_layers 4 \
         --L2_reg_weight 1e-4 --use_ego_emb_L2_reg 1 \
         --emb_lr 0.001 \
         --emb_dim 64 \
         --train_batch_size 2048 \
-        --epochs 1000 --val_freq 10 \
-        --key_score_metric r20 --conconvergence_threshold 50 \
+        --epochs 10 --val_freq 5 \
+        --key_score_metric r20 --convergence_threshold 1000 \
