@@ -12,7 +12,7 @@ val_evaluator: ""
 val_batch_size: 256
 file_val_set: ""
 
-# Testing configuration
+# Testing configuration (optional)
 test_evaluator: ""
 test_batch_size: 256
 file_test_set: ""
