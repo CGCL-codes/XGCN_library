@@ -13,7 +13,7 @@ def main():
     
     model.fit()
     
-    test_results = model.test(config)
+    test_results = model.test()
     print("test:", test_results)
     io.save_json(osp.join(config['results_root'], 'test_results.json'), test_results)
 

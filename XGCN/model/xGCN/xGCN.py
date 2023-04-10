@@ -29,7 +29,8 @@ class xGCN(BaseEmbeddingModel):
         self.node_dl = torch.utils.data.DataLoader(
             torch.arange(self.info['num_nodes']), batch_size=4096)
         
-        self.opt = torch.optim.Adam([
+        self.optimizers = {}
+        self.optimizers['dnn-Adam'] = torch.optim.Adam([
             {'params': self.refnet.parameters(), 'lr': self.config['dnn_lr']},
         ])
         
@@ -41,9 +42,10 @@ class xGCN(BaseEmbeddingModel):
     
     def forward_and_backward(self, batch_data):
         loss = self.forward(batch_data)
-        self.opt.zero_grad()
+        optmizer = self.optimizers['dnn-Adam']
+        optmizer.zero_grad()
         loss.backward()
-        self.opt.step()
+        optmizer.step()
         return loss.item()
         
     def create_refnet(self):
@@ -106,7 +108,7 @@ class xGCN(BaseEmbeddingModel):
             self.refnet.train()
     
     @torch.no_grad()
-    def on_eval_begin(self):
+    def infer_out_emb_table(self):
         self.refnet.eval()
         for nids in self.node_dl:
             self.out_emb_table[nids] = self.get_refnet_output_emb(nids).to(self.out_emb_table_device)
@@ -137,3 +139,36 @@ class xGCN(BaseEmbeddingModel):
                     self.total_prop_times += 1
                     self.epoch_last_prop = epoch
         self.refnet.train()
+    
+    def _save_emb_table(self, root=None):
+        if root is None:
+            root = self.model_root
+        torch.save(self.emb_table, osp.join(root, 'emb_table.pt'))
+    
+    def _load_emb_table(self, root=None):
+        if root is None:
+            root = self.model_root
+        self.emb_table = torch.load(osp.join(root, 'emb_table.pt'))
+    
+    def _save_refnet(self, root=None):
+        if root is None:
+            root = self.model_root
+        torch.save(self.refnet.state_dict(), osp.join(root, 'refnet-state_dict.pt'))
+
+    def _load_refnet(self, root=None):
+        if root is None:
+            root = self.model_root
+        state_dict = torch.load(osp.join(root, 'refnet-state_dict.pt'))
+        self.refnet.load_state_dict(state_dict)
+    
+    def save(self, root=None):
+        self._save_out_emb_table(root)
+        self._save_emb_table(root)
+        self._save_refnet(root)
+        self._save_optimizers(root)
+    
+    def load(self, root=None):
+        self._load_out_emb_table(root)
+        self._load_emb_table(root)
+        self._load_refnet(root)
+        self._load_optimizers(root)
