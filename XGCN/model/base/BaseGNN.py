@@ -6,6 +6,7 @@ from XGCN.utils.utils import id_map
 
 import torch
 import dgl
+import os.path as osp
 
 
 class BaseGNN(BaseEmbeddingModel):
@@ -26,33 +27,56 @@ class BaseGNN(BaseEmbeddingModel):
         #     assert self.forward_mode == 'sample'
         self.g = prepare_gnn_graph(self.config, self.data)
         
-        self.opt_list = []
+        self.optimizers = {}
         
         self.emb_table = init_emb_table(self.config, self.info['num_nodes'])
         
         if not self.config['freeze_emb']:
             if self.config['use_sparse']:
                 assert self.forward_mode != 'full_graph'
-                self.opt_list.append(
-                    torch.optim.SparseAdam([{'params':list(self.emb_table.parameters()),
-                                            'lr': self.config['emb_lr']}])
+                self.optimizers['emb_table-SparseAdam'] = torch.optim.SparseAdam(
+                    [{'params':list(self.emb_table.parameters()), 
+                      'lr': self.config['emb_lr']}]
                 )
             else:
-                self.opt_list.append(
-                    torch.optim.Adam([{'params': self.emb_table.parameters(),
-                                       'lr': self.config['emb_lr']}])
+                self.optimizers['emb_table-Adam'] = torch.optim.Adam(
+                    [{'params': self.emb_table.parameters(),
+                      'lr': self.config['emb_lr']}]
                 )
         
-        self.create_gnn()
+        self._create_gnn()
         
-    def create_gnn(self):
+    def _create_gnn(self):
         # self.gnn = ...
-        # self.opt_list.append(
-        #     torch.optim.Adam([{'params': self.gnn.parameters(),
-        #                         'lr': self.config['gnn_lr']}])
+        # self.optimizers['gnn_optimizer'] = torch.optim.Adam(
+        #     [{'params': self.gnn.parameters(),
+        #       'lr': self.config['gnn_lr']}]
         # )
         raise NotImplementedError
 
+    def _save_gnn(self, root=None):
+        if root is None:
+            root = self.model_root
+        torch.save(self.gnn.state_dict(), osp.join(root, 'gnn-state_dict.pt'))
+
+    def _load_gnn(self, root=None):
+        if root is None:
+            root = self.model_root
+        state_dict = torch.load(osp.join(root, 'gnn-state_dict.pt'))
+        self.gnn.load_state_dict(state_dict)
+
+    def save(self, root=None):
+        self._save_out_emb_table(root)
+        self._save_emb_table(root)
+        self._save_gnn(root)
+        self._save_optimizers(root)
+    
+    def load(self, root=None):
+        self._load_out_emb_table(root)
+        self._load_emb_table(root)
+        self._load_gnn(root)
+        self._load_optimizers(root)
+    
     def forward_and_backward(self, batch_data):
         if self.config['forward_mode'] == 'full_graph':
             ((src, pos, neg), ) = batch_data
@@ -113,26 +137,28 @@ class BaseGNN(BaseEmbeddingModel):
                 )
             loss += rw * L2_reg_loss
         
-        self.backward(loss)
+        self._backward(loss)
         return loss.item()
     
     @torch.no_grad()
-    def on_eval_begin(self):
+    def infer_out_emb_table(self):
         if self.forward_mode == 'full_graph':
             # full graph infer
             input_emb = self.emb_table.weight
             self.out_emb_table = self.gnn(self.g, input_emb).to(self.out_emb_table_device)
         else:
             # infer on blocks
-            self.out_emb_table = self.block_infer_out_emb_table()
+            self.out_emb_table = self._block_infer_out_emb_table()
             
         if self.graph_type == 'user-item':
             self.target_emb_table = self.out_emb_table[self.info['num_users'] : ]
         else:
             self.target_emb_table = self.out_emb_table
         
+        return self.out_emb_table
+    
     @torch.no_grad()
-    def block_infer_out_emb_table(self):
+    def _block_infer_out_emb_table(self):
         X = torch.empty(size=self.emb_table.weight.shape, dtype=torch.float32,
                         device=self.out_emb_table_device)
         
@@ -168,9 +194,9 @@ class BaseGNN(BaseEmbeddingModel):
         out_emb_table = X
         return out_emb_table
 
-    def backward(self, loss):
-        for opt in self.opt_list:
-            opt.zero_grad()
+    def _backward(self, loss):
+        for opt in self.optimizers:
+            self.optimizers[opt].zero_grad()
         loss.backward()
-        for opt in self.opt_list:
-            opt.step()
+        for opt in self.optimizers:
+            self.optimizers[opt].step()

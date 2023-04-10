@@ -26,6 +26,9 @@ class BaseEmbeddingModel(BaseModel):
         ensure_dir(self.results_root)
         io.save_yaml(osp.join(self.results_root, 'config.yaml'), self.config)
         
+        self.model_root = osp.join(self.results_root, 'model')
+        ensure_dir(self.model_root)
+        
         self.info = io.load_yaml(osp.join(self.data_root, 'info.yaml'))
         self.graph_type = self.info['graph_type']
         if self.graph_type == 'user-item':
@@ -46,23 +49,26 @@ class BaseEmbeddingModel(BaseModel):
         self.trainer.train()
         
         if self.config['use_validation_for_early_stop']:
-            self.load()  # load the best model on the validation set
+            self.load()
         
     def test(self, test_config):
         test_evaluator = XGCN.create_test_Evaluator(
             config=test_config, data=self.data, model=self
         )
         
-        if hasattr(self, 'on_eval_begin'):
-            self.on_eval_begin()
-        
         results = test_evaluator.eval(desc='test')
-        
-        if hasattr(self, 'on_eval_end'):
-            self.model.on_eval_end()
 
         results['formatted'] = get_formatted_results(results)
         return results
+    
+    def on_val_begin(self):
+        self.infer_out_emb_table()
+    
+    @torch.no_grad()
+    def infer_out_emb_table(self):
+        # self.out_emb_table = ...
+        # return self.out_emb_table
+        raise NotImplementedError
     
     def _eval_a_batch(self, batch_data, eval_type):
         return {
@@ -70,20 +76,51 @@ class BaseEmbeddingModel(BaseModel):
             'whole_graph_one_pos': self._eval_whole_graph_one_pos,
             'one_pos_k_neg': self._eval_one_pos_k_neg
         }[eval_type](batch_data)
-        
+    
     def save(self, root=None):
-        if root is None:
-            root = self.results_root
-        torch.save(self.out_emb_table, osp.join(root, 'out_emb_table.pt'))
+        raise NotImplementedError
     
     def load(self, root=None):
+        raise NotImplementedError
+    
+    def _save_out_emb_table(self, root=None):
         if root is None:
-            root = self.results_root
+            root = self.model_root
+        torch.save(self.out_emb_table, osp.join(root, 'out_emb_table.pt'))
+
+    def _save_optimizers(self, root=None):
+        if root is None:
+            root = self.model_root
+        for opt in self.optimizers:
+            torch.save(self.optimizers[opt].state_dict(),
+                       osp.join(root, opt + '-state_dict.pt'))
+
+    def _save_emb_table(self, root=None):
+        if root is None:
+            root = self.model_root
+        torch.save(self.emb_table.state_dict(), osp.join(root, 'emb_table-state_dict.pt'))
+    
+    def _load_out_emb_table(self, root=None):
+        if root is None:
+            root = self.model_root
         self.out_emb_table = torch.load(osp.join(root, 'out_emb_table.pt'))
         if self.graph_type == 'user-item':
             self.target_emb_table = self.out_emb_table[self.info['num_users']:]
         else:
             self.target_emb_table = self.out_emb_table
+    
+    def _load_optimizers(self, root=None):
+        if root is None:
+            root = self.model_root
+        for opt in self.optimizers:
+            state_dict = torch.load(osp.join(root, opt + '-state_dict.pt'))
+            self.optimizers[opt].load_state_dict(state_dict)
+    
+    def _load_emb_table(self, root=None):
+        if root is None:
+            root = self.model_root
+        state_dict = torch.load(osp.join(root, 'emb_table-state_dict.pt'))
+        self.emb_table.load_state_dict(state_dict)
     
     @torch.no_grad()
     def _eval_whole_graph_multi_pos(self, batch_data):

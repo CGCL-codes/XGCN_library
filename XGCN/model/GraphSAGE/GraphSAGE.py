@@ -32,9 +32,10 @@ class GraphSAGE_Module(torch.nn.Module):
 
 class GraphSAGE(BaseGNN):
     
-    def create_gnn(self):
+    def _create_gnn(self):
         self.gnn = GraphSAGE_Module(arch=self.config['gnn_arch']).to(self.config['gnn_device'])
-        self.opt_list.append(
-            torch.optim.Adam([{'params': self.gnn.parameters(),
-                                'lr': self.config['gnn_lr']}])
+        self.optimizers['gnn-Adam'] = torch.optim.Adam(
+            [{'params': self.gnn.parameters(),
+              'lr': self.config['gnn_lr']}]
         )
+        

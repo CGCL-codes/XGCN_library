@@ -37,9 +37,9 @@ class GIN_Module(torch.nn.Module):
 
 class GIN(BaseGNN):
     
-    def create_gnn(self):
+    def _create_gnn(self):
         self.gnn = GIN_Module(num_gcn_layers=self.config['num_gcn_layers']).to(self.config['gnn_device'])
-        self.opt_list.append(
+        self.optimizers.append(
             torch.optim.Adam([{'params': self.gnn.parameters(),
                                 'lr': self.config['gnn_lr']}])
         )

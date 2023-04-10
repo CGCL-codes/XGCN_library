@@ -35,15 +35,15 @@ class PPRGo(BaseEmbeddingModel):
             print("## not uniform weight")
             self.wei = self.wei / (self.wei.sum(dim=-1, keepdim=True) + 1e-12)
         
-        self.opt_list = []
+        self.optimizers = []
         if not self.config['freeze_emb']:
             if self.config['use_sparse']:
-                self.opt_list.append(
+                self.optimizers.append(
                     torch.optim.SparseAdam([{'params':list(self.emb_table.parameters()),
                                             'lr': self.config['emb_lr']}])
                 )
             else:
-                self.opt_list.append(
+                self.optimizers.append(
                     torch.optim.Adam([{'params': self.emb_table.parameters(),
                                        'lr': self.config['emb_lr']}])
                 )
@@ -102,8 +102,8 @@ class PPRGo(BaseEmbeddingModel):
             self.target_emb_table = self.out_emb_table
 
     def backward(self, loss):
-        for opt in self.opt_list:
+        for opt in self.optimizers:
             opt.zero_grad()
         loss.backward()
-        for opt in self.opt_list:
+        for opt in self.optimizers:
             opt.step()

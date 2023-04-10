@@ -56,15 +56,15 @@ class SimpleX(BaseEmbeddingModel):
             self.fn_msg = dgl.function.u_mul_e('h', 'ew', 'm')
             self.fn_reduce = dgl.function.sum(msg='m', out='h')
             
-        self.opt_list = []
+        self.optimizers = []
         if not self.config['freeze_emb']:
             if self.config['use_sparse']:
-                self.opt_list.append(
+                self.optimizers.append(
                     torch.optim.SparseAdam([{'params':list(self.emb_table.parameters()),
                                             'lr': self.config['emb_lr']}])
                 )
             else:
-                self.opt_list.append(
+                self.optimizers.append(
                     torch.optim.Adam([{'params': self.emb_table.parameters(),
                                     'lr': self.config['emb_lr']}])
                 )
@@ -127,8 +127,8 @@ class SimpleX(BaseEmbeddingModel):
             self.target_emb_table = self.out_emb_table
 
     def backward(self, loss):
-        for opt in self.opt_list:
+        for opt in self.optimizers:
             opt.zero_grad()
         loss.backward()
-        for opt in self.opt_list:
+        for opt in self.optimizers:
             opt.step()

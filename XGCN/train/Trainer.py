@@ -65,13 +65,13 @@ class Trainer:
             
             if self.do_val and (epoch % self.val_freq == 0):
                 self.timer.start("val")
-                if hasattr(self.model, 'on_eval_begin'):
-                    self.model.on_eval_begin()
+                if hasattr(self.model, 'on_val_begin'):
+                    self.model.on_val_begin()
                 
                 results = self.val_evaluator.eval(desc='val')
                 
-                if hasattr(self.model, 'on_eval_end'):
-                    self.model.on_eval_end()
+                if hasattr(self.model, 'on_val_end'):
+                    self.model.on_val_end()
                 self.timer.end("val")
                 
                 print("val:", results)
@@ -112,20 +112,3 @@ class Trainer:
                 self.timer.save_record()
             epoch_loss = np.array(loss_list).mean()
         return epoch_loss
-        
-    # def test(self):
-    #     self.model.load()  # load the best model on validation set
-    #     self.timer.start("test")
-    #     if hasattr(self.model, 'on_eval_begin'):
-    #         self.model.on_eval_begin()
-
-    #     results = self.test_evaluator.eval(desc='test')
-                
-    #     if hasattr(self.model, 'on_eval_end'):
-    #         self.model.on_eval_end()
-    #     self.timer.end("test")
-    #     self.timer.save_record()
-        
-    #     results['formatted'] = get_formatted_results(results)
-    #     print("test:", results)
-    #     io.save_json(osp.join(self.results_root, "test_results.json"), results)
