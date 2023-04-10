@@ -4,7 +4,6 @@ results_root: ""
 
 # Trainer configuration
 epochs: 200
-# results_root: ""
 use_validation_for_early_stop: 1
 val_freq: 1
 key_score_metric: r100

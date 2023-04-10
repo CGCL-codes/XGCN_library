@@ -4,9 +4,18 @@ results_root: ""
 
 # Trainer configuration
 epochs: 200
+use_validation_for_early_stop: 1
 val_freq: 1
 key_score_metric: r100
 convergence_threshold: 20
+val_evaluator: ""
+val_batch_size: 256
+file_val_set: ""
+
+# Testing configuration
+test_evaluator: ""
+test_batch_size: 256
+file_test_set: ""
 
 # DataLoader configuration
 Dataset_type: BlockDataset
@@ -20,14 +29,6 @@ num_neg: 1
 BatchSampleIndicesGenerator_type: SampleIndicesWithReplacement
 train_batch_size: 1024
 epoch_sample_ratio: 0.1
-
-# Evaluator configuration
-val_evaluator: ""
-val_batch_size: 256
-file_val_set: ""
-test_evaluator: ""
-test_batch_size: 256
-file_test_set: ""
 
 # Model configuration
 model: SSGC_learnable_emb

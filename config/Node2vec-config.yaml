@@ -2,23 +2,24 @@
 data_root: ""
 results_root: ""
 
-# DataLoader configuration
-train_batch_size: 2048
-num_workers: 4
-
 # Trainer configuration
 epochs: 200
+use_validation_for_early_stop: 1
 val_freq: 1
 key_score_metric: r100
 convergence_threshold: 20
-
-# Evaluator configuration
-val_evaluator: WholeGraph_MultiPos_Evaluator
+val_evaluator: ""
 val_batch_size: 256
 file_val_set: ""
-test_evaluator: WholeGraph_MultiPos_Evaluator
+
+# Testing configuration
+test_evaluator: ""
 test_batch_size: 256
 file_test_set: ""
+
+# DataLoader configuration
+train_batch_size: 2048
+num_workers: 4
 
 # Model configuration
 model: Node2vec
