@@ -2,17 +2,30 @@ Training and Evaluation
 ============================
 
 Once the dataset instance is generated (for dataset preprocessing, please refer to previous sections), 
-you can run models in two ways: Command Line Interface (CLI) or API functions. 
-In this section, we first introduce how to set model configurations, and then present the two ways to run a model. 
+you can run models with XGCN's APIs: 
 
+.. code:: python
+
+    model = XGCN.create_model(config)
+    model.fit()
+
+In this section, we are going to introduce model configuration setting, 
+model training APIs, and model evaluation APIs. 
+
+
+---------------------------
 Model Configuration
-----------------------------
+---------------------------
 
-The model configuration in XGCN is basically a Dict containing all the setting parameters. 
+The model configuration in XGCN is basically a Python Dict containing all the setting parameters. 
 XGCN supports parsing model configurations from command line arguments and ``.yaml`` files. 
 You can also manually write a Dict with all the parameters in a python script. 
 
-Directory ``config/`` includes ``.yaml`` configuration file templates for all the models. 
+
+Configuration Template
+---------------------------
+
+Directory ``config/`` includes ``.yaml`` configuration templates for all the models. 
 A typical ``.yaml`` configuration file including all the arguments is like follows:
 
 .. code:: yaml
@@ -52,15 +65,12 @@ A typical ``.yaml`` configuration file including all the arguments is like follo
     # Model configuration
     model: GraphSAGE
     seed: 1999
-
     graph_device: "cuda:0"
     emb_table_device: "cuda:0"
     gnn_device: "cuda:0"
     out_emb_table_device: "cuda:0"
-
     forward_mode: sample
     infer_num_layer_sample: "[10, 20]"
-
     from_pretrained: 0
     file_pretrained_emb: ""
     freeze_emb: 0
@@ -68,13 +78,10 @@ A typical ``.yaml`` configuration file including all the arguments is like follo
     emb_dim: 64 
     emb_init_std: 0.1
     emb_lr: 0.005
-
     gnn_arch: "[{'in_feats': 64, 'out_feats': 64, 'aggregator_type': 'pool', 'activation': torch.tanh}, {'in_feats': 64, 'out_feats': 64, 'aggregator_type': 'pool'}]"
     gnn_lr: 0.01
-
     loss_type: bpr
     L2_reg_weight: 0.0
-
 
 It consists of five parts:
 
@@ -94,26 +101,105 @@ Specifies the dataloader for training.
 Specifies the model configuration such as hyper-parameters. 
 
 
-Run from CLI
+Load config from yaml file
+---------------------------
+
+We can load a ``.yaml`` configuration file with ``XGCN.data.io`` module:
+
+.. code:: python
+
+    import XGCN
+    from XGCN.data import io
+
+    config = io.load_yaml('config.yaml')  # load template
+    config['data_root'] = ...             # add/modify some configurations
+
+    model = XGCN.create_model(config)
+    model.fit()
+
+
+Parse config from command line
+--------------------------------
+
+We also provide a ``parse_arguments()`` to parse command line arguments: 
+
+.. code:: python
+
+    import XGCN
+    from XGCN.utils.parse_arguments import parse_arguments
+
+    config = parse_arguments()
+
+    model = XGCN.create_model(config)
+    model.fit()
+
+You can specify a ``.yaml`` configuration file with ``--config_file``. 
+Note that a configuration file is not a necessity for the ``parse_arguments()`` function 
+and has lower priority when the same command line argument is given. 
+
+
+------------------
+Model Training
 ------------------
 
-Running models from CLI with the ``XGCN.main.run_model`` module is pretty easy: 
+Run from command line
+------------------------
+
+XGCN provide a simple module - ``XGCN.main.run_model`` - to run models from command line. 
+It has the following contents:
+
+.. code:: python
+
+    import XGCN
+    from XGCN.data import io
+    from XGCN.utils.parse_arguments import parse_arguments
+
+    import os.path as osp
+
+
+    def main():
+        
+        config = parse_arguments()
+
+        model = XGCN.create_model(config)
+        
+        model.fit()
+        
+        test_results = model.test()
+        print("test:", test_results)
+        io.save_json(osp.join(config['results_root'], 'test_results.json'), test_results)
+
+
+    if __name__ == '__main__':
+        
+        main()
+
+We provide shell scripts to run all the models in ``script/examples``.
+For example, ``run_xGCN-facebook.sh``: 
 
 .. code:: bash
 
-    # run model from CLI
-    python -m XGCN.main.run_model \
-        --config_file "../config/GraphSAGE/config.yaml" \
-        --seed 1999 \
-        --data_root ... \
-        --results_root ... \
+    # modify to your own paths:
+    all_data_root=/home/xxx/XGCN_data
+    config_file_root=/home/xxx/XGCN_library/config  # path to the config file templates
 
-If you want to use a ``.yaml`` configuration file, specify the path 
-with the command line argument ``--config_file``. 
-Note that a ``.yaml`` file is not a necessity of running the code and has lower 
-priority when the same command line argument is given. 
+    dataset=facebook
+    model=xGCN
+    seed=0
 
-We provide shell scripts examples for all the models, **please refer to...**.
+    data_root=$all_data_root/dataset/instance_$dataset
+    results_root=$all_data_root/model_output/$dataset/$model/[seed$seed]
+    
+    python -m XGCN.main.run_model --seed $seed \
+        --config_file $config_file_root/$model-config.yaml \
+        --data_root $data_root --results_root $results_root \
+        --val_evaluator WholeGraph_MultiPos_Evaluator --val_batch_size 256 \
+        --file_val_set $data_root/val_set.pkl \
+        --test_evaluator WholeGraph_MultiPos_Evaluator --test_batch_size 256 \
+        --file_test_set $data_root/test_set.pkl \
+
+To run a shell script, you only need to modify ``all_data_root`` and 
+``config_file_root`` to your own paths. 
 
 Once a model is trained, the output data will be saved at ``results_root``: 
 
@@ -135,29 +221,16 @@ Once a model is trained, the output data will be saved at ``results_root``:
 Run from API functions
 --------------------------
 
-XGCN provides API functions to create and train a model, for example: 
+XGCN provides APIs to create and train a model: 
 
 .. code:: python
 
-    import XGCN
-
-    # configurations parsed from command line arguments or a .yaml file
-    config = {
-        'data_root': ..., 'results_root': ..., 
-        'model': 'xGCN', 'seed': 1999, 
-        ...,
-        'test_evaluator': 'OnePosKNeg_Evaluator', 
-        'test_batch_size': 256, 'file_test_set': ...,
-        ...
-    }
     model = XGCN.create_model(config)
-
     model.fit()              # model training, 
                              # the best model on the validation set 
                              # will be saved at results_root
 
-After training, models can be evaluated on one or more test sets 
-(for more information about model evaluation, **please refer to...**): 
+After training, models can be evaluated on one or more test sets: 
 
 .. code:: python
 
@@ -172,8 +245,7 @@ After training, models can be evaluated on one or more test sets
     }
     results2 = model.test(test_config_2)
 
-XGCN provides some model inference APIs 
-(for more information, **please refer to...**): 
+XGCN provides some model inference APIs: 
 
 .. code:: python
 
@@ -189,7 +261,6 @@ XGCN provides some model inference APIs
     # save the output embeddings as a text file
     model.save_emb_as_txt(filename='out_emb_table.txt')
 
-
 XGCN also supports load pretrained models to do fine-tunning: 
 
 .. code:: python
@@ -203,6 +274,7 @@ XGCN also supports load pretrained models to do fine-tunning:
     new_resutls = model.test()
 
 
+--------------------
 Model Evaluation
 --------------------
 
@@ -223,7 +295,7 @@ it executes the default testing setting configurations in ``config``:
     model.fit()  
     results = model.test()
 
-Or you can specify other test sets
+Or you can specify other test sets:
 
 .. code:: python
 
@@ -234,73 +306,10 @@ Or you can specify other test sets
     }
     results = model.test(test_config)
 
-In link prediction tasks, A single evaluation sample can be formulated as: 
-(src, pos[1], ..., pos[m], neg[1], ... neg[k]), where src, pos, neg denotes source node, 
-positive node, and negative node, respectively. 
-The positive nodes usually comes from the removed edges from the original graph. 
-The negative nodes are usually sampled from un-interacted nodes 
-(i.e. nodes that are not neighbors of the source node). 
+The function receives a Dict containing three arguments: 
 
-Considering the number of positive nodes and negative nodes for each source node, 
-XGCN supports three kinds of evaluation methods: 
+* ``test_evaluator``: specifices the evaluation method. Available options: 'WholeGraph_MultiPos_Evaluator', 'WholeGraph_OnePos_Evaluator', and 'OnePosKNeg_Evaluator'. 
 
-* "one-pos-k-neg"
+* ``test_batch_size``: specifices the batch size for model testing. 
 
-* "whole-graph-one-pos"
-
-* "whole-graph-multi-pos"
-
-For "one-pos-k-neg", each evaluation sample has one positive node and k negative nodes. 
-Different evaluation samples may have the same source node. 
-The saved pickle file should be a N*(2+k) numpy array, for example: 
-
-.. code:: 
-
-    X = np.array([
-        [0, 1, 33, 102, 56, ... ], 
-        [0, 2, 150, 98, 72, ... ], 
-        [2, 4, 203, 42, 11, ... ],
-        [5, 0, 64, 130, 10, ... ],
-        ...
-    ])
-
-The first column is the source nodes, the second column is the positive nodes, 
-and the rest is the negative nodes. 
-
-For "one-pos-whole-graph", each evaluation sample has one positive node. 
-Different evaluation samples may have the same source node. 
-We consider all the un-interacted nodes in the graph as negative samples. 
-The saved pickle file should be a N*2 numpy array, for example: 
-
-.. code:: python
-
-    X = np.array([
-        [0, 1], 
-        [0, 2], 
-        [2, 4],
-        [5, 0],
-        ...
-    ])
-
-For "multi-pos-whole-graph", we also consider all the un-interacted nodes as negative samples. 
-Each evaluation sample has one or more positive nodes. 
-Different evaluation samples should have different source nodes. 
-The saved object should be a Dict like follows: 
-
-.. code:: python
-
-    eval_set = {
-        'src': np.array([0, 2, 5, ... ]),
-        'pos_list': [
-            np.array([1, 2]), 
-            np.array([4, ]), 
-            np.array([0, ]), 
-            ...
-        ]
-    }
-
-The 'src' field of the Dict is a numpy array of the source nodes. 
-The 'pos_list' field of the Dict is a list of numpy array of the positive nodes. 
-
-We don't restrict filenames for the evaluation sets. 
-The evaluation method and the corresponding file can be specified in the model configuration.
+* ``file_test_set``: specifices the file of the test set. 
