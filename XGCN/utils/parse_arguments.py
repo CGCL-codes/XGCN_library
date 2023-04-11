@@ -14,8 +14,9 @@ def _parse_arguments():
     
     parser.add_argument("--file_input", type=str)
     parser.add_argument("--file_output", type=str)
-    parser.add_argument("--is_adj_list", type=int)
+    parser.add_argument("--graph_format", type=str)
     parser.add_argument("--graph_type", type=str)
+    parser.add_argument("--evaluation_type", type=str)
     
     parser.add_argument("--num_sample", type=int)
     parser.add_argument("--min_src_out_degree", type=int)

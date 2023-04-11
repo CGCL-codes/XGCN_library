@@ -8,6 +8,8 @@ import os.path as osp
 
 def main():
     
+    print("# process_int_graph...")
+    
     config = parse_arguments()
     file_input = config['file_input']
     data_root = config['data_root']

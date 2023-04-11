@@ -31,17 +31,12 @@ def load_txt_adj_as_edges(filename):
     return E_src, E_dst
 
 
-def load_txt_adj_as_csr(filename):
-    E_src, E_dst = load_txt_adj_as_edges(filename)
-    indptr, indices = csr.from_edges_to_csr(E_src, E_dst)
-    return indptr, indices
-
-
 def from_txt_adj_to_adj_eval_set(filename):
+    num_lines = wc_count(filename)
     src = []
     pos_list = []
     with open(filename, 'r') as f:
-        while True:
+        for _ in range(num_lines):
             x = np.loadtxt(f, max_rows=1, dtype=np.int32, ndmin=1)
             if len(x) == 0:
                 break
@@ -49,7 +44,6 @@ def from_txt_adj_to_adj_eval_set(filename):
                 continue
             src.append(x[0])
             pos_list.append(x[1:])
-    print("(<-- don't mind if any UserWarning pops up)")
     src = np.array(src, dtype=np.int32)
     eval_set = {'src': src, 'pos_list': pos_list}
     return eval_set
