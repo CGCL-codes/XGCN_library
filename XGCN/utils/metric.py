@@ -86,7 +86,7 @@ def one_pos_metrics(S):
     return results
 
 
-def whole_graph_multi_pos_metrics(pos: list, all_target_score):
+def multi_pos_whole_graph_metrics(pos: list, all_target_score):
     results_dict_list = _multi_pos_all_metrics(pos, all_target_score)
     results = combine_dict_list_and_calc_mean(results_dict_list)
     return results

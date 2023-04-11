@@ -162,9 +162,9 @@ named ``run_xGCN-facebook.sh`` like this:
     python -m XGCN.main.run_model --seed $seed \
         --config_file $config_file_root/$model-config.yaml \
         --data_root $data_root --results_root $results_root \
-        --val_evaluator WholeGraph_MultiPos_Evaluator \
+        --val_method MultiPosWholeGraph_Evaluator \
         --file_val_set $data_root/val_set.pkl \
-        --test_evaluator WholeGraph_MultiPos_Evaluator \
+        --test_method MultiPosWholeGraph_Evaluator \
         --file_test_set $data_root/test_set.pkl \
 
 If you want to use a ``.yaml`` configuration file, specify the path 
@@ -237,9 +237,9 @@ To run it, for convenience, we also create a shell script ``run.sh``
     python run.py --seed $seed \
         --config_file $config_file_root/$model-config.yaml \
         --data_root $data_root --results_root $results_root \
-        --val_evaluator WholeGraph_MultiPos_Evaluator \
+        --val_method MultiPosWholeGraph_Evaluator \
         --file_val_set $data_root/val_set.pkl \
-        --test_evaluator WholeGraph_MultiPos_Evaluator \
+        --test_method MultiPosWholeGraph_Evaluator \
         --file_test_set $data_root/test_set.pkl \
 
 Then you can run your Python code with ``bash run.sh``. 

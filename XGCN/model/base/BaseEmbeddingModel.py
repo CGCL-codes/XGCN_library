@@ -52,11 +52,11 @@ class BaseEmbeddingModel(BaseModel):
             self.load()
         
     def test(self, test_config):
-        test_evaluator = XGCN.create_test_Evaluator(
+        test_method = XGCN.create_test_Evaluator(
             config=test_config, data=self.data, model=self
         )
         
-        results = test_evaluator.eval(desc='test')
+        results = test_method.eval(desc='test')
 
         results['formatted'] = get_formatted_results(results)
         return results

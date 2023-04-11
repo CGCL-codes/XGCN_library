@@ -3,7 +3,7 @@ from XGCN.data import io
 import numpy as np
 
 
-class WholeGraph_MultiPos_EvalDataLoader:
+class MultiPosWholeGraph_EvalDataLoader:
     
     def __init__(self, file_eval_set, batch_size):
         eval_set = io.load_pickle(file_eval_set)

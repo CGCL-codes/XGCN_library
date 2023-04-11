@@ -29,7 +29,7 @@ class Trainer:
         
         self.do_val = self.config['use_validation_for_early_stop']
         if self.do_val:
-            self.val_evaluator = XGCN.create_val_Evaluator(self.config, self.data, self.model)
+            self.val_method = XGCN.create_val_Evaluator(self.config, self.data, self.model)
             self.val_freq = self.config['val_freq']
             self.train_tracer = TrainTracer(
                 data, model,
@@ -68,7 +68,7 @@ class Trainer:
                 if hasattr(self.model, 'on_val_begin'):
                     self.model.on_val_begin()
                 
-                results = self.val_evaluator.eval(desc='val')
+                results = self.val_method.eval(desc='val')
                 
                 if hasattr(self.model, 'on_val_end'):
                     self.model.on_val_end()

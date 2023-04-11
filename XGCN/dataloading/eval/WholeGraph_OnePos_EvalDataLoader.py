@@ -3,7 +3,7 @@ from XGCN.data import io
 import torch
 
 
-class WholeGraph_OnePos_EvalDataLoader:
+class OnePosWholeGraph_EvalDataLoader:
     
     def __init__(self, file_eval_set, batch_size):
         pos_edges = io.load_pickle(file_eval_set)

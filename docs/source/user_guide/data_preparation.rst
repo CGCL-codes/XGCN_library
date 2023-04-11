@@ -1,27 +1,37 @@
 Data Preparation
 ======================
 
-This section introduce XGCN's data processing APIs. 
+* available input format
 
-XGCN supports handling both homogenous graphs (e.g. social networks) 
-and bipartite graphs (e.g. user-item graphs). The data pipeline is as follows:
+* Processing Pipeline
 
-.. image:: ../asset/data_pipeline.jpg
-  :width: 500
-  :align: center
-  :alt: data processing pipeline
 
-As shown in the figure, XGCN has three data processing modules: 
 
-* ``XGCN.data.io``. Handle disk-reading/writing operations, including reading raw token IDs as input and re-index them into continuous integer IDs. 
+data processing api
 
-* ``XGCN.data.trim``. Some industrial graph datasets tend to be large-scale (e.g. Taobao's transaction record), and we might want to get a smaller one for model development and quick evaluation. This module help users trim graphs by dropping nodes randomly or according to nodes' degrees. 
+dataset instance
 
-* ``XGCN.data.split``. To evaluate a link prediction model, it is common to split a portion of edges as positive samples, which can be done by using this module. 
+.. This section introduce XGCN's data processing APIs. 
 
-In this section, we'll first introduce the "dataset instance" format, which is needed 
-to run a model. Next, we'll present the data processing APIs in the three modules above. 
-As for data processing examples, please refer to the Running Examples section. 
+.. XGCN supports handling both homogenous graphs (e.g. social networks) 
+.. and bipartite graphs (e.g. user-item graphs). The data pipeline is as follows:
+
+.. .. image:: ../asset/data_pipeline.jpg
+..   :width: 500
+..   :align: center
+..   :alt: data processing pipeline
+
+.. As shown in the figure, XGCN has three data processing modules: 
+
+.. * ``XGCN.data.io``. Handle disk-reading/writing operations, including reading raw token IDs as input and re-index them into continuous integer IDs. 
+
+.. * ``XGCN.data.trim``. Some industrial graph datasets tend to be large-scale (e.g. Taobao's transaction record), and we might want to get a smaller one for model development and quick evaluation. This module help users trim graphs by dropping nodes randomly or according to nodes' degrees. 
+
+.. * ``XGCN.data.split``. To evaluate a link prediction model, it is common to split a portion of edges as positive samples, which can be done by using this module. 
+
+.. In this section, we'll first introduce the "dataset instance" format, which is needed 
+.. to run a model. Next, we'll present the data processing APIs in the three modules above. 
+.. As for data processing examples, please refer to the Running Examples section. 
 
 .. * **facebook**. The facebook data is included in our XGCN repository: 
 .. ``data/raw_facebook/``. You can also download it from SNAP: 
@@ -35,8 +45,8 @@ As for data processing examples, please refer to the Running Examples section.
 .. To download and process them, please refer to the following introduction sections 
 .. and the scripts in ``script/data_process/pokec_and_livejournal``. 
 
-.. toctree::
-    :maxdepth: 1
+.. .. toctree::
+..     :maxdepth: 1
    
-    data_preparation/dataset_instance
-    data_preparation/data_process_api
+..     data_preparation/dataset_instance
+..     data_preparation/data_process_api

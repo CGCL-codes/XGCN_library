@@ -100,9 +100,9 @@ reproduce the results on the gowalla dataset:
     python -m XGCN.main.run_model --seed $seed \
         --config_file $config_file_root/$model-full_graph-config.yaml \
         --data_root $data_root --results_root $results_root \
-        --val_evaluator WholeGraph_MultiPos_Evaluator \
+        --val_method MultiPosWholeGraph_Evaluator \
         --file_val_set $data_root/test_set.pkl \
-        --test_evaluator WholeGraph_MultiPos_Evaluator \
+        --test_method MultiPosWholeGraph_Evaluator \
         --file_test_set $data_root/test_set.pkl \
         --str_num_total_samples num_users \
         --pos_sampler NodeBased_ObservedEdges_Sampler \

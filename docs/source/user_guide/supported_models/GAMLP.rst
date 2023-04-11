@@ -46,10 +46,10 @@ XGCN implements two version of GAMLP: (1) ``GAMLP``: freeze node embeddings as f
     epoch_sample_ratio: 0.1
 
     # Evaluator configuration
-    val_evaluator: ""
+    val_method: ""
     val_batch_size: 256
     file_val_set: ""
-    test_evaluator: ""
+    test_method: ""
     test_batch_size: 256
     file_test_set: ""
 
@@ -96,9 +96,9 @@ XGCN implements two version of GAMLP: (1) ``GAMLP``: freeze node embeddings as f
     python -m XGCN.main.run_model --seed $seed \
         --config_file $config_file_root/$model-config.yaml \
         --data_root $data_root --results_root $results_root \
-        --val_evaluator WholeGraph_MultiPos_Evaluator --val_batch_size 256 \
+        --val_method MultiPosWholeGraph_Evaluator --val_batch_size 256 \
         --file_val_set $data_root/val_set.pkl \
-        --test_evaluator WholeGraph_MultiPos_Evaluator --test_batch_size 256 \
+        --test_method MultiPosWholeGraph_Evaluator --test_batch_size 256 \
         --file_test_set $data_root/test_set.pkl \
         --file_pretrained_emb $file_pretrained_emb \
 
@@ -132,10 +132,10 @@ XGCN implements two version of GAMLP: (1) ``GAMLP``: freeze node embeddings as f
     epoch_sample_ratio: 0.1
 
     # Evaluator configuration
-    val_evaluator: ""
+    val_method: ""
     val_batch_size: 256
     file_val_set: ""
-    test_evaluator: ""
+    test_method: ""
     test_batch_size: 256
     file_test_set: ""
 
@@ -191,9 +191,9 @@ XGCN implements two version of GAMLP: (1) ``GAMLP``: freeze node embeddings as f
     python -m XGCN.main.run_model --seed $seed \
         --config_file $config_file_root/$model-config.yaml \
         --data_root $data_root --results_root $results_root \
-        --val_evaluator WholeGraph_MultiPos_Evaluator --val_batch_size 256 \
+        --val_method MultiPosWholeGraph_Evaluator --val_batch_size 256 \
         --file_val_set $data_root/val_set.pkl \
-        --test_evaluator WholeGraph_MultiPos_Evaluator --test_batch_size 256 \
+        --test_method MultiPosWholeGraph_Evaluator --test_batch_size 256 \
         --file_test_set $data_root/test_set.pkl \
         --from_pretrained 1 \
         --file_pretrained_emb $file_pretrained_emb \

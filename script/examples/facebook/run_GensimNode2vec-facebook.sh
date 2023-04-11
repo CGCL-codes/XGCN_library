@@ -14,9 +14,9 @@ python $project_root/main/main.py $project_root \
     --config_file $project_root"/model/"$model"/config.yaml" \
     --seed $seed \
     --data_root $data_root --results_root $results_root \
-    --val_evaluator "WholeGraph_MultiPos_Evaluator" --val_batch_size 256 \
+    --val_method "MultiPosWholeGraph_Evaluator" --val_batch_size 256 \
     --file_val_set $data_root"/val_set.pkl" \
-    --test_evaluator "WholeGraph_MultiPos_Evaluator" --test_batch_size 256 \
+    --test_method "MultiPosWholeGraph_Evaluator" --test_batch_size 256 \
     --file_test_set $data_root"/test_set.pkl" \
     --epochs 200 --val_freq 1 \
     --emb_dim 64 --emb_lr 0.01 \

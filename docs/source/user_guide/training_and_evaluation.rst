@@ -40,12 +40,12 @@ A typical ``.yaml`` configuration file including all the arguments is like follo
     val_freq: 1
     key_score_metric: r100
     convergence_threshold: 20
-    val_evaluator: ""
+    val_method: ""
     val_batch_size: 256
     file_val_set: ""
 
     # Testing configuration  (required for model.test())
-    test_evaluator: ""
+    test_method: ""
     test_batch_size: 256
     file_test_set: ""
 
@@ -193,9 +193,9 @@ For example, ``run_xGCN-facebook.sh``:
     python -m XGCN.main.run_model --seed $seed \
         --config_file $config_file_root/$model-config.yaml \
         --data_root $data_root --results_root $results_root \
-        --val_evaluator WholeGraph_MultiPos_Evaluator --val_batch_size 256 \
+        --val_method MultiPosWholeGraph_Evaluator --val_batch_size 256 \
         --file_val_set $data_root/val_set.pkl \
-        --test_evaluator WholeGraph_MultiPos_Evaluator --test_batch_size 256 \
+        --test_method MultiPosWholeGraph_Evaluator --test_batch_size 256 \
         --file_test_set $data_root/test_set.pkl \
 
 To run a shell script, you only need to modify ``all_data_root`` and 
@@ -239,7 +239,7 @@ After training, models can be evaluated on one or more test sets:
 
     # testing on other test sets
     test_config_2 = {
-        'test_evaluator': 'WholeGraph_MultiPos_Evaluator',
+        'test_method': 'MultiPosWholeGraph_Evaluator',
         'test_batch_size': 256,
         'file_test_set': ...  # another test set
     }
@@ -287,7 +287,7 @@ it executes the default testing setting configurations in ``config``:
         'data_root': ..., 'results_root': ..., 
         'model': 'xGCN', 'seed': 1999, 
         ...,
-        'test_evaluator': 'OnePosKNeg_Evaluator', 
+        'test_method': 'OnePosKNeg_Evaluator', 
         'test_batch_size': 256, 'file_test_set': ...,
         ...
     }
@@ -300,7 +300,7 @@ Or you can specify other test sets:
 .. code:: python
 
     test_config = {
-        'test_evaluator': 'WholeGraph_MultiPos_Evaluator',
+        'test_method': 'MultiPosWholeGraph_Evaluator',
         'test_batch_size': 256,
         'file_test_set': ... 
     }
@@ -308,7 +308,7 @@ Or you can specify other test sets:
 
 The function receives a Dict containing three arguments: 
 
-* ``test_evaluator``: specifices the evaluation method. Available options: 'WholeGraph_MultiPos_Evaluator', 'WholeGraph_OnePos_Evaluator', and 'OnePosKNeg_Evaluator'. 
+* ``test_method``: specifices the evaluation method. Available options: 'MultiPosWholeGraph_Evaluator', 'OnePosWholeGraph_Evaluator', and 'OnePosKNeg_Evaluator'. 
 
 * ``test_batch_size``: specifices the batch size for model testing. 
 

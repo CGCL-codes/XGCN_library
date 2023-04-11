@@ -49,17 +49,16 @@ def split_edges(indptr, indices, num_sample, min_src_out_degree, min_dst_in_degr
         for s in all_nodes:
             if src_degree_ok(s):
                 nei = g.successors(s)
-                np.random.shuffle(nei)
-                for d in nei:
-                    if dst_degree_ok(d):
-                        print("sampling edges {}/{} ({:.2f}%)".format(
-                            len(pos_edges), num_sample, 100*len(pos_edges) / num_sample), end='\r')
-                        exists_ok_node = True
-                        pos_edges.append((s, d))
-                        g.remove_successor(s, d)
+                idx = torch.randint(0, len(nei), (1,)).item()
+                d = nei[idx]
+                if dst_degree_ok(d):
+                    print("sampling edges {}/{} ({:.2f}%)".format(
+                        len(pos_edges), num_sample, 100*len(pos_edges) / num_sample), end='\r')
+                    exists_ok_node = True
+                    pos_edges.append((s, d))
+                    g.remove_successor(s, d)
+                    if len(pos_edges) >= num_sample:
                         break
-                if len(pos_edges) >= num_sample:
-                    break
         if len(pos_edges) >= num_sample or not exists_ok_node:
             break
     print("\nnum sampled edges:", len(pos_edges))

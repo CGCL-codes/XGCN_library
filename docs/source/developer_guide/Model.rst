@@ -223,10 +223,10 @@ with the following contents:
     epoch_sample_ratio: 0.1
     
     # Evaluator configuration
-    val_evaluator: "WholeGraph_MultiPos_Evaluator"
+    val_method: "MultiPosWholeGraph_Evaluator"
     val_batch_size: 256
     file_val_set: ""
-    test_evaluator: "WholeGraph_MultiPos_Evaluator"
+    test_method: "MultiPosWholeGraph_Evaluator"
     test_batch_size: 256
     file_test_set: ""
 

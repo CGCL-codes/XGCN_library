@@ -1,3 +1,3 @@
-from .WholeGraph_MultiPos_EvalDataLoader import WholeGraph_MultiPos_EvalDataLoader
-from .WholeGraph_OnePos_EvalDataLoader import WholeGraph_OnePos_EvalDataLoader
+from .MultiPosWholeGraph_EvalDataLoader import MultiPosWholeGraph_EvalDataLoader
+from .OnePosWholeGraph_EvalDataLoader import OnePosWholeGraph_EvalDataLoader
 from .OnePosKNeg_EvalDataLoader import OnePosKNeg_EvalDataLoader

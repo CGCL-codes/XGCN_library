@@ -8,12 +8,12 @@ use_validation_for_early_stop: 1
 val_freq: 1
 key_score_metric: r100
 convergence_threshold: 20
-val_evaluator: ""
+val_method: ""
 val_batch_size: 256
 file_val_set: ""
 
 # Testing configuration (optional)
-test_evaluator: ""
+test_method: ""
 test_batch_size: 256
 file_test_set: ""
 

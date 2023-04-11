@@ -13,9 +13,9 @@ file_pretrained_emb=$all_data_root/model_output/$dataset/Node2vec/[seed$seed]/ou
 python -m XGCN.main.run_model --seed $seed \
     --config_file $config_file_root/$model-config.yaml \
     --data_root $data_root --results_root $results_root \
-    --val_evaluator WholeGraph_MultiPos_Evaluator --val_batch_size 256 \
+    --val_method MultiPosWholeGraph_Evaluator --val_batch_size 256 \
     --file_val_set $data_root/val_set.pkl \
-    --test_evaluator WholeGraph_MultiPos_Evaluator --test_batch_size 256 \
+    --test_method MultiPosWholeGraph_Evaluator --test_batch_size 256 \
     --file_test_set $data_root/test_set.pkl \
     --from_pretrained 0 --file_pretrained_emb $file_pretrained_emb \
     --ppr_data_root $all_data_root/model_output/$dataset/PPR/[seed0] \

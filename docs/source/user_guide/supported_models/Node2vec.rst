@@ -34,10 +34,10 @@ Running with XGCN
     convergence_threshold: 20
 
     # Evaluator configuration
-    val_evaluator: WholeGraph_MultiPos_Evaluator
+    val_method: MultiPosWholeGraph_Evaluator
     val_batch_size: 256
     file_val_set: ""
-    test_evaluator: WholeGraph_MultiPos_Evaluator
+    test_method: MultiPosWholeGraph_Evaluator
     test_batch_size: 256
     file_test_set: ""
 
@@ -73,9 +73,9 @@ Running with XGCN
     python -m XGCN.main.run_model --seed $seed \
         --config_file $config_file_root/$model-config.yaml \
         --data_root $data_root --results_root $results_root \
-        --val_evaluator WholeGraph_MultiPos_Evaluator --val_batch_size 256 \
+        --val_method MultiPosWholeGraph_Evaluator --val_batch_size 256 \
         --file_val_set $data_root/val_set.pkl \
-        --test_evaluator WholeGraph_MultiPos_Evaluator --test_batch_size 256 \
+        --test_method MultiPosWholeGraph_Evaluator --test_batch_size 256 \
         --file_test_set $data_root/test_set.pkl \
         --device $device \
 
@@ -90,11 +90,11 @@ Running with XGCN
     data_root: ""
     results_root: ""
 
-    val_evaluator: ""
+    val_method: ""
     val_batch_size: 256
     file_val_set: ""
 
-    test_evaluator: ""
+    test_method: ""
     test_batch_size: 256
     file_test_set: ""
 
@@ -134,9 +134,9 @@ Running with XGCN
     python -m XGCN.main.run_model --seed $seed \
         --config_file $config_file_root/$model-config.yaml \
         --data_root $data_root --results_root $results_root \
-        --val_evaluator "WholeGraph_MultiPos_Evaluator" --val_batch_size 256 \
+        --val_method "MultiPosWholeGraph_Evaluator" --val_batch_size 256 \
         --file_val_set $data_root"/val_set.pkl" \
-        --test_evaluator "WholeGraph_MultiPos_Evaluator" --test_batch_size 256 \
+        --test_method "MultiPosWholeGraph_Evaluator" --test_batch_size 256 \
         --file_test_set $data_root"/test_set.pkl" \
         --epochs 200 --val_freq 1 \
         --emb_dim 64 --emb_lr 0.01 \
