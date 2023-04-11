@@ -11,9 +11,8 @@ def main():
     print("# process_int_graph")
     
     config = parse_arguments()
-    file_input = config['file_input']
+    file_input_graph = config['file_input_graph']
     data_root = config['data_root']
-    ensure_dir(data_root)
     
     graph_type = config['graph_type']
     assert graph_type in ['homo', 'user-item']
@@ -23,9 +22,9 @@ def main():
     
     print("# load graph...")
     if graph_format == 'edge_list':
-        E_src, E_dst = io.load_txt_edges(file_input)
+        E_src, E_dst = io.load_txt_edges(file_input_graph)
     elif graph_format == 'adjacency_list':
-        E_src, E_dst = io.load_txt_adj_as_edges(file_input)
+        E_src, E_dst = io.load_txt_adj_as_edges(file_input_graph)
     else:
         assert 0
 

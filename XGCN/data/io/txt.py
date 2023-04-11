@@ -49,6 +49,16 @@ def from_txt_adj_to_adj_eval_set(filename):
     return eval_set
 
 
+def save_adj_eval_set_as_txt(filename, eval_set):
+    src = eval_set['src']
+    pos_list = eval_set['pos_list']
+    with open(filename, 'w') as f:
+        for i in range(len(src)):
+            u = src[i]
+            pos_nodes = pos_list[i]
+            f.write(' '.join([str(x) for x in ([u,] + list(pos_nodes))]) + '\n')
+
+
 def save_id_mapping_as_txt(id_mapping):
     raise NotImplementedError
 

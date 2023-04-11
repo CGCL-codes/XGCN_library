@@ -1,5 +1,5 @@
 # input text file:
-file_input='/home/sxr/code/XGCN_and_data/XGCN_data/dataset/raw_facebook/facebook_combined.txt'
+file_input_graph='/home/sxr/code/XGCN_and_data/XGCN_data/dataset/raw_facebook/facebook_combined.txt'
 # data instance root:
 data_root='/home/sxr/code/XGCN_and_data/XGCN_data/dataset/instance_facebook'
 
@@ -9,5 +9,5 @@ graph_type='homo'
 graph_format='edge_list'
 
 python -m XGCN.data.process.process_int_graph \
-    --file_input $file_input --data_root $data_root \
+    --file_input_graph $file_input_graph --data_root $data_root \
     --graph_type $graph_type --graph_format $graph_format \

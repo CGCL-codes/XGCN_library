@@ -13,12 +13,14 @@ def _parse_arguments():
     parser.add_argument("--results_root", type=str)
     
     parser.add_argument("--file_input", type=str)
+    parser.add_argument("--file_input_graph", type=str)
     parser.add_argument("--file_output", type=str)
-    parser.add_argument("--file_output_val_set", type=str)
-    parser.add_argument("--file_output_test_set", type=str)
+    parser.add_argument("--file_output_graph", type=str)
+    parser.add_argument("--file_output_eval_set", type=str)
+    parser.add_argument("--eval_method", type=str)
+    parser.add_argument("--num_edge_samples", type=int)
     parser.add_argument("--graph_format", type=str)
     parser.add_argument("--graph_type", type=str)
-    parser.add_argument("--evaluation_method", type=str)
     
     parser.add_argument("--num_sample", type=int)
     parser.add_argument("--min_src_out_degree", type=int)
