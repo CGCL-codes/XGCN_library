@@ -24,7 +24,7 @@ By using XGCN's data processing API, the data are loaded and saved into:
 
 We refer to such processed dataset as "dataset instance", which is required before running XGCN models. 
 
-In the following sections we'll introduce:
+In the following, we'll introduce:
 
 * **Graph Processing:** input format of the graph, and the processing API.
 * **Evaluation Set Processing:** input format of the evaluation set, and the processing API. If you only have the graph data and do not have evaluation sets, XGCN can also help you generate them. 

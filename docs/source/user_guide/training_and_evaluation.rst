@@ -1,7 +1,7 @@
 Training and Evaluation
 ============================
 
-Once the dataset instance is generated (for dataset processing, please refer to the previous section), 
+Once the dataset instance is generated (for dataset instance generation, please refer to the previous section), 
 you can run models with XGCN's APIs: 
 
 .. code:: python
@@ -11,9 +11,10 @@ you can run models with XGCN's APIs:
 
 In this section, we are going to introduce:
 
-* **Model Configuration**
-* **Model Training**
-* **Model Evaluation**
+* **How to set model configurations**
+* **How to train a model**
+* **How to evaluate a model**
+* **Model inference APIs**
 
 ---------------------------
 Model Configuration
@@ -27,14 +28,15 @@ You can also manually write a Dict with all the parameters in a python script.
 Configuration Template
 ---------------------------
 
-Directory ``config/`` includes ``.yaml`` configuration templates for all the models. 
-A typical ``.yaml`` configuration file including all the arguments is like follows:
+Directory ``config/`` includes ``.yaml`` configuration file templates for all the models. 
+Each file contains **all** the arguments needed to run a model. 
+A typical ``.yaml`` configuration file is like this:
 
 .. code:: yaml
 
     # Dataset/Results root
-    data_root: ""
-    results_root: ""
+    data_root: ""       # root of the dataset instance
+    results_root: ""    # root for model outputs, training record, and evaluation results
 
     # Trainer configuration
     epochs: 200
@@ -85,10 +87,10 @@ A typical ``.yaml`` configuration file including all the arguments is like follo
     loss_type: bpr
     L2_reg_weight: 0.0
 
-It consists of five parts:
+The configuration consists of five parts:
 
 (1) **Dataset/Results root**. 
-Specifies the dataset root and the directory to save the outputs during the model training. Note that when calling the ``XGCN.create_model(config)`` function, the 'results_root' directory will be automatically created if it does not exist. 
+Specifies the dataset instance root and the directory to save the outputs during the model training. Note that when calling the ``XGCN.create_model(config)`` function, the 'results_root' directory will be automatically created if it does not exist. 
 
 (2) **Trainer configuration**. 
 Specifies the configuration about training loop control, e.g. ``epochs``. 
@@ -191,14 +193,14 @@ For example, ``run_xGCN-facebook.sh``:
 
     data_root=$all_data_root/dataset/instance_$dataset
     results_root=$all_data_root/model_output/$dataset/$model/[seed$seed]
-    
+
     python -m XGCN.main.run_model --seed $seed \
         --config_file $config_file_root/$model-config.yaml \
         --data_root $data_root --results_root $results_root \
-        --val_method 'multi_pos_whole_graph' --val_batch_size 256 \
-        --file_val_set $data_root/val_set.pkl \
-        --test_method 'multi_pos_whole_graph' --test_batch_size 256 \
-        --file_test_set $data_root/test_set.pkl \
+        --val_method one_pos_k_neg --val_batch_size 256 \
+        --file_val_set $data_root/val-one_pos_k_neg.pkl \
+        --test_method multi_pos_whole_graph --test_batch_size 256 \
+        --file_test_set $data_root/test-multi_pos_whole_graph.pkl \
 
 To run a shell script, you only need to modify ``all_data_root`` and 
 ``config_file_root`` to your own paths. 
@@ -223,56 +225,33 @@ Once a model is trained, the output data will be saved at ``results_root``:
 Run from API functions
 --------------------------
 
-XGCN provides APIs to create and train a model: 
+XGCN provides API functions to create and train a model: 
 
 .. code:: python
 
-    model = XGCN.create_model(config)
+    model = XGCN.create_model(config)  
+    # When call the XGCN.create_model function,
+    # the 'results_root' directory will be automatically created 
+    # if it does not exist.
     model.fit()              # model training, 
                              # the best model on the validation set 
                              # will be saved at results_root
 
-After training, models can be evaluated on one or more test sets: 
+After training, models can be evaluated on one or more test sets by using the ``model.test()`` function. 
 
-.. code:: python
 
-    # model testing (default settings in config)
-    results = model.test()
+Load and continue to train
+------------------------------
 
-    # testing on other test sets
-    test_config_2 = {
-        'test_method': ''multi_pos_whole_graph'',
-        'test_batch_size': 256,
-        'file_test_set': ...  # another test set
-    }
-    results2 = model.test(test_config_2)
-
-XGCN provides some model inference APIs: 
-
-.. code:: python
-
-    # infer scores given a source node and one or more target nodes:
-    target_score = model.infer_target_score(
-        src=5, 
-        target=torch.LongTensor(101, 102, 103)
-    )
-
-    # infer top-k recommendations for a source node
-    score, topk_node = model.infer_topk(k=100, src=5, mask_nei=True)
-
-    # save the output embeddings as a text file
-    model.save_emb_as_txt(filename='out_emb_table.txt')
-
-XGCN also supports load pretrained models to do fine-tunning: 
+XGCN can also load trained models and continue to train: 
 
 .. code:: python
 
     config = io.load_yaml(...)  # the previously saved config.yaml
     config['emb_lr'] = 0.0001   # change some hyper-paramenters
 
-    model = XGCN.create_model(config)
-    model.load()  # load the saved model      
-    model.fit()   # training on the hyper-paramenters
+    model = XGCN.load_model(config)  # load the saved model      
+    model.fit()                      # training on the new hyper-paramenters
     new_resutls = model.test()
 
 
@@ -302,7 +281,7 @@ Or you can specify other test sets:
 .. code:: python
 
     test_config = {
-        'test_method': ''multi_pos_whole_graph'',
+        'test_method': 'multi_pos_whole_graph',
         'test_batch_size': 256,
         'file_test_set': ... 
     }
@@ -310,8 +289,29 @@ Or you can specify other test sets:
 
 The function receives a Dict containing three arguments: 
 
-* ``test_method``: specifices the evaluation method. Available options: ''multi_pos_whole_graph'', 'OnePosWholeGraph_Evaluator', and 'OnePosKNeg_Evaluator'. 
+* ``test_method``: specifices the evaluation method. Available options: 'one_pos_k_neg', 'one_pos_whole_graph', and 'multi_pos_whole_graph'. 
 
-* ``test_batch_size``: specifices the batch size for model testing. 
+* ``test_batch_size``: specifices the batch size. 
 
-* ``file_test_set``: specifices the file of the test set. 
+* ``file_test_set``: specifices the file of the processed evaluation set. 
+
+
+------------------
+Model Inference
+------------------
+
+XGCN provides some model inference APIs: 
+
+.. code:: python
+
+    # infer scores given a source node and one or more target nodes:
+    target_score = model.infer_target_score(
+        src=5, 
+        target=torch.LongTensor(101, 102, 103)
+    )
+
+    # infer top-k recommendations for a source node
+    score, topk_node = model.infer_topk(k=100, src=5, mask_nei=True)
+
+    # save the output embeddings as a text file
+    model.save_emb_as_txt(filename='out_emb_table.txt')
