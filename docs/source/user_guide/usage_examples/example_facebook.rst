@@ -200,6 +200,6 @@ If you have done the above steps successfully, your data directory will look lik
 
 Congratulations! Now we have a complete dataset instance, and is ready to run any models in XGCN!
 
----------------------
-Model Running
----------------------
+.. ---------------------
+.. Model Running
+.. ---------------------
