@@ -80,7 +80,7 @@ We recommend to install XGCN from source with the following command:
 .. code:: bash
 
     git clone git@github.com:xiransong/XGCN_library.git -b dev
-    cd xGCN
+    cd XGCN_library
     python -m pip install -e .
    
 
