@@ -1,7 +1,7 @@
 Data Preparation
 ======================
 
-In this section, we introduce how to process your text data into our "dataset instances". 
+In this section, we introduce how to process your text data into XGCN's "dataset instances". 
 For example, suppose you have a dataset looks like this: 
 
 .. code:: 
@@ -23,6 +23,12 @@ By using XGCN's data processing API, the data are loaded and saved into:
     └── test.pkl
 
 We refer to such processed dataset as "dataset instance", which is required before running XGCN models. 
+
+In the following sections we'll introduce:
+
+* **Graph Processing:** input format of the graph, and the processing API.
+* **Evaluation Set Processing:** input format of the evaluation set, and the processing API.
+* **Evaluation Set Generation:** if you only have the graph data and do not have evaluation sets, XGCN can also help you generate them. 
 
 
 Graph Processing
@@ -184,6 +190,7 @@ An example of the shell script is as follows:
     file_input='/home/xxx/xxx/test.txt'
     file_output='/home/xxx/XGCN_data/dataset/instance_xxx/test.pkl'
 
+    # available evaluation_method: 'one_pos_k_neg', 'one_pos_whole_graph', 'multi_pos_whole_graph'
     evaluation_method='multi_pos_whole_graph'
 
     python -m XGCN.data.process.process_evaluation_set \
@@ -195,3 +202,61 @@ There are 3 arguments:
 * ``file_input``: the input text file. 
 * ``file_output``: the output file. We save the data object using ``Pickle``, so it's recommended to name the output as 'xxx.pkl'. 
 * ``evaluation_method``: available evaluation method: 'one_pos_k_neg', 'one_pos_whole_graph', and 'multi_pos_whole_graph'. 
+
+
+Evaluation Set Generation
+-----------------------------
+
+Suppose we only have the graph data: 'graph.txt', and want to generate some evaluation sets, 
+then we can use the ``XGCN.data.process.evaluation_set_generation`` module: 
+
+.. code:: bash
+
+    file_input_graph='/home/xxx/graph.txt'
+    # available graph type: 'homo', 'user-item'
+    graph_type='homo'
+    # available graph format: 'edge_list', 'adjacency_list'
+    graph_format='edge_list'
+
+    seed=1999               # random seed
+    num_edge_samples=10000  # number of edges to split
+    min_src_out_degree=3    # guarantee the minimum out-degree of a source node after the split
+    min_dst_in_degree=3     # guarantee the minimum in-degree of a destination node after the split
+
+    # available evaluation_method: 'one_pos_k_neg', 'one_pos_whole_graph', 'multi_pos_whole_graph'
+    eval_method='one_pos_k_neg'
+    num_neg=999  # the num_neg argument is required when the eval_method='one_pos_k_neg'
+
+    # the output graph will be saved as a text file in edge list format
+    file_output_graph='/home/xxx/graph-1.txt'
+    file_output_eval_set='/home/xxx/val.txt'
+
+    python -m XGCN.data.process.evaluation_set_generation \
+        --file_input_graph $file_input_graph \
+        --file_output_graph $file_output_graph \
+        --file_output_eval_set $file_output_eval_set \
+        --seed $seed --graph_type $graph_type --graph_format $graph_format \
+        --num_edge_samples $num_edge_samples \
+        --min_src_out_degree $min_src_out_degree \
+        --min_dst_in_degree $min_dst_in_degree \
+        --eval_method $eval_method \
+        --num_neg $num_neg \
+
+The arguments are:
+
+* ``file_input_graph``: the input text file. 
+* ``graph_type``: available graph type: 'homo' (for homogeneous) or 'user-item'. 
+* ``graph_format``: available graph format: 'edge_list' or 'adjacency_list'. 
+* ``seed``: random seed for edges split. 
+* ``num_edge_samples``: number of edges to split. 
+* ``min_src_out_degree``: to guarantee the minimum out-degree of a source node after the split. 
+* ``min_dst_in_degree``: to guarantee the minimum in-degree of a destination node after the split. 
+* ``eval_method``: evaluation method: 'one_pos_k_neg', 'one_pos_whole_graph', and 'multi_pos_whole_graph'. 
+* ``num_neg``: number of negative samples for a source node, this argument is required when eval_method='one_pos_k_neg'. 
+* ``file_output_graph``: the output graph, which will be saved as a text file in the edge list format. 
+* ``file_output_eval_set``: the output text file of the evaluation set. 
+
+You can successively use this module to generate several different evaluation sets. 
+The output evaluation sets can then be fed into the ``XGCN.data.process.process_evaluation_set`` module. 
+And the final version of the graph for training can be fed into the ``XGCN.data.process.process_int_graph`` module 
+to generate a complete dataset instance. 

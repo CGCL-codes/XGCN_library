@@ -2,7 +2,6 @@
 file_input_graph='/home/sxr/code/XGCN_and_data/XGCN_data/dataset/raw_gowalla/train.txt'
 instance_root='/home/sxr/code/XGCN_and_data/XGCN_data/dataset/instance_gowalla2'
 
-rm -r $instance_root
 mkdir -p $instance_root
 
 file_train_graph=$instance_root'/train.txt'
