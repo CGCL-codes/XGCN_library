@@ -27,14 +27,13 @@ We refer to such processed dataset as "dataset instance", which is required befo
 In the following sections we'll introduce:
 
 * **Graph Processing:** input format of the graph, and the processing API.
-* **Evaluation Set Processing:** input format of the evaluation set, and the processing API.
-* **Evaluation Set Generation:** if you only have the graph data and do not have evaluation sets, XGCN can also help you generate them. 
+* **Evaluation Set Processing:** input format of the evaluation set, and the processing API. If you only have the graph data and do not have evaluation sets, XGCN can also help you generate them. 
 
 
+---------------------
 Graph Processing
 ---------------------
 
---------------------
 Input format
 --------------------
 
@@ -66,7 +65,7 @@ We also support adjacency list as input, for example:
 In this case, each line represents: (source node, neighbor node 1, neighbor node 2, ...). 
 Two nodes are also seperated by a blank. 
 
---------------------
+
 Processing module
 --------------------
 
@@ -108,10 +107,10 @@ After running this module, your data root will be like:
     └── indices.pkl
 
 
+-----------------------------
 Evaluation Set Processing
 -----------------------------
 
---------------------
 Input format
 --------------------
 
@@ -178,7 +177,7 @@ The input text file should be an adjacency list, two nodes are seperated by a bl
 
 The first line contains source nodes. Each source should have at least one positive node. 
 
---------------------
+
 Processing module
 --------------------
 
