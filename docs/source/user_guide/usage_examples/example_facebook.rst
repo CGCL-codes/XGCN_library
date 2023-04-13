@@ -162,7 +162,7 @@ Next, we process the validation set and the test set:
 
     ###### process validation set
     file_input='/home/xxx/XGCN_data/dataset/raw_facebook/val-one_pos_k_neg.txt'
-    file_output='/home/xxx/XGCN_data/dataset/instance_xxx/val-one_pos_k_neg.pkl'
+    file_output='/home/xxx/XGCN_data/dataset/instance_facebook/val-one_pos_k_neg.pkl'
 
     evaluation_method='one_pos_k_neg'
 
@@ -172,7 +172,7 @@ Next, we process the validation set and the test set:
 
     ###### process test set
     file_input='/home/xxx/XGCN_data/dataset/raw_facebook/test-multi_pos_whole_graph.txt'
-    file_output='/home/xxx/XGCN_data/dataset/instance_xxx/test-multi_pos_whole_graph.pkl'
+    file_output='/home/xxx/XGCN_data/dataset/instance_facebook/test-multi_pos_whole_graph.pkl'
 
     evaluation_method='multi_pos_whole_graph'
 
@@ -199,3 +199,7 @@ If you have done the above steps successfully, your data directory will look lik
             └── test-multi_pos_whole_graph.pkl
 
 Congratulations! Now we have a complete dataset instance, and is ready to run any models in XGCN!
+
+---------------------
+Model Running
+---------------------

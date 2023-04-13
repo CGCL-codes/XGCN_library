@@ -7,7 +7,7 @@ def select_evaluator(evaluation_method):
     return {
         'one_pos_k_neg': OnePosKNeg_Evaluator,
         'one_pos_whole_graph': OnePosWholeGraph_Evaluator,
-        'whole_pos_whole_graph': MultiPosWholeGraph_Evaluator,
+        'multi_pos_whole_graph': MultiPosWholeGraph_Evaluator,
     }[evaluation_method]
 
 

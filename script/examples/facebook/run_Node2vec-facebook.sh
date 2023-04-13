@@ -12,8 +12,8 @@ results_root=$all_data_root/model_output/$dataset/$model/[seed$seed]
 python -m XGCN.main.run_model --seed $seed \
     --config_file $config_file_root/$model-config.yaml \
     --data_root $data_root --results_root $results_root \
-    --val_method MultiPosWholeGraph_Evaluator --val_batch_size 256 \
-    --file_val_set $data_root/val_set.pkl \
-    --test_method MultiPosWholeGraph_Evaluator --test_batch_size 256 \
-    --file_test_set $data_root/test_set.pkl \
+    --val_method one_pos_k_neg --val_batch_size 256 \
+    --file_val_set $data_root/val-one_pos_k_neg.pkl \
+    --test_method multi_pos_whole_graph --test_batch_size 256 \
+    --file_test_set $data_root/test-multi_pos_whole_graph.pkl \
     --device $device \

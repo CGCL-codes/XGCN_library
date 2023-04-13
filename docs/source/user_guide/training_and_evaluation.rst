@@ -1,7 +1,7 @@
 Training and Evaluation
 ============================
 
-Once the dataset instance is generated (for dataset preprocessing, please refer to previous sections), 
+Once the dataset instance is generated (for dataset processing, please refer to the previous section), 
 you can run models with XGCN's APIs: 
 
 .. code:: python
@@ -9,9 +9,11 @@ you can run models with XGCN's APIs:
     model = XGCN.create_model(config)
     model.fit()
 
-In this section, we are going to introduce model configuration setting, 
-model training APIs, and model evaluation APIs. 
+In this section, we are going to introduce:
 
+* **Model Configuration**
+* **Model Training**
+* **Model Evaluation**
 
 ---------------------------
 Model Configuration
@@ -86,7 +88,7 @@ A typical ``.yaml`` configuration file including all the arguments is like follo
 It consists of five parts:
 
 (1) **Dataset/Results root**. 
-Specifies the dataset root and the directory to save the outputs during the model training. 
+Specifies the dataset root and the directory to save the outputs during the model training. Note that when calling the ``XGCN.create_model(config)`` function, the 'results_root' directory will be automatically created if it does not exist. 
 
 (2) **Trainer configuration**. 
 Specifies the configuration about training loop control, e.g. ``epochs``. 
@@ -193,9 +195,9 @@ For example, ``run_xGCN-facebook.sh``:
     python -m XGCN.main.run_model --seed $seed \
         --config_file $config_file_root/$model-config.yaml \
         --data_root $data_root --results_root $results_root \
-        --val_method MultiPosWholeGraph_Evaluator --val_batch_size 256 \
+        --val_method 'multi_pos_whole_graph' --val_batch_size 256 \
         --file_val_set $data_root/val_set.pkl \
-        --test_method MultiPosWholeGraph_Evaluator --test_batch_size 256 \
+        --test_method 'multi_pos_whole_graph' --test_batch_size 256 \
         --file_test_set $data_root/test_set.pkl \
 
 To run a shell script, you only need to modify ``all_data_root`` and 
@@ -239,7 +241,7 @@ After training, models can be evaluated on one or more test sets:
 
     # testing on other test sets
     test_config_2 = {
-        'test_method': 'MultiPosWholeGraph_Evaluator',
+        'test_method': ''multi_pos_whole_graph'',
         'test_batch_size': 256,
         'file_test_set': ...  # another test set
     }
@@ -300,7 +302,7 @@ Or you can specify other test sets:
 .. code:: python
 
     test_config = {
-        'test_method': 'MultiPosWholeGraph_Evaluator',
+        'test_method': ''multi_pos_whole_graph'',
         'test_batch_size': 256,
         'file_test_set': ... 
     }
@@ -308,7 +310,7 @@ Or you can specify other test sets:
 
 The function receives a Dict containing three arguments: 
 
-* ``test_method``: specifices the evaluation method. Available options: 'MultiPosWholeGraph_Evaluator', 'OnePosWholeGraph_Evaluator', and 'OnePosKNeg_Evaluator'. 
+* ``test_method``: specifices the evaluation method. Available options: ''multi_pos_whole_graph'', 'OnePosWholeGraph_Evaluator', and 'OnePosKNeg_Evaluator'. 
 
 * ``test_batch_size``: specifices the batch size for model testing. 
 
