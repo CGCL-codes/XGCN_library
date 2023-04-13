@@ -38,3 +38,9 @@ def create_model(config):
         'GAMLP_learnable_emb': GAMLP_learnable_emb,
     }[config['model']](config)
     return model
+
+
+def load_model(config):
+    model = create_model(config)
+    model.load()
+    return model

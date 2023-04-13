@@ -6,7 +6,7 @@ from XGCN import model
 from XGCN import train
 from XGCN import utils
 
-from XGCN.model.create import create_model
+from XGCN.model.create import create_model, load_model
 
 from XGCN.dataloading.create import create_DataLoader
 from XGCN.evaluator.create import create_val_Evaluator, create_test_Evaluator
