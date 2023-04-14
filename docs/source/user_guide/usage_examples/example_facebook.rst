@@ -15,7 +15,8 @@ Before getting started
 -------------------------
 
 We recommend to arrange the data with a clear directory structure. 
-Before getting started, you may manually setup an ``XGCN_data`` (or other names you like) directory as follows: 
+Before getting started, you may manually 
+setup an ``XGCN_data`` (or other names you like) directory as follows: 
 (It's recommended to put your ``XGCN_data`` somewhere else than in this repository.)
 
 .. code:: 
@@ -36,12 +37,13 @@ Evaluation sets generation
 At first, we only have the graph data: ``facebook_combined.txt``, and want to generate a validation set and a test set. 
 This can be done by using the ``XGCN.data.process.evaluation_set_generation`` module. 
 
-Suppose we are going to generate a 'one_pos_k_neg' evaluation set for fast validation. 
+Suppose we are going to generate a 'one_pos_k_neg' evaluation set for fast validation during training. 
 We sample 500 positive edges and 300 negative nodes for each source node. 
-The script is as follows: 
+The script is as follows (**remember to modify the paths in the scripts into your own**): 
 
 .. code:: shell
 
+    # script/examples/facebook/00-val_set_generation.sh
     # set to your own path:
     file_input_graph='/home/xxx/XGCN_data/dataset/raw_facebook/facebook_combined.txt'
     graph_type='homo'
@@ -83,10 +85,11 @@ After running the script above, you'll get two new files: ``train.txt`` and ``va
             ├── train.txt
             └── val-one_pos_k_neg.txt
 
-We further split some edges in the ``train.txt`` and generate a test set: 
+We further split some edges from the ``train.txt`` and generate a test set: 
 
 .. code:: shell
 
+    # script/examples/facebook/01-test_set_generation.sh
     # set to your own path:
     file_input_graph='/home/xxx/XGCN_data/dataset/raw_facebook/facebook_combined.txt'
     graph_type='homo'
@@ -119,7 +122,7 @@ We further split some edges in the ``train.txt`` and generate a test set:
 
 This time we use the 'multi_pos_whole_graph' evaluation method and split 8000 edges 
 for fine-grained testing. 
-The output 'train.txt' will overwrite the one before, so finally we get three files: 
+The output 'train.txt' will overwrite the previous one, so finally we get three files: 
 ``train.txt``, ``val-one_pos_k_neg.txt``, and ``test-multi_pos_whole_graph.txt``: 
 
 .. code:: 
@@ -136,12 +139,13 @@ The output 'train.txt' will overwrite the one before, so finally we get three fi
 Dataset instance generation
 -----------------------------
 
-Now we have the complete tran/val/test text data, and is ready to process them into a dataset instance. 
+Now we have the complete train/val/test text data, and is ready to process them into a dataset instance. 
 
-First, let's process the graph (**remember to change the paths in the scripts into your own**): 
+First, let's process the graph: 
 
 .. code:: shell
 
+    # in script/examples/facebook/02-instance_generation.sh
     ###### process graph for training
     # set to your own path:
     file_input_graph='/home/xxx/XGCN_data/dataset/raw_facebook/train.txt'
@@ -159,6 +163,8 @@ First, let's process the graph (**remember to change the paths in the scripts in
 Next, we process the validation set and the test set:
 
 .. code:: shell
+
+    # in script/examples/facebook/02-instance_generation.sh
 
     ###### process validation set
     file_input='/home/xxx/XGCN_data/dataset/raw_facebook/val-one_pos_k_neg.txt'
@@ -200,6 +206,78 @@ If you have done the above steps successfully, your data directory will look lik
 
 Congratulations! Now we have a complete dataset instance, and is ready to run any models in XGCN!
 
-.. ---------------------
-.. Model Running
-.. ---------------------
+---------------------
+Model Running
+---------------------
+
+XGCN provides a simple module - ``XGCN.main.run_model`` - to run models from command line. 
+It has the following contents:
+
+.. code:: python
+
+    import XGCN
+    from XGCN.data import io
+    from XGCN.utils.parse_arguments import parse_arguments
+
+    import os.path as osp
+
+
+    def main():
+        
+        config = parse_arguments()
+
+        model = XGCN.create_model(config)
+        
+        model.fit()
+        
+        test_results = model.test()
+        print("test:", test_results)
+        io.save_json(osp.join(config['results_root'], 'test_results.json'), test_results)
+
+
+    if __name__ == '__main__':
+        
+        main()
+
+Directory ``script/examples/facebook`` contains shell scripts to run all the models. 
+For example, the ``run_xGCN-facebook.sh``: 
+
+.. code:: shell
+    
+    all_data_root='/home/xxx/XGCN_data'
+    config_file_root='/home/xxx/XGCN_library/config'
+
+    dataset=facebook
+    model=xGCN
+    seed=0
+
+    data_root=$all_data_root/dataset/instance_$dataset
+    results_root=$all_data_root/model_output/$dataset/$model/[seed$seed]
+
+    python -m XGCN.main.run_model --seed $seed \
+        --config_file $config_file_root/$model-config.yaml \
+        --data_root $data_root --results_root $results_root \
+        --val_method one_pos_k_neg --val_batch_size 256 \
+        --file_val_set $data_root/val-one_pos_k_neg.pkl \
+        --test_method multi_pos_whole_graph --test_batch_size 256 \
+        --file_test_set $data_root/test-multi_pos_whole_graph.pkl \
+
+Modify the ``all_data_root`` and ``config_file_root`` to your own paths, 
+and then you can run it! 
+
+The ``results_root`` directory will be made automatically. When the training and 
+testing is completed, you'll get the following contents: 
+
+.. code:: 
+
+    XGCN_data
+    └── model_output
+        └── facebook
+            └── xGCN
+                └── [seed0]
+                    ├── model (directory)       # the best model on the validation set
+                    ├── config.yaml             # configurations of the running
+                    ├── mean_time.json          # time consumption information in seconds
+                    ├── test_results.json       # test results
+                    ├── train_record_best.json  # validation results of the best epoch
+                    └── train_record.txt        # validation results of all the epochs

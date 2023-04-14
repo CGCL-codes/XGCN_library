@@ -118,9 +118,6 @@ We can load a ``.yaml`` configuration file with ``XGCN.data.io`` module:
     config = io.load_yaml('config.yaml')  # load template
     config['data_root'] = ...             # add/modify some configurations
 
-    model = XGCN.create_model(config)
-    model.fit()
-
 
 Parse config from command line
 --------------------------------
@@ -134,8 +131,6 @@ We also provide a ``parse_arguments()`` to parse command line arguments:
 
     config = parse_arguments()
 
-    model = XGCN.create_model(config)
-    model.fit()
 
 You can specify a ``.yaml`` configuration file with ``--config_file``. 
 Note that a configuration file is not a necessity for the ``parse_arguments()`` function 
@@ -146,10 +141,15 @@ and has lower priority when the same command line argument is given.
 Model Training
 ------------------
 
-Run from command line
-------------------------
+There are three steps to train a model: 
 
-XGCN provide a simple module - ``XGCN.main.run_model`` - to run models from command line. 
+(1) Prepare the ``config`` Dict, which contains all the needed arguments. 
+
+(2) Create the model: ``model = XGCN.create_model(config)``. The 'results_root' directory will be automatically created if it does not exist. 
+
+(3) Start training: ``model.fit()``. The best model on the validation set and the training information will be save at ``results_root``. 
+
+XGCN provides a simple module - ``XGCN.main.run_model`` - to run models from command line. 
 It has the following contents:
 
 .. code:: python
@@ -214,36 +214,20 @@ Once a model is trained, the output data will be saved at ``results_root``:
         └── facebook
             └── xGCN
                 └── [seed0]
+                    ├── model (directory)       # the best model on the validation set
                     ├── config.yaml             # configurations of the running
                     ├── mean_time.json          # time consumption information in seconds
                     ├── test_results.json       # test results
                     ├── train_record_best.json  # validation results of the best epoch
-                    ├── train_record.txt        # validation results and losses during training
-                    └── model                   # a directory containing the saved model
-
-
-Run from API functions
---------------------------
-
-XGCN provides API functions to create and train a model: 
-
-.. code:: python
-
-    model = XGCN.create_model(config)  
-    # When call the XGCN.create_model function,
-    # the 'results_root' directory will be automatically created 
-    # if it does not exist.
-    model.fit()              # model training, 
-                             # the best model on the validation set 
-                             # will be saved at results_root
-
-After training, models can be evaluated on one or more test sets by using the ``model.test()`` function. 
+                    └── train_record.txt        # validation results of all the epochs
 
 
 Load and continue to train
 ------------------------------
 
-XGCN can also load trained models and continue to train: 
+XGCN can also load trained models and continue to train. 
+In this case please specify the previously saved ``config.yaml`` and call the 
+``XGCN.load_model()`` function: 
 
 .. code:: python
 

@@ -6,20 +6,16 @@ in our XGCN repository: ``data/raw_gowalla/``, which is copied from LightGCN's o
 https://github.com/gusye1234/LightGCN-PyTorch.
 
 
-Prepare the Dataset Instance
--------------------------------
+---------------------
+Data Preparation
+---------------------
 
-Let's first import some modules and functions:
-
-.. code:: python
-
-    import XGCN
-    from XGCN.data import io, csr
-    from XGCN.utils.utils import ensure_dir, set_random_seed
-    import os.path as osp
+Before getting started
+-------------------------
 
 We recommend to arrange the data with a clear directory structure. 
-To get started, you may manually setup an ``XGCN_data`` (or other names you like) directory as follows: 
+Before getting started, you may manually 
+setup an ``XGCN_data`` (or other names you like) directory as follows: 
 (It's recommended to put your ``XGCN_data`` somewhere else than in this repository.)
 
 .. code:: 
@@ -32,56 +28,93 @@ To get started, you may manually setup an ``XGCN_data`` (or other names you like
 
 We'll use this directory to hold all the different datasets 
 and models outputs. 
-We refer to its path as ``all_data_root`` in our python code and shell scripts: 
-
-.. code:: python
-
-    >>> # set your own all_data_root:
-    >>> all_data_root = '/home/xxx/XGCN_data'
-
-Load the graph from ``train.txt`` and convert it to CSR format:
-
-.. code:: python
-
-    >>> dataset = 'gowalla'
-    >>> raw_data_root = osp.join(all_data_root, 'dataset/raw_' + dataset)
-    >>> E_src, E_dst = io.load_txt_adj_as_edges(osp.join(raw_data_root, 'train.txt'))
-    >>> print(E_src)
-    [    0     0     0 ... 29857 29857 29857]
-    >>> print(E_dst)
-    [   0    1    2 ... 1853  691  674]
-    >>> info, indptr, indices = csr.from_edges_to_csr_with_info(E_src, E_dst, graph_type='user-item')
-    # from_edges_to_csr ...
-    # remove_repeated_edges ...
-    ## 0 edges are removed
-    >>> print(info)
-    {'graph_type': 'user-item', 'num_users': 29858, 'num_items': 40981, 'num_nodes': 70839, 'num_edges': 810128}
-
-It is a user-item graph, so we set the ``graph_type`` argument 
-to ``'user-item'`` in function ``csr.from_edges_to_csr_with_info()``.
-
-Load the provided test set:
-
-.. code:: python
-
-    test_set = io.from_txt_adj_to_adj_eval_set(osp.join(raw_data_root, 'test.txt'))
-
-Save the complete dataset instance (the validation set is not provided, so we just use the test set for early-stop): 
-
-.. code:: python
-
-    >>> data_root = osp.join(all_data_root, 'dataset/instance_' + dataset)
-    >>> ensure_dir(data_root)
-    >>> io.save_yaml(osp.join(data_root, 'info.yaml'), info)
-    >>> io.save_pickle(osp.join(data_root, 'indptr.pkl'), indptr)
-    >>> io.save_pickle(osp.join(data_root, 'indices.pkl'), indices)
-    >>> io.save_pickle(osp.join(data_root, 'test_set.pkl'), test_set)
+We refer to its path as ``all_data_root`` in our scripts. 
 
 
+Dataset instance generation
+-----------------------------
+
+First, let's process the graph: 
+
+.. code:: shell
+
+    ###### process graph for training
+    # set to your own path:
+    file_input_graph='/home/xxx/XGCN_data/dataset/raw_gowalla/train.txt'
+    data_root='/home/xxx/XGCN_data/dataset/instance_gowalla'
+    
+    mkdir -p $data_root  # make sure to setup the directory
+
+    graph_type='homo'
+    graph_format='edge_list'
+
+    python -m XGCN.data.process.process_int_graph \
+        --file_input_graph $file_input_graph --data_root $data_root \
+        --graph_type $graph_type --graph_format $graph_format \
+
+Then we process the test set (the LightGCN paper does not provide a validation set): 
+
+.. code:: shell
+
+    ###### process test set
+    file_input='/home/xxx/XGCN_data/dataset/raw_gowalla/test.txt'
+    file_output='/home/xxx/XGCN_data/dataset/instance_gowalla/test.pkl'
+
+    evaluation_method='multi_pos_whole_graph'
+
+    python -m XGCN.data.process.process_evaluation_set \
+        --file_input $file_input --file_output $file_output \
+        --evaluation_method $evaluation_method \
+
+After the above processing, your data directory will look like this: 
+
+.. code:: 
+
+    XGCN_data
+    └── dataset
+        ├── raw_gowalla
+        |   ├── train.txt
+        |   └── test.txt
+        └── instance_gowalla
+            ├── info.yaml
+            ├── indices.pkl
+            ├── indptr.pkl
+            └── test.pkl
+
+-----------------
 Run LightGCN
 -----------------
 
-The follow shell script run a LightGCN model with ``XGCN.main.run_model`` module and 
+XGCN provides a simple module - ``XGCN.main.run_model`` - to run models from command line. 
+It has the following contents:
+
+.. code:: python
+
+    import XGCN
+    from XGCN.data import io
+    from XGCN.utils.parse_arguments import parse_arguments
+
+    import os.path as osp
+
+
+    def main():
+        
+        config = parse_arguments()
+
+        model = XGCN.create_model(config)
+        
+        model.fit()
+        
+        test_results = model.test()
+        print("test:", test_results)
+        io.save_json(osp.join(config['results_root'], 'test_results.json'), test_results)
+
+
+    if __name__ == '__main__':
+        
+        main()
+
+The following shell script runs a LightGCN model with ``XGCN.main.run_model`` module and 
 reproduce the results on the gowalla dataset: 
 
 .. code:: shell
@@ -100,9 +133,9 @@ reproduce the results on the gowalla dataset:
     python -m XGCN.main.run_model --seed $seed \
         --config_file $config_file_root/$model-full_graph-config.yaml \
         --data_root $data_root --results_root $results_root \
-        --val_method MultiPosWholeGraph_Evaluator \
+        --val_method multi_pos_whole_graph \
         --file_val_set $data_root/test_set.pkl \
-        --test_method MultiPosWholeGraph_Evaluator \
+        --test_method multi_pos_whole_graph \
         --file_test_set $data_root/test_set.pkl \
         --str_num_total_samples num_users \
         --pos_sampler NodeBased_ObservedEdges_Sampler \
@@ -115,3 +148,5 @@ reproduce the results on the gowalla dataset:
         --train_batch_size 2048 \
         --epochs 10 --val_freq 5 \
         --key_score_metric r20 --convergence_threshold 1000 \
+
+The results will be around: Recall@20:0.1827, NDCG@20:0.1550
