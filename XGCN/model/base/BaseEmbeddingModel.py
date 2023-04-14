@@ -51,13 +51,15 @@ class BaseEmbeddingModel(BaseModel):
         if self.config['use_validation_for_early_stop']:
             self.load()
         
-    def test(self, test_config):
-        test_method = XGCN.create_test_Evaluator(
+    def test(self, test_config=None):
+        if test_config is None:
+            test_config = self.config
+        
+        test_evaluator = XGCN.create_test_Evaluator(
             config=test_config, data=self.data, model=self
         )
+        results = test_evaluator.eval(desc='test')
         
-        results = test_method.eval(desc='test')
-
         results['formatted'] = get_formatted_results(results)
         return results
     
