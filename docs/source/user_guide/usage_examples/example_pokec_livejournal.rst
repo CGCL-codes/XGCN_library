@@ -9,7 +9,6 @@ The data can be downloaded from here:
 To download and process them, please refer to the "Data Preparation" section and 
 the scripts in ``script/data_process/pokec_and_livejournal``. 
 
-Please refer to ``script/examples/pokec_and_livejournal`` and ``script/examples/xbox-3m`` 
-which includes all the scripts for different datasets. 
+Please refer to ``script/examples/pokec_and_livejournal`` which includes all the scripts for different datasets. 
 To run a model, you only need to modify the ``all_data_root`` and ``config_file_root`` 
 arguments in the script to your own paths. 
