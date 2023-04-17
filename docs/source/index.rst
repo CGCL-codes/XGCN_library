@@ -13,7 +13,7 @@ XGCN includes **xGCN** - an implementation for the TheWebConf 2023 paper:
 **xGCN: An Extreme Graph Convolutional Network for Large-scale Social Link Prediction**. 
 XGCN's repository is available at: https://github.com/xiransong/XGCN_library .
 
-We now focus on embedding models for **social link prediction** (also knows as friend recommendation) 
+We now focus on embedding models for **social link prediction** (also known as friend recommendation) 
 and **user-item link prediction** (i.e. the classic recommendation task), 
 where each node in the graph is assigned a learnable ID embedding. Other tasks like node classification 
 can also be easily added into our framework. 
@@ -37,7 +37,7 @@ can also be easily added into our framework.
    The UltraGCN's code is from https\://github.com/xue-pai/UltraGCN.git (commit SHA\: c460a05). 
    (Note that currently RecBole v1.1.1 does not provide UltraGCN implementation.)
 
-   The results are shown in the figures below. We observe that XGCN have much better scalability on million-scale graphs. 
+   The results are shown in the figures below. We observe that XGCN has much better scalability on million-scale graphs. 
    
 .. image:: asset/scalability_study.jpg
   :width: 400

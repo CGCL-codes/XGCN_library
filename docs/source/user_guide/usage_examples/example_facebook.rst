@@ -139,7 +139,7 @@ The output 'train.txt' will overwrite the previous one, so finally we get three 
 Dataset instance generation
 -----------------------------
 
-Now we have the complete train/val/test text data, and is ready to process them into a dataset instance. 
+Now we have the complete train/val/test text data, and are ready to process them into a dataset instance. 
 
 First, let's process the graph: 
 
@@ -204,7 +204,7 @@ If you have done the above steps successfully, your data directory will look lik
             ├── val-one_pos_k_neg.pkl
             └── test-multi_pos_whole_graph.pkl
 
-Congratulations! Now we have a complete dataset instance, and is ready to run any models in XGCN!
+Congratulations! Now we have a complete dataset instance, and are able to run any models in XGCN!
 
 ---------------------
 Model Running

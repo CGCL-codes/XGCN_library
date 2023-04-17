@@ -9,8 +9,8 @@ and run models. An overview of the running pipeline is shown in the figure below
   :align: center
   :alt: XGCN data process and model running pipeline
 
-XGCN supports process text files of the graph and evaluation sets as input,
-and processes them into a standard **"dataset instance"** format 
+XGCN supports taking text files of the graph and evaluation sets as input,
+and processing them into a standard **"dataset instance"** format 
 which is used by all the downstream models. 
 Once a dataset instance is generated, you can easily run models with XGCN's 
 command line interface or API functions. 

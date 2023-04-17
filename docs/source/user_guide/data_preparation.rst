@@ -114,7 +114,7 @@ Evaluation Set Processing
 Input format
 --------------------
 
-We support three kinds of model evaluation method:
+We support three kinds of model evaluation methods:
 
 * "one_pos_k_neg"
 
@@ -127,7 +127,7 @@ They are explained as follows:
 In link prediction tasks, A single evaluation sample can be formulated as: 
 (src, pos[1], ..., pos[m], neg[1], ... neg[k]), where src, pos, neg denotes source node, 
 positive node, and negative node, respectively. 
-The positive nodes usually comes from the removed edges from the original graph. 
+The positive nodes usually come from the removed edges from the original graph. 
 The negative nodes are usually sampled from un-interacted nodes 
 (i.e. nodes that are not neighbors of the source node). 
 
