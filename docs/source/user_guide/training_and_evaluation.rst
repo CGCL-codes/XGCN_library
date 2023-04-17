@@ -13,10 +13,10 @@ you can run models with XGCN's APIs:
 
 In this section, we are going to introduce:
 
-* :ref:`How to set model configurations <Model Configuration>`
-* :ref:`How to train a model <Model Training>`
-* :ref:`How to evaluate a model <Model Evaluation>`
-* :ref:`Model inference APIs <Model Inference>`
+* :ref:`How to set model configurations <user_guide-training_and_evaluation-model_configuration>`
+* :ref:`How to train a model <user_guide-training_and_evaluation-model_training>`
+* :ref:`How to evaluate a model <user_guide-training_and_evaluation-model_evaluation>`
+* :ref:`Model inference APIs <user_guide-training_and_evaluation-model_inference>`
 
 .. _user_guide-training_and_evaluation-model_configuration:
 
