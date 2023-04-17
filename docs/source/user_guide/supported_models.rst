@@ -1,3 +1,5 @@
+.. _user_guide-supported_models:
+
 Supported Models
 ====================
 

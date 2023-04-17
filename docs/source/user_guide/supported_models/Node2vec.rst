@@ -1,3 +1,5 @@
+.. _supported_models-Node2vec:
+
 Node2vec
 =============
 

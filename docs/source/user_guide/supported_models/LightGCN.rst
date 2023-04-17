@@ -1,3 +1,5 @@
+.. _supported_models-LightGCN:
+
 LightGCN
 =============
 

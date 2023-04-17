@@ -1,3 +1,5 @@
+.. _user_guide-training_and_evaluation:
+
 Training and Evaluation
 ============================
 
@@ -11,10 +13,12 @@ you can run models with XGCN's APIs:
 
 In this section, we are going to introduce:
 
-* **How to set model configurations**
-* **How to train a model**
-* **How to evaluate a model**
-* **Model inference APIs**
+* :ref:`How to set model configurations <Model Configuration>`
+* :ref:`How to train a model <Model Training>`
+* :ref:`How to evaluate a model <Model Evaluation>`
+* :ref:`Model inference APIs <Model Inference>`
+
+.. _user_guide-training_and_evaluation-model_configuration:
 
 ---------------------------
 Model Configuration
@@ -136,6 +140,7 @@ You can specify a ``.yaml`` configuration file with ``--config_file``.
 Note that a configuration file is not a necessity for the ``parse_arguments()`` function 
 and has lower priority when the same command line argument is given. 
 
+.. _user_guide-training_and_evaluation-model_training:
 
 ------------------
 Model Training
@@ -238,6 +243,7 @@ In this case please specify the previously saved ``config.yaml`` and call the
     model.fit()                      # training on the new hyper-paramenters
     new_resutls = model.test()
 
+.. _user_guide-training_and_evaluation-model_evaluation:
 
 --------------------
 Model Evaluation
@@ -279,6 +285,7 @@ The function receives a Dict containing three arguments:
 
 * ``file_test_set``: specifices the file of the processed evaluation set. 
 
+.. _user_guide-training_and_evaluation-model_inference:
 
 ------------------
 Model Inference

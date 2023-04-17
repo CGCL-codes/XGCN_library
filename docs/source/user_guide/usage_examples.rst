@@ -1,4 +1,6 @@
-Running Examples
+.. _user_guide-usage_examples:
+
+Usage Examples
 ===================
 
 We provide examples of data processing and model running: 

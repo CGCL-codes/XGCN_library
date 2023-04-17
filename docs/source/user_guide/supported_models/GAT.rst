@@ -1,3 +1,5 @@
+.. _supported_models-GAT:
+
 GAT
 =========
 
