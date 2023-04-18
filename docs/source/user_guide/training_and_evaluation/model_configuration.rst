@@ -92,7 +92,7 @@ Dataset/Results root
 
 This part only has two fields: 
 
-* ``data_root``: The dataset instance root. 
+* ``data_root``: The dataset instance root. \
 For dataset instance generation, please refer to 
 :ref:`Data Preparation <user_guide-data_preparation>`. 
 
@@ -105,7 +105,16 @@ the ``results_root`` directory will be automatically created if it does not exis
 Trainer configuration
 ---------------------------
 
-This part specifies the configuration about training loop control, e.g. ``epochs``. 
+This part specifies the configuration about training loop control: 
+
+epochs: 200
+use_validation_for_early_stop: 1
+val_freq: 1
+key_score_metric: r100
+convergence_threshold: 20
+val_method: ""
+val_batch_size: 256
+file_val_set: ""
 
 
 .. _user_guide-training_and_evaluation-testing_config:
