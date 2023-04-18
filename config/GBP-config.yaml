@@ -26,6 +26,7 @@ neg_sampler: RandomNeg_Sampler
 num_neg: 1
 BatchSampleIndicesGenerator_type: SampleIndicesWithReplacement
 train_batch_size: 2048
+str_num_total_samples: num_edges
 epoch_sample_ratio: 0.1
 
 # Model configuration

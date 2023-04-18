@@ -209,7 +209,7 @@ Their configuration arguments of the two dataloaders are as follows:
     str_num_total_samples: num_edges
     epoch_sample_ratio: 0.1
 
-The meaning of the arguments are as follows:
+The meanings of the arguments are as follows:
 
 * ``Dataset_type``: (str) This argument is fixed as "NodeListDataset" for node-only dataloader, and is fixed as "BlockDataset" for block dataloader. 
 

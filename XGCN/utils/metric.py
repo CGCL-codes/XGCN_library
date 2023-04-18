@@ -8,7 +8,7 @@ from numba.core import types
 
 @numba.jit(nopython=True)
 def _get_ndcg_weights(length):
-    ndcg_weights = 1 / np.log2(np.arange(2, 2 + 100))
+    ndcg_weights = 1 / np.log2(np.arange(2, 2 + 300))
     if length > len(ndcg_weights):
         ndcg_weights = 1 / np.log2(np.arange(2, length + 2))
     return ndcg_weights[:length]
@@ -16,7 +16,7 @@ def _get_ndcg_weights(length):
 
 @numba.jit(nopython=True)
 def _get_mrr_weights(length):
-    mrr_weights = 1 / np.arange(1, 1 + 100)
+    mrr_weights = 1 / np.arange(1, 1 + 300)
     if length > len(mrr_weights):
         mrr_weights = 1 / np.arange(2, length + 2)
     return mrr_weights[:length]
@@ -59,7 +59,7 @@ def one_pos_metrics(S):
     # ndcg
     w = _get_ndcg_weights(num_scores)
     results.update({
-        "ndcg": w[rank].sum() / num_samples,
+        # "ndcg": w[rank].sum() / num_samples,
         # "n1": top1.mean(),
         # "n3": w[rank[top3]].sum() / num_samples,
         # "n10": w[rank[top10]].sum() / num_samples,
@@ -77,17 +77,17 @@ def one_pos_metrics(S):
         "r300": top300.mean(),
     })
     
-    # mrr
-    w = _get_mrr_weights(num_scores)
-    results.update({
-        "mrr": w[rank].sum() / num_samples,
-    })
+    # # mrr
+    # w = _get_mrr_weights(num_scores)
+    # results.update({
+    #     "mrr": w[rank].sum() / num_samples,
+    # })
 
     return results
 
 
 def multi_pos_whole_graph_metrics(pos: list, all_target_score):
-    results_dict_list = _multi_pos_all_metrics(pos, all_target_score)
+    results_dict_list = multi_pos_metrics(pos, all_target_score)
     results = combine_dict_list_and_calc_mean(results_dict_list)
     return results
 
@@ -102,7 +102,7 @@ def argtopk(a, k):
 
 
 # @numba.jit(nopython=True, parallel=True)
-def _multi_pos_all_metrics(pos_list, all_target_score):
+def multi_pos_metrics(pos_list, all_target_score):
     results_dict_list = [
         Dict.empty(key_type=types.unicode_type, value_type=types.float32)
         for _ in range(len(pos_list))
@@ -110,7 +110,7 @@ def _multi_pos_all_metrics(pos_list, all_target_score):
     
     all_target_score += np.random.uniform(low=-1e-6, high=1e-6, size=all_target_score.shape)
     
-    topk_list = [20, 50, 100, 300]
+    topk_list = [20, 50, 100, 300]  # <-- to customize metrics, please modify here
     max_k = topk_list[-1]
     
     ndcg_weights = 1 / np.log2(np.arange(2, max_k + 2))
