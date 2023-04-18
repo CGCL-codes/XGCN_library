@@ -3,7 +3,8 @@
 Data Preparation
 ======================
 
-In this section, we introduce how to process your text data into XGCN's "dataset instances". 
+In this section, we introduce how to process your text data into XGCN's "dataset instances", 
+which is required before running a model. 
 For example, suppose you have a dataset looks like this: 
 
 .. code:: 
@@ -47,7 +48,7 @@ The ID must start from zero. For user-item graphs, both the user IDs and the ite
 start from zero. 
 
 XGCN specifies edge list as standard input graph structure. The edges are treated as directed. 
-In the text file, each line has two nodes: (source node, destination node), and they are seperated by a blank, for example: 
+In the text file, each line has two nodes: (source node, destination node) (or (user node, item node)), and they are seperated by a blank, for example: 
 
 .. code:: 
 
@@ -119,13 +120,13 @@ is a compact format for sparse metrices. XGCN use this structure to save
 graphs' adjacency matrices and implements some algorithoms. The reasons 
 for us to use this format are:
 
-* (1) High-efficency. CSR format is efficient on some key graph/matrix operations such as "querying node neighbors" (O(1) time complexity). By using `Numba <https://numba.pydata.org/>`_ for acceleration based on the CSR data structure, XGCN provides some efficient implements such as random walk, PPR (Personalized PageRank), and ItemCF. 
+* High-efficency. CSR format is efficient on some key graph/matrix operations such as "querying node neighbors" (O(1) time complexity). By using `Numba <https://numba.pydata.org/>`_ for acceleration based on the CSR data structure, XGCN provides some efficient implements such as random walk, PPR (Personalized PageRank), and ItemCF. 
 
-* (2) Memory-saving. The existing open-source packages for sparse matrix multiplication (such as PyTorch) tend to use a lot of memory. Though slower than PyTorch's implementation, XGCN implements a Numba-based CSR-matrix-with-dense-matrix multiplication, which consumes less memory. If your server could not execute the Pytorch's multiplication due to OOM, please consider XGCN's functions:
+* Memory-saving. The existing open-source packages for sparse matrix multiplication (such as PyTorch) tend to use a lot of memory. Though slower than PyTorch's implementation, XGCN implements a Numba-based CSR-matrix-with-dense-matrix multiplication, which consumes less memory. If your server could not execute the Pytorch's multiplication due to OOM, please consider XGCN's functions:
     + ``XGCN.data.csr.csr_mult_dense(indptr, indices, data, X_in, X_out)``
     + ``XGCN.data.csr.csr_mult_dense_and_add(indptr, indices, data, X_in, X_out)``
 
-* (3) Friendly with DGL's API. DGLGraph can be initialized directly from the CSR format.
+* Friendly with DGL's API. DGLGraph can be initialized directly from the CSR format.
 
 .. _user_guide-data_preparation-evaluation_set_processing:
 
