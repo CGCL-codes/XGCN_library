@@ -38,4 +38,3 @@ class GraphSAGE(BaseGNN):
             [{'params': self.gnn.parameters(),
               'lr': self.config['gnn_lr']}]
         )
-        
