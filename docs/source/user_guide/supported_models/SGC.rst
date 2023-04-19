@@ -19,7 +19,7 @@ Introduction
 Running with XGCN
 ----------------------
 
-XGCN implements two version of GAMLP: (1) ``SGC``: freeze node embeddings (such as embeddings pretrained by node2vec) as fixed features;
+XGCN implements two version of SGC: (1) ``SGC``: freeze node embeddings (such as embeddings pretrained by node2vec) as fixed features;
 (2) ``SGC_learnable_emb``: has learnable node embeddings. 
 
 SGC

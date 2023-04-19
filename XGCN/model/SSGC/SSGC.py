@@ -65,9 +65,10 @@ class SSGC(BaseEmbeddingModel):
         emb_dim = self.emb_table.shape[-1]
         self.mlp = torch.nn.Linear(emb_dim, emb_dim).to(self.device)
         
-        self.opt = torch.optim.Adam([
-            {'params': self.mlp.parameters(), 'lr': self.config['dnn_lr']}
-        ])
+        self.optimizers = {}
+        self.optimizers['gnn-Adam'] = torch.optim.Adam(
+            [{'params': self.mlp.parameters(), 'lr': self.config['dnn_lr']}]
+        )
     
     def get_output_emb(self, nids):
         return self.mlp(self.emb_table[nids])
@@ -106,9 +107,7 @@ class SSGC(BaseEmbeddingModel):
             )
             loss += rw * L2_reg_loss
         
-        self.opt.zero_grad()
-        loss.backward()
-        self.opt.step()
+        self._backward(loss)
         
         return loss.item()
     
@@ -116,7 +115,7 @@ class SSGC(BaseEmbeddingModel):
         self.mlp.train()
     
     @torch.no_grad()
-    def on_eval_begin(self):
+    def infer_out_emb_table(self):
         self.mlp.eval()
         dl = torch.utils.data.DataLoader(dataset=torch.arange(self.info['num_nodes']), 
                                          batch_size=8192)
@@ -127,3 +126,19 @@ class SSGC(BaseEmbeddingModel):
             self.target_emb_table = self.out_emb_table[self.info['num_users'] : ]
         else:
             self.target_emb_table = self.out_emb_table
+            
+    def save(self, root=None):
+        if root is None:
+            root = self.model_root
+        self._save_optimizers(root)
+        self._save_out_emb_table(root)
+        torch.save(self.mlp.state_dict(), osp.join(root, 'mlp-state_dict.pt'))
+    
+    def load(self, root=None):
+        if root is None:
+            root = self.model_root
+        self._load_optimizers(root)
+        self._load_out_emb_table(root)
+        self.mlp.load_state_dict(
+            torch.load(osp.join(root, 'mlp-state_dict.pt'))
+        )
