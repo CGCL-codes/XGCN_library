@@ -38,7 +38,7 @@ Node2vec
 
     # Trainer configuration
     epochs: 200
-    use_validation_for_early_stop: 1
+    use_validation_for_early_stop: 1  # bool (0 or 1)
     val_freq: 1
     key_score_metric: r100
     convergence_threshold: 20
@@ -108,7 +108,7 @@ GensimNode2vec
 
     # Trainer configuration
     epochs: 200
-    use_validation_for_early_stop: 1
+    use_validation_for_early_stop: 1  # bool (0 or 1)
     val_freq: 1
     key_score_metric: r100
     convergence_threshold: 20

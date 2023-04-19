@@ -16,8 +16,6 @@ class PPRGo(BaseEmbeddingModel):
         self.forward_device = self.config['forward_device']
         self.out_emb_table_device = self.config['out_emb_table_device']
         
-        self.emb_table = init_emb_table(self.config, self.info['num_nodes'])
-        
         print("## load ppr neighbors and ppr weights ...")
         raw_nei = io.load_pickle(osp.join(self.config['ppr_data_root'], "nei.pkl"))
         raw_wei = io.load_pickle(osp.join(self.config['ppr_data_root'], "wei.pkl"))
@@ -35,17 +33,20 @@ class PPRGo(BaseEmbeddingModel):
             print("## not uniform weight")
             self.wei = self.wei / (self.wei.sum(dim=-1, keepdim=True) + 1e-12)
         
-        self.optimizers = []
+        self.optimizers = {}
+        
+        self.emb_table = init_emb_table(self.config, self.info['num_nodes'])
+        
         if not self.config['freeze_emb']:
             if self.config['use_sparse']:
-                self.optimizers.append(
-                    torch.optim.SparseAdam([{'params':list(self.emb_table.parameters()),
-                                            'lr': self.config['emb_lr']}])
+                self.optimizers['emb_table-SparseAdam'] = torch.optim.SparseAdam(
+                    [{'params':list(self.emb_table.parameters()), 
+                      'lr': self.config['emb_lr']}]
                 )
             else:
-                self.optimizers.append(
-                    torch.optim.Adam([{'params': self.emb_table.parameters(),
-                                       'lr': self.config['emb_lr']}])
+                self.optimizers['emb_table-Adam'] = torch.optim.Adam(
+                    [{'params': self.emb_table.parameters(),
+                      'lr': self.config['emb_lr']}]
                 )
         
     def calc_pprgo_output_emb(self, nids):
@@ -100,3 +101,13 @@ class PPRGo(BaseEmbeddingModel):
             self.target_emb_table = self.out_emb_table[self.info['num_users'] : ]
         else:
             self.target_emb_table = self.out_emb_table
+
+    def save(self, root=None):
+        self._save_optimizers(root)
+        self._save_emb_table(root)
+        self._save_out_emb_table(root)
+    
+    def load(self, root=None):
+        self._load_optimizers(root)
+        self._load_emb_table(root)
+        self._load_out_emb_table(root)
