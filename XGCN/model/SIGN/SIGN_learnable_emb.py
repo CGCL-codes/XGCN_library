@@ -50,13 +50,14 @@ class SIGN_learnable_emb(BaseGNN):
             num_gcn_layers=self.config['num_gcn_layers'],
             num_dnn_layers=self.config['num_dnn_layers']
         ).to(self.config['gnn_device'])
-        self.optimizers.append(
-            torch.optim.Adam([{'params': self.gnn.parameters(),
-                                'lr': self.config['gnn_lr']}])
+        
+        self.optimizers['gnn-Adam'] = torch.optim.Adam(
+            [{'params': self.gnn.parameters(),
+              'lr': self.config['gnn_lr']}]
         )
 
     @torch.no_grad()
-    def on_eval_begin(self):
+    def infer_out_emb_table(self):
         block_sampler = self.data['block_sampler']
         self.out_emb_table = torch.empty(self.emb_table.weight.shape, dtype=torch.float32).to(self.config['out_emb_table_device'])
         dl = torch.utils.data.DataLoader(dataset=torch.arange(self.info['num_nodes']), 
