@@ -11,23 +11,25 @@ class UltraGCN(BaseEmbeddingModel):
     
     def __init__(self, config):
         super().__init__(config)
-        self.num_users = self.info['num_users']
+        if self.graph_type == 'user-item':
+            self.num_users = self.info['num_users']
         self.device = self.config['device']
         self.emb_table_device = self.config['emb_table_device']
         
         self.emb_table = init_emb_table(self.config, self.info['num_nodes'])
         
-        self.optimizers = []
-        if self.config['use_sparse']:
-            self.optimizers.append(
-                torch.optim.SparseAdam([{'params':list(self.emb_table.parameters()),
-                                        'lr': self.config['emb_lr']}])
-            )
-        else:
-            self.optimizers.append(
-                torch.optim.Adam([{'params': self.emb_table.parameters(),
-                                    'lr': self.config['emb_lr']}])
-            )
+        self.optimizers = {}
+        if not self.config['freeze_emb']:
+            if self.config['use_sparse']:
+                self.optimizers['emb_table-SparseAdam'] = torch.optim.SparseAdam(
+                    [{'params':list(self.emb_table.parameters()), 
+                      'lr': self.config['emb_lr']}]
+                )
+            else:
+                self.optimizers['emb_table-Adam'] = torch.optim.Adam(
+                    [{'params': self.emb_table.parameters(),
+                      'lr': self.config['emb_lr']}]
+                )
         
         if self.config['lambda'] > 0:
             constrain_mat = io.load_pickle(config['file_ultra_constrain_mat'])
@@ -107,21 +109,23 @@ class UltraGCN(BaseEmbeddingModel):
             
             loss += rw * L2_reg_loss
             
-        self.backward(loss)
+        self._backward(loss)
         return loss.item()
 
-    def backward(self, loss):
-        for opt in self.optimizers:
-            opt.zero_grad()
-        loss.backward()
-        for opt in self.optimizers:
-            opt.step()
-
     @torch.no_grad()
-    def on_eval_begin(self):
+    def infer_out_emb_table(self):
         self.out_emb_table = self.emb_table.weight
         if self.graph_type == 'user-item':
             self.target_emb_table = self.out_emb_table[self.num_users:]
         else:
             self.target_emb_table = self.out_emb_table
+
+    def save(self, root=None):
+        self._save_optimizers(root)
+        self._save_emb_table(root)
+        self._save_out_emb_table(root)
     
+    def load(self, root=None):
+        self._load_optimizers(root)
+        self._load_emb_table(root)
+        self._load_out_emb_table(root)

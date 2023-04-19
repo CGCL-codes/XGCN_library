@@ -33,10 +33,9 @@ class PPRGo(BaseEmbeddingModel):
             print("## not uniform weight")
             self.wei = self.wei / (self.wei.sum(dim=-1, keepdim=True) + 1e-12)
         
-        self.optimizers = {}
-        
         self.emb_table = init_emb_table(self.config, self.info['num_nodes'])
         
+        self.optimizers = {}
         if not self.config['freeze_emb']:
             if self.config['use_sparse']:
                 self.optimizers['emb_table-SparseAdam'] = torch.optim.SparseAdam(

@@ -1,7 +1,7 @@
-all_data_root=/media/xreco/DEV/xiran/code/XGCN_package_dev/XGCN_data
-config_file_root=/media/xreco/DEV/xiran/code/XGCN_package_dev/xGCN/config
+# set to your own path:
+all_data_root='/home/sxr/code/XGCN_and_data/XGCN_data'
+config_file_root='/home/sxr/code/XGCN_and_data/XGCN_library/config'
 
-######################
 dataset=facebook
 
 data_root=$all_data_root/dataset/instance_$dataset
