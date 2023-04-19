@@ -28,10 +28,16 @@ class GIN_Module(torch.nn.Module):
             for i in range(num_gcn_layers)
         ])
     
-    def forward(self, blocks, x):
-        assert len(blocks) == len(self.gnn_layers)
-        for i, (block, gnn_layer) in enumerate(zip(blocks, self.gnn_layers)):
-            x = gnn_layer(block, x)
+    def forward(self, graph_or_blocks, x):
+        if isinstance(graph_or_blocks, list):
+            blocks = graph_or_blocks
+            assert len(blocks) == len(self.gnn_layers)
+            for block, gnn_layer in zip(blocks, self.gnn_layers):
+                x = gnn_layer(block, x)
+        else:
+            g = graph_or_blocks
+            for gnn_layer in self.gnn_layers:
+                x = gnn_layer(g, x)
         return x
 
 
@@ -39,7 +45,7 @@ class GIN(BaseGNN):
     
     def _create_gnn(self):
         self.gnn = GIN_Module(num_gcn_layers=self.config['num_gcn_layers']).to(self.config['gnn_device'])
-        self.optimizers.append(
-            torch.optim.Adam([{'params': self.gnn.parameters(),
-                                'lr': self.config['gnn_lr']}])
+        self.optimizers['gnn-Adam'] = torch.optim.Adam(
+            [{'params': self.gnn.parameters(),
+              'lr': self.config['gnn_lr']}]
         )
