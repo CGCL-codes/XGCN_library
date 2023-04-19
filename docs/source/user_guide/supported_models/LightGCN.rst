@@ -30,7 +30,7 @@ training batch.
 
 .. code:: yaml
 
-    ####### LightGCN-full_graph-config.yaml #######
+    # config/LightGCN-full_graph-config.yaml
     # Dataset/Results root
     data_root: ""
     results_root: ""
@@ -92,6 +92,7 @@ training batch.
 
 .. code:: bash
 
+    # script/examples/facebook/run_LightGCN-full_graph.sh
     # set to your own path:
     all_data_root='/home/sxr/code/XGCN_and_data/XGCN_data'
     config_file_root='/home/sxr/code/XGCN_and_data/XGCN_library/config'
@@ -130,7 +131,7 @@ When using the 'sample' forward_mode, DGL's neighbor sampler is used to generate
 
 .. code:: yaml
 
-    ####### LightGCN-block-config.yaml #######
+    # config/LightGCN-block-config.yaml
     # Dataset/Results root
     data_root: ""
     results_root: ""
@@ -195,6 +196,7 @@ When using the 'sample' forward_mode, DGL's neighbor sampler is used to generate
 
 .. code:: bash
 
+    # script/examples/facebook/run_LightGCN-block.sh
     # set to your own path:
     all_data_root='/home/sxr/code/XGCN_and_data/XGCN_data'
     config_file_root='/home/sxr/code/XGCN_and_data/XGCN_library/config'

@@ -32,6 +32,7 @@ Node2vec
 
 .. code:: yaml
 
+    # config/Node2vec-config.yaml
     # Dataset/Results root
     data_root: ""
     results_root: ""
@@ -73,6 +74,7 @@ Node2vec
 
 .. code:: bash
 
+    # script/examples/facebook/run_Node2vec.sh
     # set to your own path:
     all_data_root='/home/sxr/code/XGCN_and_data/XGCN_data'
     config_file_root='/home/sxr/code/XGCN_and_data/XGCN_library/config'
@@ -102,6 +104,7 @@ GensimNode2vec
 
 .. code:: yaml
 
+    # config/GensimNode2vec-config.yaml
     # Dataset/Results root
     data_root: ""
     results_root: ""
@@ -142,6 +145,7 @@ GensimNode2vec
 
 .. code:: bash
 
+    # script/examples/facebook/run_GensimNode2vec.sh
     # set to your own path:
     all_data_root='/home/sxr/code/XGCN_and_data/XGCN_data'
     config_file_root='/home/sxr/code/XGCN_and_data/XGCN_library/config'
