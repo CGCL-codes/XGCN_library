@@ -19,7 +19,7 @@ python -m XGCN.main.run_model --seed $seed \
     --val_method one_pos_k_neg \
     --file_val_set $data_root/val-one_pos_k_neg.pkl \
     --key_score_metric r20 \
-    --test_method multi_pos_whole_graph\
+    --test_method multi_pos_whole_graph \
     --file_test_set $data_root/test-multi_pos_whole_graph.pkl \
     --file_pretrained_emb $file_pretrained_emb \
     --device $device \

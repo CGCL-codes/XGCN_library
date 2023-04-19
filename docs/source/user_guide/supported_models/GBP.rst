@@ -17,21 +17,29 @@ Introduction
 Running with XGCN
 ----------------------
 
-**Configuration template:**
+**Configuration template for GBP:**
 
 .. code:: yaml
     
-    ####### GBP-config.yaml #######
-
+    # config/GBP-config.yaml
     # Dataset/Results root
     data_root: ""
     results_root: ""
 
     # Trainer configuration
     epochs: 200
+    use_validation_for_early_stop: 1
     val_freq: 1
     key_score_metric: r100
     convergence_threshold: 20
+    val_method: ""
+    val_batch_size: 256
+    file_val_set: ""
+
+    # Testing configuration
+    test_method: ""
+    test_batch_size: 256
+    file_test_set: ""
 
     # DataLoader configuration
     Dataset_type: NodeListDataset
@@ -42,15 +50,8 @@ Running with XGCN
     num_neg: 1
     BatchSampleIndicesGenerator_type: SampleIndicesWithReplacement
     train_batch_size: 2048
+    str_num_total_samples: num_edges
     epoch_sample_ratio: 0.1
-
-    # Evaluator configuration
-    val_method: ""
-    val_batch_size: 256
-    file_val_set: ""
-    test_method: ""
-    test_batch_size: 256
-    file_test_set: ""
 
     # Model configuration
     model: GBP
@@ -71,28 +72,34 @@ Running with XGCN
     loss_fn: bpr
 
 
-**Run from CMD:**
+**Run GBP from command line:**
+
+Note that pretrained embeddings are needed, to run the script below, please run Node2vec first. 
 
 .. code:: bash
 
-    all_data_root=""       # fill your own paths here
-    config_file_root=""
+    # script/examples/facebook/run_GBP.sh
+    all_data_root='/home/sxr/code/XGCN_and_data/XGCN_data'
+    config_file_root='/home/sxr/code/XGCN_and_data/XGCN_library/config'
 
     dataset=facebook
     model=GBP
     seed=0
+    device='cuda:1'
 
     data_root=$all_data_root/dataset/instance_$dataset
     results_root=$all_data_root/model_output/$dataset/$model/[seed$seed]
 
-    file_pretrained_emb=$all_data_root/model_output/$dataset/Node2vec/[seed$seed]/out_emb_table.pt
+    # pretrained embeddings are needed
+    file_pretrained_emb=$all_data_root/model_output/$dataset/Node2vec/[seed$seed]/model/out_emb_table.pt
 
     python -m XGCN.main.run_model --seed $seed \
         --config_file $config_file_root/$model-config.yaml \
         --data_root $data_root --results_root $results_root \
-        --val_method MultiPosWholeGraph_Evaluator --val_batch_size 256 \
-        --file_val_set $data_root/val_set.pkl \
-        --test_method MultiPosWholeGraph_Evaluator --test_batch_size 256 \
-        --file_test_set $data_root/test_set.pkl \
-        --from_pretrained: 1 \
+        --val_method one_pos_k_neg \
+        --file_val_set $data_root/val-one_pos_k_neg.pkl \
+        --key_score_metric r20 \
+        --test_method multi_pos_whole_graph \
+        --file_test_set $data_root/test-multi_pos_whole_graph.pkl \
         --file_pretrained_emb $file_pretrained_emb \
+        --device $device \
