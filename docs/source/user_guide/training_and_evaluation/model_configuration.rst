@@ -75,15 +75,15 @@ A typical ``.yaml`` configuration file is like this:
 
 The configuration consists of five parts:
 
-(1) `Dataset/Results root`_
+(1) :ref:`Dataset/Results root <user_guide-training_and_evaluation-data_root_results_root>`
 
-(2) `Trainer configuration`_
+(2) :ref:`Trainer configuration <user_guide-training_and_evaluation-trainer_config>`
 
-(3) `Testing configuration`_
+(3) :ref:`Testing configuration <user_guide-training_and_evaluation-testing_config>`
 
-(4) `DataLoader configuration`_
+(4) :ref:`DataLoader configuration <user_guide-training_and_evaluation-dataloader_config>`
 
-(5) `Model configuration`_
+(5) :ref:`Model configuration <user_guide-training_and_evaluation-model_config>`
 
 
 .. _user_guide-training_and_evaluation-data_root_results_root:
@@ -179,7 +179,7 @@ Their configuration arguments of the two dataloaders are as follows:
 
 .. code:: yaml
     
-    # for node-only dataloader
+    ####### for node-only dataloader #######
     # DataLoader configuration
     Dataset_type: NodeListDataset  # fixed
     num_workers: 0
@@ -194,7 +194,7 @@ Their configuration arguments of the two dataloaders are as follows:
 
 .. code:: yaml
 
-    # for block dataloader
+    #######  for block dataloader ####### 
     # DataLoader configuration
     Dataset_type: BlockDataset  # fixed
     num_workers: 0
@@ -221,17 +221,26 @@ The meanings of the arguments are as follows:
 
 * ``train_num_layer_sample``: (str) Number of nodes to sample in each layer during training. For example, "[10, 20]" means 10 nodes in the first layer and 20 nodes in the second layer. This argument is required for the block dataloader. 
 
-* ``pos_sampler``: (str) Postive sampler. Available: **"ObservedEdges_Sampler"**: given edge IDs, return the edges. **"NodeBased_ObservedEdges_Sampler"**: given node IDs, sample a neighbor for each node. 
+* ``pos_sampler``: (str) Postive sampler. Available options:
+    + **"ObservedEdges_Sampler"**: given edge IDs, return the edges. 
+    + **"NodeBased_ObservedEdges_Sampler"**: given node IDs, sample a neighbor for each node. 
 
-* ``neg_sampler``: (str) Negative sampler. Available: **"RandomNeg_Sampler"**: random sampling from all the nodes (from all the item nodes for user-item graphs). **"StrictNeg_Sampler"**: sample strictly un-interacted nodes. 
+* ``neg_sampler``: (str) Negative sampler. Available options: 
+    + **"RandomNeg_Sampler"**: random sampling from all the nodes (from all the item nodes for user-item graphs). 
+    + **"StrictNeg_Sampler"**: sample strictly un-interacted nodes. 
 
 * ``num_neg``: (int) Number of negative samples for each positive sample. 
 
-* ``str_num_total_samples``: (str) the number of all the IDs used to generate samples. Available: **"num_edges"**: sample from all the edges for training, this is required for **"ObservedEdges_Sampler"**; **"num_nodes"**: first sample a node, then sample a neighbor from it. This is required for the **"NodeBased_ObservedEdges_Sampler"**; **"num_users"**: This is required for the **"NodeBased_ObservedEdges_Sampler"** when using **"NodeBased_ObservedEdges_Sampler"**. 
+* ``str_num_total_samples``: (str) the number of all the IDs used to generate samples. Available options:
+    + **"num_edges"**: sample from all the edges for training, this is required by "ObservedEdges_Sampler";
+    + **"num_nodes"**: first sample a node, then sample a neighbor from it. This is required by "NodeBased_ObservedEdges_Sampler"; 
+    + **"num_users"**: This is required by the "NodeBased_ObservedEdges_Sampler" when the graph is a user-item network. 
 
 * ``epoch_sample_ratio``: (float) the ``str_num_total_samples`` might be a large number, e.g. the edges in a graph. We can shrink the number of samples for an epoch to ``epoch_sample_ratio`` \* ``str_num_total_samples`` by setting ``epoch_sample_ratio`` to a value between 0 and 1. We can also expand the number of samples by setting it larger than 1. 
 
-* ``BatchSampleIndicesGenerator_type``: (str) the way to generate samples IDs in a batch. Available: **"SampleIndicesWithReplacement"**: sampling without replacement, e.g. sampling from all the edges without replacement; **"SampleIndicesWithoutReplacement"**: sampling with replacement, e.g. all the edges is guaranteed to be sampled within a number of epochs. 
+* ``BatchSampleIndicesGenerator_type``: (str) the way to generate samples IDs in a batch. Available options: 
+    + **"SampleIndicesWithReplacement"**: sampling without replacement, e.g. sampling from all the edges without replacement; 
+    + **"SampleIndicesWithoutReplacement"**: sampling with replacement, e.g. all the edges is guaranteed to be sampled within a number of epochs. 
 
 * ``train_batch_size``: (int) training batch size. 
 
