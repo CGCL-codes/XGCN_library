@@ -48,7 +48,7 @@ gnn_lr: 0.001
 emb_init_std: 0.1
 use_sparse: 0
 freeze_emb: 0
-from_pretrained: 1
+from_pretrained: 0
 file_pretrained_emb: ''
 
 L2_reg_weight: 0.0
