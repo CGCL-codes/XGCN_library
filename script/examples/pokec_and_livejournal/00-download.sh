@@ -1,4 +1,4 @@
-all_data_root=$1
+all_data_root=/home/sxr/code/XGCN_and_data/XGCN_data
 
 mkdir -p $all_data_root/dataset
 cd  $all_data_root/dataset

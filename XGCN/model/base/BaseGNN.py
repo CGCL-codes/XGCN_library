@@ -193,10 +193,3 @@ class BaseGNN(BaseEmbeddingModel):
         
         out_emb_table = X
         return out_emb_table
-
-    def _backward(self, loss):
-        for opt in self.optimizers:
-            self.optimizers[opt].zero_grad()
-        loss.backward()
-        for opt in self.optimizers:
-            self.optimizers[opt].step()

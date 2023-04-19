@@ -83,11 +83,11 @@ class PPRGo(BaseEmbeddingModel):
             )
             loss += rw * L2_reg_loss
         
-        self.backward(loss)
+        self._backward(loss)
         return loss.item()
     
     @torch.no_grad()
-    def on_eval_begin(self):
+    def infer_out_emb_table(self):
         self.out_emb_table = torch.empty(size=self.emb_table.weight.shape, dtype=torch.float32,
                                          device=self.out_emb_table_device)
         dl = torch.utils.data.DataLoader(dataset=torch.arange(self.info['num_nodes']), 
@@ -100,10 +100,3 @@ class PPRGo(BaseEmbeddingModel):
             self.target_emb_table = self.out_emb_table[self.info['num_users'] : ]
         else:
             self.target_emb_table = self.out_emb_table
-
-    def backward(self, loss):
-        for opt in self.optimizers:
-            opt.zero_grad()
-        loss.backward()
-        for opt in self.optimizers:
-            opt.step()

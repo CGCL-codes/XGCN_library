@@ -79,6 +79,13 @@ class BaseEmbeddingModel(BaseModel):
             'one_pos_k_neg': self._eval_one_pos_k_neg
         }[eval_type](batch_data)
     
+    def _backward(self, loss):
+        for opt in self.optimizers:
+            self.optimizers[opt].zero_grad()
+        loss.backward()
+        for opt in self.optimizers:
+            self.optimizers[opt].step()
+    
     def save(self, root=None):
         raise NotImplementedError
     

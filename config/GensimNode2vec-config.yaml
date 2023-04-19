@@ -1,21 +1,25 @@
-seed: 1999
-model: GensimNode2vec
-
+# Dataset/Results root
 data_root: ""
 results_root: ""
 
+# Trainer configuration
+epochs: 200
+use_validation_for_early_stop: 1
+val_freq: 1
+key_score_metric: r100
+convergence_threshold: 20
 val_method: ""
 val_batch_size: 256
 file_val_set: ""
 
+# Testing configuration
 test_method: ""
 test_batch_size: 256
 file_test_set: ""
 
-epochs: 200
-val_freq: 1
-key_score_metric: r100
-convergence_threshold: 20
+# Model configuration
+model: GensimNode2vec
+seed: 1999
 
 emb_dim: 64
 emb_lr: 0.01

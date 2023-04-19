@@ -5,20 +5,33 @@ Data Preparation
 
 In this section, we introduce how to process your text data into XGCN's "dataset instances", 
 which is required before running a model. 
-For example, suppose you have a dataset looks like this: 
+
+Before getting started
+-------------------------
+
+We recommend to arrange the data with a clear directory structure. 
+Before getting started, you may manually 
+setup an ``XGCN_data`` (or other names you like) directory as follows: 
+(It's recommended to put your ``XGCN_data`` somewhere else than in the code repository.)
 
 .. code:: 
 
-    raw_facebook
-    ├── graph.txt   # edge list
-    ├── val.txt     # samples for validation
-    └── test.txt    # samples for test
+    XGCN_data
+    └── dataset
+        └── raw_xxx
+            ├── graph.txt   # edge list
+            ├── val.txt     # samples for validation (optional)
+            └── test.txt    # samples for test (optional)
 
-By using XGCN's data processing API, the data are loaded and saved into: 
+We'll use this directory to hold all the different datasets 
+and models outputs. 
+We refer to its path as ``all_data_root`` in our shell scripts. 
+
+By using XGCN's data processing API, the text data are loaded and saved into: 
 
 .. code:: 
 
-    instance_facebook
+    instance_xxx
     ├── info.yaml      # contains some basic information such as "graph type" and "number of nodes"
     ├── indptr.pkl     # graph in CSR format (numpy array)
     ├── indices.pkl

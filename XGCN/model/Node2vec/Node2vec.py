@@ -2,8 +2,8 @@ from XGCN.data import io, csr
 from XGCN.model.base import BaseEmbeddingModel
 
 import torch
-import os.path as osp
 from torch_geometric.nn import Node2Vec as pyg_Node2vec
+import os.path as osp
 
 
 class Node2vec(BaseEmbeddingModel):
@@ -37,8 +37,12 @@ class Node2vec(BaseEmbeddingModel):
             sparse=True
         ).to(self.device)
         
-        self.opt = torch.optim.SparseAdam(self.model.parameters(), 
-                                          lr=self.config['emb_lr'])
+        self.optimizers = {
+            'emb_table-SparseAdam': 
+                torch.optim.SparseAdam(
+                    self.model.parameters(), lr=self.config['emb_lr']
+                )
+        }
         
         pyg_node2vec_train_dl = self.model.loader(
             batch_size=self.config['train_batch_size'],
@@ -49,15 +53,13 @@ class Node2vec(BaseEmbeddingModel):
     def forward_and_backward(self, batch_data):
         pos_rw, neg_rw = batch_data
         loss = self.model.loss(pos_rw.to(self.device), neg_rw.to(self.device))
-        self.opt.zero_grad()
-        loss.backward()
-        self.opt.step()
+        self._backward(loss)
         return loss.item()
     
     def on_epoch_begin(self):
         self.model.train()
     
-    def on_eval_begin(self):
+    def infer_out_emb_table(self):
         self.model.eval()
         self.out_emb_table = self.model.embedding.weight.data
         
@@ -65,3 +67,19 @@ class Node2vec(BaseEmbeddingModel):
             self.target_emb_table = self.out_emb_table[self.info['num_users']:]
         else:
             self.target_emb_table = self.out_emb_table
+
+    def save(self, root=None):
+        if root is None:
+            root = self.model_root
+        self._save_optimizers(root)
+        torch.save(self.model.state_dict(), osp.join(root, 'model-state_dict.pt'))
+        self._save_out_emb_table(root)
+        
+    def load(self, root=None):
+        if root is None:
+            root = self.model_root
+        self._load_optimizers(root)
+        self.model.load_state_dict(
+             torch.load(osp.join(root, 'model-state_dict.pt'))
+        )
+        self._load_out_emb_table(root)

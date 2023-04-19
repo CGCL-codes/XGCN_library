@@ -51,8 +51,8 @@ class GensimNode2vec(BaseEmbeddingModel):
         )
         
         print("build vocab...")
-        self.model.create_vocab(self.sentences)
-        # self.model.create_vocab_from_freq(indptr[1:] - indptr[:-1])
+        self.model.build_vocab(self.sentences)
+        # self.model.build_vocab_from_freq(indptr[1:] - indptr[:-1])
 
     def train_an_epoch(self):
         lr = self.config['emb_lr']
@@ -67,7 +67,7 @@ class GensimNode2vec(BaseEmbeddingModel):
         loss = self.model.get_latest_training_loss()
         return loss
     
-    def on_eval_begin(self):
+    def infer_out_emb_table(self):
         self.out_emb_table = torch.FloatTensor(
             self.model.wv[list(range(self.info['num_nodes']))]
         )
@@ -75,3 +75,13 @@ class GensimNode2vec(BaseEmbeddingModel):
             self.target_emb_table = self.out_emb_table[self.info['num_users']:]
         else:
             self.target_emb_table = self.out_emb_table
+    
+    def save(self, root=None):
+        if root is None:
+            root = self.model_root
+        self._save_out_emb_table(root)
+
+    def load(self, root=None):
+        if root is None:
+            root = self.model_root
+        self._load_out_emb_table(root)

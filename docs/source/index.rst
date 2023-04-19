@@ -13,7 +13,7 @@ aiming at helping researchers to quickly embed million-scale graphs in a single-
 XGCN includes **xGCN** - an implementation for the TheWebConf 2023 paper: 
 **xGCN: An Extreme Graph Convolutional Network for Large-scale Social Link Prediction** 
 (a 3-minute video introduction for the paper: `video <https://www.youtube.com/watch?v=8yedOmd_3Fw>`_). 
-XGCN's repository is available at: https://github.com/xiransong/XGCN_library .
+XGCN's repository is available at: https://github.com/xiransong/XGCN_library
 
 We now focus on embedding models for **social link prediction** (also known as friend recommendation) 
 and **user-item link prediction** (i.e. the classic recommendation task), 

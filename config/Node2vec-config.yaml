@@ -19,7 +19,7 @@ file_test_set: ""
 
 # DataLoader configuration
 train_batch_size: 2048
-num_workers: 4
+num_workers: 6
 
 # Model configuration
 model: Node2vec
