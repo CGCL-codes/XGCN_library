@@ -56,17 +56,17 @@ class SimpleX(BaseEmbeddingModel):
             self.fn_msg = dgl.function.u_mul_e('h', 'ew', 'm')
             self.fn_reduce = dgl.function.sum(msg='m', out='h')
             
-        self.optimizers = []
+        self.optimizers = {}
         if not self.config['freeze_emb']:
             if self.config['use_sparse']:
-                self.optimizers.append(
-                    torch.optim.SparseAdam([{'params':list(self.emb_table.parameters()),
-                                            'lr': self.config['emb_lr']}])
+                self.optimizers['emb_table-SparseAdam'] = torch.optim.SparseAdam(
+                    [{'params':list(self.emb_table.parameters()), 
+                      'lr': self.config['emb_lr']}]
                 )
             else:
-                self.optimizers.append(
-                    torch.optim.Adam([{'params': self.emb_table.parameters(),
-                                    'lr': self.config['emb_lr']}])
+                self.optimizers['emb_table-Adam'] = torch.optim.Adam(
+                    [{'params': self.emb_table.parameters(),
+                      'lr': self.config['emb_lr']}]
                 )
                     
     def _get_user_output_emb(self, users=None):
@@ -113,11 +113,12 @@ class SimpleX(BaseEmbeddingModel):
             L2_reg_loss = 1/2 * (1 / len(src)) * ((src_emb**2).sum() + (pos_emb**2).sum() + (neg_emb**2).sum())
             loss += self.config['L2_reg_weight'] * L2_reg_loss
         
-        self.backward(loss)
+        self._backward(loss)
+        
         return loss.item()
     
     @torch.no_grad()
-    def on_eval_begin(self):
+    def infer_out_emb_table(self):
         if self.graph_type == 'user-item':
             self.out_emb_table[:self.num_users] = self._get_user_output_emb().cpu()
             self.out_emb_table[self.num_users:] = self.emb_table.weight[self.num_users:].cpu()
@@ -126,9 +127,12 @@ class SimpleX(BaseEmbeddingModel):
             self.out_emb_table = self.emb_table.weight
             self.target_emb_table = self.out_emb_table
 
-    def backward(self, loss):
-        for opt in self.optimizers:
-            opt.zero_grad()
-        loss.backward()
-        for opt in self.optimizers:
-            opt.step()
+    def save(self, root=None):
+        self._save_optimizers(root)
+        self._save_emb_table(root)
+        self._save_out_emb_table(root)
+    
+    def load(self, root=None):
+        self._load_optimizers(root)
+        self._load_emb_table(root)
+        self._load_out_emb_table(root)
