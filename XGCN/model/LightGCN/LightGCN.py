@@ -80,7 +80,7 @@ class LightGCN(BaseGNN):
         )
     
     @torch.no_grad()
-    def on_eval_begin(self):
+    def infer_out_emb_table(self):
         if self.forward_mode == 'full_graph':
             self.out_emb_table = self.gnn(
                 self.g, self.emb_table.weight
