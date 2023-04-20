@@ -110,7 +110,6 @@ Full Documentations
    :maxdepth: 1
    :caption: Developer Guide
 
-   developer_guide/overview
    developer_guide/Model
    developer_guide/DataLoader
 
