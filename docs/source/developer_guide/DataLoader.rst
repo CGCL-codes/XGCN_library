@@ -10,8 +10,8 @@ then customize a new one.
 In XGCN, the dataloader is called by ``Trainer`` during the batch training, 
 and basically it only needs to be an iterable object. 
 To add a new dataloader, you can simply implement it as an iterable object
-on your own and add it to ``XGCN.build_DataLoader()`` 
-(see ``build_DataLoader()`` in ``XGCN/dataloading/build.py``), 
+on your own and add it to ``XGCN.create_DataLoader()`` 
+(see ``create_DataLoader()`` in ``XGCN/dataloading/create.py``), 
 or you can use the infrastructure provided by XGCN. 
 
 In this section, we focus on introducing main components of
@@ -38,8 +38,8 @@ To train large-scale message-passing GNNs, mini-graph sampling is often needed.
 In XGCN, the ``BlockDataset`` class utilize the ``NodeListDataset``
 and DGL's ``BlockSampler`` to conduct mini-graph sampling. 
 
-The function ``XGCN.build_DataLoader()`` is used to initialize a dataloader. 
-You can refer to the functions in ``XGCN/dataloading/build.py``. 
+The function ``XGCN.create_DataLoader()`` is used to initialize a dataloader. 
+You can refer to the functions in ``XGCN/dataloading/create.py``. 
 
 
 2. Implement a Sampler
@@ -92,16 +92,16 @@ done by adding a new Sampler (add a ``XGCN/dataloading/sample/WeightedNeg_Sample
             return neg
 
 
-Also remember to add it to the ``build_Sampler()`` function in ``XGCN/dataloading/build.py``, 
+Also remember to add it to the ``create_Sampler()`` function in ``XGCN/dataloading/create.py``, 
 so that XGCN can find the new Sampler.
 
 .. code:: python
     
-    # in XGCN/dataloading/build.py
+    # in XGCN/dataloading/create.py
 
     from XGCN.sample.WeightedNeg_Sampler import WeightedNeg_Sampler
 
-    def build_LinkDataset(config, data):
+    def create_LinkDataset(config, data):
         pos_sampler = {
             'ObservedEdges_Sampler': ObservedEdges_Sampler,
         }[config['pos_sampler']](config, data)

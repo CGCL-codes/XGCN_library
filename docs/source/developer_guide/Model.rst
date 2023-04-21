@@ -182,6 +182,104 @@ The ``save()``\/``load()`` function are supposed to save/load the whole model an
 6. Add to build_Model()
 ---------------------------------
 
+The full NewModel.py is as follows:
+
+.. code:: python
+
+    # XGCN/model/NewModel.py
+    from XGCN.model.base import BaseEmbeddingModel
+    from XGCN.model.module import init_emb_table, dot_product, bce_loss
+
+    import torch
+    import os.path as osp
+
+
+    class NewModel(BaseEmbeddingModel):
+        
+        def __init__(self, config):
+            super().__init__(config)
+            self.device = self.config['device']
+
+            self.emb_table = init_emb_table(self.config, self.info['num_nodes'])
+            self.mlp = torch.nn.Sequential(
+                torch.nn.Linear(self.config['emb_dim'], 1024), 
+                torch.nn.Tanh(), 
+                torch.nn.Linear(1024, self.config['emb_dim']), 
+            ).to(self.device)
+            
+            self.optimizers = {}
+            if not self.config['freeze_emb']:
+                if self.config['use_sparse']:  # use SparseAdam
+                    self.optimizers['emb_table-SparseAdam'] = torch.optim.SparseAdam(
+                        [{'params':list(self.emb_table.parameters()), 
+                            'lr': self.config['emb_lr']}]
+                    )
+                else:
+                    self.optimizers['emb_table-Adam'] = torch.optim.Adam(
+                        [{'params': self.emb_table.parameters(),
+                            'lr': self.config['emb_lr']}]
+                    )
+            self.optimizers['mlp-Adam'] = torch.optim.Adam(
+                [{'params': self.mlp.parameters(), 'lr': self.config['dnn_lr']}]
+            )
+            
+        def forward_and_backward(self, batch_data):
+            ((src, pos, neg), ) = batch_data
+
+            src_emb = self.mlp(self.emb_table(src.to(self.device)))
+            pos_emb = self.mlp(self.emb_table(pos.to(self.device)))
+            neg_emb = self.mlp(self.emb_table(neg.to(self.device)))
+
+            pos_score = dot_product(src_emb, pos_emb)
+            neg_score = dot_product(src_emb, neg_emb)
+
+            loss = bce_loss(pos_score, neg_score)
+
+            rw = self.config['L2_reg_weight']
+            L2_reg_loss = 1/2 * (1 / len(src)) * (
+                (src_emb**2).sum() + (pos_emb**2).sum() + (neg_emb**2).sum()
+            )
+            loss += rw * L2_reg_loss
+
+            self._backward(loss)  # the _backward function is already implemented by BaseEmbeddingModel
+
+            return loss.item()    # need to return the loss value
+
+        @torch.no_grad()
+        def infer_out_emb_table(self):
+            self.out_emb_table = torch.empty(
+                size=self.emb_table.weight.shape, dtype=torch.float32
+            ).to(self.device)
+            dl = torch.utils.data.DataLoader(
+                dataset=torch.arange(self.info['num_nodes']), 
+                batch_size=256
+            )
+            for nids in dl:
+                self.out_emb_table[nids] = self.mlp(self.emb_table(nids.to(self.device)))
+            
+            if self.graph_type == 'user-item':
+                self.target_emb_table = self.out_emb_table[self.info['num_users'] : ]
+            else:
+                self.target_emb_table = self.out_emb_table
+                
+        def save(self, root=None):
+            if root is None:
+                root = self.model_root  # the self.model_root is set in BaseEmbeddingModel
+            torch.save(self.mlp.state_dict(), osp.join(root, 'mlp-state_dict.pt'))
+            self._save_optimizers(root)     # already implemented by BaseEmbeddingModel
+            self._save_emb_table(root)
+            self._save_out_emb_table(root)
+        
+        def load(self, root=None):
+            if root is None:
+                root = self.model_root
+            self.mlp.load_state_dict(
+                torch.load(osp.join(root, 'mlp-state_dict.pt'))
+            )
+            self._load_optimizers(root)     # already implemented by BaseEmbeddingModel
+            self._load_emb_table(root)
+            self._load_out_emb_table(root)
+
 Once the model is complete, it should be added into ``XGCN.create_model()`` 
 so that XGCN is able to find it: 
 
