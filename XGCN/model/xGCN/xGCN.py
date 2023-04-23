@@ -128,7 +128,7 @@ class xGCN(BaseEmbeddingModel):
                 self.total_prop_times += 1
                 self.epoch_last_prop = epoch
         else:
-            if 'not_eval' in self.config and self.config['not_eval']:
+            if not self.config['use_validation_for_early_stop']:
                 # do nothing
                 pass
             else:
