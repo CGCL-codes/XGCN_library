@@ -45,7 +45,7 @@ python -m XGCN.main.run_model --seed $seed \
     --emb_lr 0.001 \
     --emb_dim 64 \
     --train_batch_size 2048 \
-    --epochs 10 --val_freq 5 \
+    --epochs 1000 --val_freq 20 \
     --key_score_metric r20 --convergence_threshold 1000 \
     --graph_device $graph_device --emb_table_device $emb_table_device \
     --gnn_device $gnn_device --out_emb_table_device $out_emb_table_device \
