@@ -95,6 +95,8 @@ class BaseEmbeddingModel(BaseModel):
     def _save_out_emb_table(self, root=None):
         if root is None:
             root = self.model_root
+        if not hasattr(self, 'out_emb_table'):
+            self.infer_out_emb_table()
         torch.save(self.out_emb_table, osp.join(root, 'out_emb_table.pt'))
 
     def _save_optimizers(self, root=None):
