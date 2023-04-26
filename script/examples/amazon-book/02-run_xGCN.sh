@@ -19,10 +19,6 @@ out_emb_table_device=$device
 data_root=$all_data_root/dataset/instance_$dataset
 results_root=$all_data_root/model_output/$dataset/$model/[seed$seed][epoch_sample_ratio1.0]
 
-# The results of the following running should be around:
-# r20:0.0409 || r50:0.0792 || r100:0.1252 || r300:0.2367 || n20:0.0316 || n50:0.0458 || n100:0.0606 || n300:0.0911
-# 'r' for 'Recall@', 'n' for 'NDCG@'
-
 python -m XGCN.main.run_model --seed $seed \
     --config_file $config_file_root/$model-config.yaml \
     --data_root $data_root --results_root $results_root \
@@ -33,7 +29,7 @@ python -m XGCN.main.run_model --seed $seed \
     --emb_table_device $emb_table_device \
     --forward_device $forward_device \
     --out_emb_table_device $out_emb_table_device \
-    --epochs 3000 --val_freq 1 --convergence_threshold 100 \
+    --epochs 1000 --val_freq 1 --convergence_threshold 100 \
     --key_score_metric r20 \
     --epoch_sample_ratio 1.0 \
     --dnn_arch "[nn.Linear(64, 1024), nn.Tanh(), nn.Linear(1024, 64)]" \
