@@ -134,11 +134,9 @@ graphs' adjacency matrices and implements some algorithoms. The reasons
 for us to use this format are:
 
 * High-efficency. CSR format is efficient on some key graph/matrix operations such as "querying node neighbors" (O(1) time complexity). By using `Numba <https://numba.pydata.org/>`_ for acceleration based on the CSR data structure, XGCN provides some efficient implements such as random walk, PPR (Personalized PageRank), and ItemCF. 
-
 * Memory-saving. The existing open-source packages for sparse matrix multiplication (such as PyTorch) tend to use a lot of memory. Though slower than PyTorch's implementation, XGCN implements a Numba-based CSR-matrix-with-dense-matrix multiplication, which consumes less memory. If your server could not execute the Pytorch's multiplication due to OOM, please consider XGCN's functions:
     + ``XGCN.data.csr.csr_mult_dense(indptr, indices, data, X_in, X_out)``
     + ``XGCN.data.csr.csr_mult_dense_and_add(indptr, indices, data, X_in, X_out)``
-
 * Friendly with DGL's API. DGLGraph can be initialized directly from the CSR format.
 
 .. _user_guide-data_preparation-evaluation_set_processing:
