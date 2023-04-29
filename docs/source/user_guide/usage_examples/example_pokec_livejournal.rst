@@ -2,8 +2,7 @@ Example: Pokec and LiveJournal
 =====================================
 
 We provide data and model running scripts of two large-scale social network datasets: Pokec and LiveJournal, 
-which are used in our paper: `xGCN: An Extreme Graph Convolutional Network for Large-scale Social Link Prediction <https://doi.org/10.1145/3543507.3583340>`_.
- (the Xbox dataset is an industrial one and is not able to be public.) 
+which are used in our paper: `xGCN: An Extreme Graph Convolutional Network for Large-scale Social Link Prediction <https://doi.org/10.1145/3543507.3583340>`_. (The Xbox dataset is an industrial one and is not able to be public.)
 
 All the scripts including dataset downloading & processing can be found in ``script/data_process/pokec_and_livejournal``. 
 For example, to download and process the dataset, you can run the following script: 
