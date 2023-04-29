@@ -97,7 +97,7 @@ class xGCN(BaseEmbeddingModel):
         if self.config['renew_by_loading_best'] and (self.total_prop_times >= self.config['K']):
             print("# refresh by loading best...")
             self.emb_table = torch.load(
-                osp.join(self.config['results_root'], 'out_emb_table.pt'),
+                osp.join(self.model_root, 'out_emb_table.pt'),
                 map_location=self.emb_table_device
             )
         else:

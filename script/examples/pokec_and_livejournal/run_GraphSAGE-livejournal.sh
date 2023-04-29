@@ -1,5 +1,5 @@
-all_data_root=/media/xreco/DEV/xiran/code/XGCN_package_dev/XGCN_data
-config_file_root=/media/xreco/DEV/xiran/code/XGCN_package_dev/xGCN/config
+all_data_root=$1
+config_file_root=$2
 
 dataset=livejournal
 model=GraphSAGE
@@ -13,10 +13,8 @@ file_pretrained_emb=$all_data_root/model_output/$dataset/Node2vec/[seed$seed]/ou
 python -m XGCN.main.run_model --seed $seed \
     --config_file $config_file_root/$model-config.yaml \
     --data_root $data_root --results_root $results_root \
-    --val_method one_pos_whole_graph --val_batch_size 256 \
-    --file_val_set $data_root/val_edges.pkl \
-    --test_method multi_pos_whole_graph --test_batch_size 256 \
-    --file_test_set $data_root/test_set.pkl \
+    --val_method one_pos_whole_graph --file_val_set $data_root/val_edges.pkl \
+    --test_method multi_pos_whole_graph --file_test_set $data_root/test_set.pkl \
     --from_pretrained 1 --file_pretrained_emb $file_pretrained_emb \
     --freeze_emb 1 \
     --num_gcn_layers 2 --train_num_layer_sample '[10, 20]' --infer_num_layer_sample '[10, 20]' \

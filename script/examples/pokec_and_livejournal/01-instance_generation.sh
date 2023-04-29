@@ -1,5 +1,5 @@
 # set to your own path:
-all_data_root='/home/sxr/code/XGCN_and_data/XGCN_data'
+all_data_root=$1
 
 for dataset in 'pokec' 'livejournal'
 do
