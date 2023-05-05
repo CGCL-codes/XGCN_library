@@ -54,6 +54,7 @@ class Trainer:
             self.model.save()
         
         if hasattr(self.model, 'on_train_end'):
+            self.model.infer_out_emb_table()
             self.model.on_train_end()
             
         self.timer.end("train")
