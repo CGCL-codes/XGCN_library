@@ -23,6 +23,7 @@ the full model list is as follows:
 .. toctree::
     :maxdepth: 1
 
+    supported_models/Cluster-GCN.rst
     supported_models/GAMLP.rst
     supported_models/GAT.rst
     supported_models/GBP.rst
