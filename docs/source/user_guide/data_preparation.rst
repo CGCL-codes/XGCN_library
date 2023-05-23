@@ -6,13 +6,13 @@ Data Preparation
 In this section, we introduce how to process your text data into XGCN's "dataset instances", 
 which is required before running a model. 
 
+-------------------------
 Before getting started
 -------------------------
 
 We recommend to arrange the data with a clear directory structure. 
 Before getting started, you may manually 
 setup an ``XGCN_data`` (or other names you like) directory as follows: 
-(It's recommended to put your ``XGCN_data`` somewhere else than in the code repository.)
 
 .. code:: 
 
@@ -23,11 +23,12 @@ setup an ``XGCN_data`` (or other names you like) directory as follows:
             ├── val.txt     # samples for validation (optional)
             └── test.txt    # samples for test (optional)
 
+It's recommended to put your ``XGCN_data`` somewhere else than in the code repository. 
 We'll use this directory to hold all the different datasets 
 and models outputs. 
 We refer to its path as ``all_data_root`` in our shell scripts. 
 
-By using XGCN's data processing API, the text data are loaded and saved into: 
+By using XGCN's data processing API, the text data will be loaded and saved into: 
 
 .. code:: 
 
