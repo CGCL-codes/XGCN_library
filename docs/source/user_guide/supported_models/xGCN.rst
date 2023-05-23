@@ -5,7 +5,8 @@ xGCN
 
 Introduction
 -----------------
-.. `\[paper\] <>`_
+
+`\[paper\] <https://dl.acm.org/doi/10.1145/3543507.3583340>`_
 
 **Title:** xGCN: An Extreme Graph Convolutional Network for Large-scale Social Link Prediction
 

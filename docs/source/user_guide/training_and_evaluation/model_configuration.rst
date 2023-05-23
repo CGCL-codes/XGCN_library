@@ -3,7 +3,7 @@
 Model Configuration
 ======================
 
-The model configuration in XGCN is basically a Python Dict containing all the setting parameters. 
+The model configuration in XGCN is basically a python Dict containing all the setting parameters. 
 XGCN supports parsing model configurations from command line arguments and ``.yaml`` files. 
 You can also manually write a Dict with all the parameters in a python script. 
 
@@ -144,7 +144,7 @@ please refer to :ref:`Model Evaluation <user_guide-training_and_evaluation-model
 DataLoader configuration
 ---------------------------
 
-In general, we consider two types of dataloader for GNN training: 
+In general, we consider two types of dataloaders for GNN training: 
 
 (1) **node-only dataloader:** In each mini-batch, returns the needed node IDs: (source nodes, positive nodes, negative nodes). 
 
@@ -222,16 +222,19 @@ The meanings of the arguments are as follows:
 * ``train_num_layer_sample``: (str) Number of nodes to sample in each layer during training. For example, "[10, 20]" means 10 nodes in the first layer and 20 nodes in the second layer. This argument is required for the block dataloader. 
 
 * ``pos_sampler``: (str) Postive sampler. Available options:
+    
     + "ObservedEdges_Sampler": given edge IDs, return the edges. 
     + "NodeBased_ObservedEdges_Sampler": given node IDs, sample a neighbor for each node. 
 
 * ``neg_sampler``: (str) Negative sampler. Available options: 
+    
     + "RandomNeg_Sampler": random sampling from all the nodes (from all the item nodes for user-item graphs). 
     + "StrictNeg_Sampler": sample strictly un-interacted nodes. 
 
 * ``num_neg``: (int) Number of negative samples for each positive sample. 
 
 * ``str_num_total_samples``: (str) the number of all the IDs used to generate samples. Available options:
+    
     + "num_edges": sample from all the edges for training, this is required by "ObservedEdges_Sampler";
     + "num_nodes": first sample a node, then sample a neighbor from it. This is required by "NodeBased_ObservedEdges_Sampler"; 
     + "num_users": This is required by the "NodeBased_ObservedEdges_Sampler" when the graph is a user-item network. 
@@ -239,6 +242,7 @@ The meanings of the arguments are as follows:
 * ``epoch_sample_ratio``: (float) the ``str_num_total_samples`` might be a large number, e.g. the edges in a graph. We can shrink the number of samples for an epoch to ``epoch_sample_ratio`` times ``str_num_total_samples`` by setting ``epoch_sample_ratio`` to a value between 0 and 1. We can also expand the number of samples by setting it larger than 1. 
 
 * ``BatchSampleIndicesGenerator_type``: (str) the way to generate samples IDs in a batch. Available options: 
+    
     + "SampleIndicesWithReplacement": sampling without replacement, e.g. sampling from all the edges without replacement; 
     + "SampleIndicesWithoutReplacement": sampling with replacement, e.g. all the edges is guaranteed to be sampled within a number of epochs. 
 
@@ -250,7 +254,7 @@ Model configuration
 ---------------------------
 
 This part specifies the model configuration such as hyper-parameters. 
-Please refer to :ref:` <user_guide-supported_models>` for the detailed explaination of each model. 
+Please refer to :ref:`Supported Models <user_guide-supported_models>` for the detailed explaination of each model. 
 
 
 .. _user_guide-training_and_evaluation-load_config_from_yaml:

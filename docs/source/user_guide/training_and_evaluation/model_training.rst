@@ -3,11 +3,14 @@
 Model Training
 ======================
 
+Train from scratch
+------------------------------
+
 There are three steps to train a model: 
 
 (1) Prepare the ``config`` Dict, which contains all the needed arguments. 
 
-(2) Create the model: ``model = XGCN.create_model(config)``. The 'results_root' directory will be automatically created if it does not exist. 
+(2) Create the model: ``model = XGCN.create_model(config)``. The ``results_root`` directory will be automatically created if it does not exist. 
 
 (3) Start training: ``model.fit()``. The best model on the validation set and the training information will be save at ``results_root``. 
 
@@ -41,30 +44,41 @@ It has the following contents:
         main()
 
 We provide shell scripts to run all the models in ``script/examples``.
-For example, ``run_xGCN-facebook.sh``: 
+For example, ``script/examples/facebook/run_xGCN.sh``: 
 
 .. code:: bash
 
-    # modify to your own paths:
-    all_data_root=/home/xxx/XGCN_data
-    config_file_root=/home/xxx/XGCN_library/config  # path to the config file templates
+    # set to your own path:
+    all_data_root='/home/sxr/code/XGCN_and_data/XGCN_data'
+    config_file_root='/home/sxr/code/XGCN_and_data/XGCN_library/config'
 
     dataset=facebook
     model=xGCN
     seed=0
+    device='cuda:0'
+    emb_table_device=$device
+    forward_device=$device
+    out_emb_table_device=$device
 
     data_root=$all_data_root/dataset/instance_$dataset
     results_root=$all_data_root/model_output/$dataset/$model/[seed$seed]
 
+    # file_pretrained_emb=$all_data_root/model_output/$dataset/Node2vec/[seed$seed]/model/out_emb_table.pt
+
     python -m XGCN.main.run_model --seed $seed \
         --config_file $config_file_root/$model-config.yaml \
         --data_root $data_root --results_root $results_root \
-        --val_method one_pos_k_neg --val_batch_size 256 \
+        --val_method one_pos_k_neg \
         --file_val_set $data_root/val-one_pos_k_neg.pkl \
-        --test_method multi_pos_whole_graph --test_batch_size 256 \
+        --key_score_metric r20 \
+        --test_method multi_pos_whole_graph \
         --file_test_set $data_root/test-multi_pos_whole_graph.pkl \
+        --emb_table_device $emb_table_device \
+        --forward_device $forward_device \
+        --out_emb_table_device $out_emb_table_device \
+        # --from_pretrained 1 --file_pretrained_emb $file_pretrained_emb \
 
-To run a shell script, you only need to modify ``all_data_root`` and 
+To run a script, you only need to modify ``all_data_root`` and 
 ``config_file_root`` to your own paths. 
 
 Once a model is trained, the output data will be saved at ``results_root``: 
@@ -88,7 +102,7 @@ Load and continue to train
 ------------------------------
 
 XGCN can also load trained models and continue to train. 
-In this case please specify the previously saved ``config.yaml`` and call the 
+In this case, please specify the previously saved ``config.yaml`` and call the 
 ``XGCN.load_model()`` function: 
 
 .. code:: python

@@ -3,7 +3,7 @@
 Model Inference
 ==================
 
-XGCN provides some model inference APIs: 
+XGCN provides some model inference APIs for the embedding models: 
 
 .. code:: python
 

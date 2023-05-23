@@ -1,3 +1,5 @@
+.. _user_guide-usage_examples-facbook:
+
 Example: facebook
 ======================
 
@@ -240,27 +242,39 @@ It has the following contents:
         main()
 
 Directory ``script/examples/facebook`` contains shell scripts to run all the models. 
-For example, the ``run_xGCN-facebook.sh``: 
+For example, the ``run_xGCN.sh``: 
 
 .. code:: shell
     
-    all_data_root='/home/xxx/XGCN_data'
-    config_file_root='/home/xxx/XGCN_library/config'
+    # set to your own path:
+    all_data_root='/home/sxr/code/XGCN_and_data/XGCN_data'
+    config_file_root='/home/sxr/code/XGCN_and_data/XGCN_library/config'
 
     dataset=facebook
     model=xGCN
     seed=0
+    device='cuda:0'
+    emb_table_device=$device
+    forward_device=$device
+    out_emb_table_device=$device
 
     data_root=$all_data_root/dataset/instance_$dataset
     results_root=$all_data_root/model_output/$dataset/$model/[seed$seed]
 
+    # file_pretrained_emb=$all_data_root/model_output/$dataset/Node2vec/[seed$seed]/model/out_emb_table.pt
+
     python -m XGCN.main.run_model --seed $seed \
         --config_file $config_file_root/$model-config.yaml \
         --data_root $data_root --results_root $results_root \
-        --val_method one_pos_k_neg --val_batch_size 256 \
+        --val_method one_pos_k_neg \
         --file_val_set $data_root/val-one_pos_k_neg.pkl \
-        --test_method multi_pos_whole_graph --test_batch_size 256 \
+        --key_score_metric r20 \
+        --test_method multi_pos_whole_graph \
         --file_test_set $data_root/test-multi_pos_whole_graph.pkl \
+        --emb_table_device $emb_table_device \
+        --forward_device $forward_device \
+        --out_emb_table_device $out_emb_table_device \
+        # --from_pretrained 1 --file_pretrained_emb $file_pretrained_emb \
 
 Modify the ``all_data_root`` and ``config_file_root`` to your own paths, 
 and then you can run it! 
@@ -281,3 +295,11 @@ testing is completed, you'll get the following contents:
                     ├── test_results.json       # test results
                     ├── train_record_best.json  # validation results of the best epoch
                     └── train_record.txt        # validation results of all the epochs
+
+
+-----------------------
+The Complete Scripts
+-----------------------
+
+All the scripts of running examples can be found in ``script/examples/facebook``. 
+Remember to modify the paths in the scripts. 

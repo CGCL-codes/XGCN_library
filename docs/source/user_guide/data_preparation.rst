@@ -6,6 +6,8 @@ Data Preparation
 In this section, we introduce how to process your text data into XGCN's "dataset instances", 
 which is required before running a model. 
 
+We also provide a complete data preparation example in :ref:`Example: facebook <user_guide-usage_examples-facbook>`. 
+
 -------------------------
 Before getting started
 -------------------------
@@ -46,7 +48,7 @@ In the following, we'll introduce:
 * `Graph Processing`_: input format of the graph, and the processing API.
 * `Evaluation Set Processing`_: input format of the evaluation set, and the processing API. 
 
-If you only have the graph data and do not have evaluation sets, XGCN can also help you generate them: :ref:`Evaluation set generation <user_guide-data_preparation-evaluation_set_processing-evaluation_set_generation>`. 
+If you only have the graph data and do not have evaluation sets, XGCN can also help you generate them: :ref:`Evaluation Set Generation <user_guide-data_preparation-evaluation_set_processing-evaluation_set_generation>`. 
 
 .. _user_guide-data_preparation-graph_processing:
 
@@ -90,7 +92,7 @@ Processing module
 --------------------
 
 The corresponding data processing module is ``XGCN.data.process.process_int_graph``. 
-An example of the shell script is as follows: 
+An example of the data processing shell script is as follows: 
 
 .. code:: shell
 
@@ -113,11 +115,11 @@ An example of the shell script is as follows:
 There are 4 arguments: 
 
 * ``file_input_graph``: the input text file. 
-* ``data_root``: the output root (i.e. data instance root). 
-* ``graph_type``: available graph type: 'homo' (for homogeneous) or 'user-item'. 
+* ``data_root``: the output root (i.e. the data instance root). 
+* ``graph_type``: available graph type: 'homo' (for homogeneous graphs, e.g. social networks) or 'user-item'. 
 * ``graph_format``: available graph format: 'edge_list' or 'adjacency_list'. 
 
-After running this module, your data root will be like: 
+After running this script, your data root will be like: 
 
 .. code:: 
 
@@ -131,8 +133,7 @@ CSR graph format
 
 `CSR <https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.csr_matrix.html>`_ 
 is a compact format for sparse metrices. XGCN use this structure to save 
-graphs' adjacency matrices and implements some algorithoms. The reasons 
-for us to use this format are:
+graphs' adjacency matrices and implements some algorithoms. The reasons are:
 
 * High-efficency. CSR format is efficient on some key graph/matrix operations such as "querying node neighbors" (O(1) time complexity). By using `Numba <https://numba.pydata.org/>`_ for acceleration based on the CSR data structure, XGCN provides some efficient implements such as random walk and PPR (Personalized PageRank). 
 * Memory-saving. The existing open-source packages for sparse matrix multiplication (such as PyTorch) tend to use a lot of memory. Though slower than PyTorch's implementation, XGCN implements a Numba-based CSR-matrix-with-dense-matrix multiplication, which consumes less memory. If your server could not execute the Pytorch's multiplication due to OOM, please consider XGCN's functions:
@@ -151,7 +152,7 @@ Evaluation Set Processing
 Input format
 --------------------
 
-We support three kinds of model evaluation methods:
+We support three kinds of link prediction model evaluation methods:
 
 * "one_pos_k_neg"
 
@@ -162,7 +163,7 @@ We support three kinds of model evaluation methods:
 They are explained as follows: 
 
 In link prediction tasks, A single evaluation sample can be formulated as: 
-(src, pos[1], ..., pos[m], neg[1], ... neg[k]), where src, pos, neg denotes source node, 
+(src, pos[1], ..., pos[m], neg[1], ... neg[k]), where src, pos, and neg denotes source node, 
 positive node, and negative node, respectively. 
 The positive nodes usually come from the removed edges from the original graph. 
 The negative nodes are usually sampled from un-interacted nodes 
@@ -212,14 +213,14 @@ The input text file should be an adjacency list, two nodes are seperated by a bl
     2 4 3 5
     5 0
 
-The first line contains source nodes. Each source should have at least one positive node. 
+The first line contains source nodes. Each source node should have at least one positive node. 
 
 
 Processing module
 --------------------
 
 The corresponding data processing module is ``XGCN.data.process.process_evaluation_set``. 
-An example of the shell script is as follows: 
+An example of the data processing shell script is as follows: 
 
 .. code:: shell
 
@@ -239,13 +240,16 @@ There are 3 arguments:
 * ``file_output``: the output file. We save the data object using ``Pickle``, so it's recommended to name the output as 'xxx.pkl'. 
 * ``evaluation_method``: available evaluation method: 'one_pos_k_neg', 'one_pos_whole_graph', and 'multi_pos_whole_graph'. 
 
+You can use this script to save the text evaluation sets into pickle objects in the data instance directory. 
+
 .. _user_guide-data_preparation-evaluation_set_processing-evaluation_set_generation:
 
+-----------------------------
 Evaluation Set Generation
 -----------------------------
 
-Suppose we only have the graph data: 'graph.txt', and want to generate some evaluation sets, 
-then we can use the ``XGCN.data.process.evaluation_set_generation`` module: 
+Suppose you only have the graph data: graph.txt, and want to generate some evaluation sets, 
+then you can use the ``XGCN.data.process.evaluation_set_generation`` module: 
 
 .. code:: bash
 
@@ -282,7 +286,7 @@ then we can use the ``XGCN.data.process.evaluation_set_generation`` module:
 The arguments are:
 
 * ``file_input_graph``: the input text file. 
-* ``graph_type``: available graph type: 'homo' (for homogeneous) or 'user-item'. 
+* ``graph_type``: available graph type: 'homo' (for homogeneous graphs) or 'user-item'. 
 * ``graph_format``: available graph format: 'edge_list' or 'adjacency_list'. 
 * ``seed``: random seed for edges split. 
 * ``num_edge_samples``: number of edges to split. 
@@ -294,6 +298,6 @@ The arguments are:
 * ``file_output_eval_set``: the output text file of the evaluation set. 
 
 You can successively use this module to generate several different evaluation sets. 
-The output evaluation sets can then be fed into the ``XGCN.data.process.process_evaluation_set`` module. 
+The output text evaluation sets can then be fed into the ``XGCN.data.process.process_evaluation_set`` module. 
 And the final version of the graph for training can be fed into the ``XGCN.data.process.process_int_graph`` module 
 to generate a complete dataset instance. 

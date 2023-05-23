@@ -3,14 +3,14 @@
 Training and Evaluation
 ============================
 
-Once the dataset instance is generated (for dataset instance generation, please refer to the previous section), 
+Once the dataset instance is generated (for dataset instance generation, please refer to the previous section: :ref:`Data Preparation <user_guide-data_preparation>`), 
 you can run models with XGCN's APIs: 
 
 .. code:: python
 
-    model = XGCN.create_model(config)
-    model.fit()
-    score, topk_node = model.infer_topk(k=100, src=5)
+    model = XGCN.create_model(config)                  # create model
+    model.fit()                                        # train
+    score, topk_node = model.infer_topk(k=100, src=5)  # inference
 
 In this section, we are going to introduce:
 

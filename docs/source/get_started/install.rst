@@ -1,8 +1,6 @@
 Install XGCN
 ======================
 
-XGCN can be installed from source files or using ``pip``. 
-
 
 System requirements
 ------------------------
@@ -30,13 +28,3 @@ Download the source files from GitHub and install locally:
     git clone git@github.com:xiransong/XGCN_library.git -b dev
     cd XGCN_library
     python -m pip install -e .
-
-
-.. Install XGCN using pip
-.. ------------------------------
-
-.. Run the following command:
-
-.. .. code:: bash
-
-..     python -m pip install -i https://test.pypi.org/simple XGCN

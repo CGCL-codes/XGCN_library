@@ -7,7 +7,7 @@ Cluster-GCN
 Introduction
 -----------------
 
-`\[paper\] <>`_
+`\[paper\] <https://dl.acm.org/doi/10.1145/3292500.3330925>`_
 
 **Title:** Cluster-GCN: An Efficient Algorithm for Training Deep and Large Graph Convolutional Networks
 

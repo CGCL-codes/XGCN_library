@@ -6,7 +6,7 @@ Model Evaluation
 Evaluation methods
 ----------------------
 
-XGCN support three kinds of model evaluation methods:
+We support three kinds of link prediction model evaluation methods:
 
 * "one_pos_k_neg"
 
@@ -18,7 +18,7 @@ XGCN receives text files of the evaluation sets as input and processes them into
 The three evaluation methods are explained as follows: 
 
 In link prediction tasks, A single evaluation sample can be formulated as: 
-(src, pos[1], ..., pos[m], neg[1], ... neg[k]), where src, pos, neg denotes source node, 
+(src, pos[1], ..., pos[m], neg[1], ... neg[k]), where src, pos, and neg denotes source node, 
 positive node, and negative node, respectively. 
 The positive nodes usually come from the removed edges from the original graph. 
 The negative nodes are usually sampled from un-interacted nodes 
@@ -68,7 +68,7 @@ The input text file should be an adjacency list, two nodes are seperated by a bl
     2 4 3 5
     5 0
 
-The first line contains source nodes. Each source should have at least one positive node. 
+The first line contains source nodes. Each source node should have at least one positive node. 
 
 
 Evaluation metrics
@@ -82,7 +82,7 @@ NDCG@20 (write as "n20"), NDCG@50 ("n50"), NDCG@100 ("n100"), and NDCG@300 ("n30
 Available Recall\@k metrics are: 
 Recall@20 (write as "r20"), Recall@50 ("r50"), Recall@100 ("r100"), and Recall@300 ("r300"). 
 
-To use customized metrics, please modify the ``one_pos_metrics()`` and ``multi_pos_metrics()`` function in ``XGCN/utils/metric.py``. 
+To use customized metrics, please modify the ``one_pos_metrics()`` and ``multi_pos_metrics()`` functions in ``XGCN/utils/metric.py``. 
 More friendly metrics APIs are coming in the future versions. 
 
 
