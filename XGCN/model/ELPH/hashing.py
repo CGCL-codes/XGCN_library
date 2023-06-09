@@ -50,21 +50,26 @@ class ElphHashes(object):
     class to store hashes and retrieve subgraph features
     """
 
-    def __init__(self, args):
-        assert args.max_hash_hops in {1, 2, 3}, f'hashing is not implemented for {args.max_hash_hops} hops'
-        self.max_hops = args.max_hash_hops
-        self.floor_sf = args.floor_sf  # if true set minimum sf to 0 (they're counts, so it should be)
+    def __init__(self, config, num_nodes, edge_index):
+        '''
+            edge_index: edge index tensor [2, num_links]
+        '''
+        self.config = config
+        self.device = config['device']
+        assert config['max_hash_hops'] in {1, 2, 3}, f'hashing is not implemented for {config["max_hash_hops"]} hops'
+        self.max_hops = config['max_hash_hops']
+        self.floor_sf = config['floor_sf']  # if true set minimum sf to 0 (they're counts, so it should be)
         # minhash params
         self._mersenne_prime = np.uint64((1 << 61) - 1)
         self._max_minhash = np.uint64((1 << 32) - 1)
         self._minhash_range = (1 << 32)
         self.minhash_seed = 1
-        self.num_perm = args.minhash_num_perm
+        self.num_perm = config['minhash_num_perm']
         self.minhash_prop = MinhashPropagation()
         # hll params
-        self.p = args.hll_p
+        self.p = config['hll_p']
         self.m = 1 << self.p  # the bitshift way of writing 2^p
-        self.use_zero_one = args.use_zero_one
+        self.use_zero_one = config['use_zero_one']
         self.label_lookup = LABEL_LOOKUP[self.max_hops]
         tmp = HyperLogLogPlusPlus(p=self.p)
         # store values that are shared and only depend on p
@@ -79,6 +84,51 @@ class ElphHashes(object):
         self.bias_vector = torch.tensor(hyperloglog_const._bias[self.p - 4], dtype=torch.float)
         self.estimate_vector = torch.tensor(hyperloglog_const._raw_estimate[self.p - 4], dtype=torch.float)
         self.hll_prop = HllPropagation()
+
+        ###### Xiran's code:
+        self.node_hashings_table, self.cards = self._init_feat(self, num_nodes, edge_index)
+
+    ###### Xiran's code:
+    def get_link_heuristic(self, links):
+        return self.get_subgraph_features(links, self.node_hashings_table, self.cards)
+
+    ###### from official elph.py:
+    def _init_feat(self, num_nodes, edge_index):
+        """
+        @param edge_index: edge index tensor [2, num_links]
+        """
+        hash_edge_index, _ = add_self_loops(edge_index)  # unnormalised, but with self-loops
+        
+        edge_index = edge_index.to(self.device)
+        init_hashes = self.initialise_minhash(num_nodes).to(self.device)
+        init_hll = self.initialise_hll(num_nodes).to(self.device)
+        cards = torch.zeros((num_nodes, self.config['max_hash_hops'])).to(self.device)
+
+        # initialise data tensors for storing k-hop hashes
+        node_hashings_table = {}
+        for k in range(self.config['max_hash_hops'] + 1):
+            logger.info(f"Calculating hop {k} hashes")
+            node_hashings_table[k] = {
+                'hll': torch.zeros((num_nodes, self.hll_size), dtype=torch.int8, device=self.device),
+                'minhash': torch.zeros((num_nodes, self.num_perm), dtype=torch.int64, device=self.device)}
+            start = time()
+            if k == 0:
+                node_hashings_table[k]['minhash'] = init_hashes
+                node_hashings_table[k]['hll'] = init_hll
+            else:
+                node_hashings_table[k]['hll'] = self.hll_prop(
+                    node_hashings_table[k - 1]['hll'], hash_edge_index
+                )
+                node_hashings_table[k]['minhash'] = self.minhash_prop(
+                    node_hashings_table[k - 1]['minhash'], hash_edge_index
+                )
+                cards[:, k - 1] = self.hll_count(
+                    node_hashings_table[k]['hll']
+                )
+
+            logger.info(f'{k} hop hash generation ran in {time() - start} s')
+
+        return node_hashings_table, cards
 
     def _np_bit_length(self, bits):
         """
