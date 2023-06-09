@@ -124,6 +124,12 @@ def _parse_arguments():
     parser.add_argument("--T", type=int)
     parser.add_argument("--tolerance", type=int)
     
+    parser.add_argument("--max_hash_hops", type=int)
+    parser.add_argument("--minhash_num_perm", type=int)
+    parser.add_argument("--hll_p", type=int)
+    parser.add_argument("--use_zero_one", type=int)
+
+
     (args, unknown) = parser.parse_known_args()
     parsed_results = {}
     for arg in sorted(vars(args)):

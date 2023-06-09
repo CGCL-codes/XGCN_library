@@ -13,6 +13,7 @@ from XGCN.model.SSGC import SSGC, SSGC_learnable_emb
 from XGCN.model.SIGN import SIGN, SIGN_learnable_emb
 from XGCN.model.GBP import GBP
 from XGCN.model.GAMLP import GAMLP, GAMLP_learnable_emb
+from XGCN.model.ELPH import ELPH
 
 
 def create_model(config):
@@ -36,6 +37,7 @@ def create_model(config):
         'GBP': GBP,
         'GAMLP': GAMLP,
         'GAMLP_learnable_emb': GAMLP_learnable_emb,
+        'ELPH': ELPH,
     }[config['model']](config)
     return model
 

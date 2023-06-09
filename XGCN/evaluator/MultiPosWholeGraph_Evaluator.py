@@ -18,7 +18,7 @@ class MultiPosWholeGraph_Evaluator:
         batch_results_weights = []
         num_samples = self.eval_dl.num_samples()
         
-        if not (hasattr(self.model, 'out_emb_table') and self.model.out_emb_table is not None):
+        if not (hasattr(self.model, 'out_emb_table') and self.model.out_emb_table is not None) and (hasattr(self.model, 'infer_out_emb_table')):
             self.model.infer_out_emb_table()
         
         for batch_data in tqdm(self.eval_dl, desc=desc):

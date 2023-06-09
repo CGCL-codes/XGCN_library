@@ -58,7 +58,8 @@ class ElphHashes(object):
         self.device = config['device']
         assert config['max_hash_hops'] in {1, 2, 3}, f'hashing is not implemented for {config["max_hash_hops"]} hops'
         self.max_hops = config['max_hash_hops']
-        self.floor_sf = config['floor_sf']  # if true set minimum sf to 0 (they're counts, so it should be)
+        # self.floor_sf = config['floor_sf']  # if true set minimum sf to 0 (they're counts, so it should be)
+        self.floor_sf = True
         # minhash params
         self._mersenne_prime = np.uint64((1 << 61) - 1)
         self._max_minhash = np.uint64((1 << 32) - 1)
@@ -86,10 +87,13 @@ class ElphHashes(object):
         self.hll_prop = HllPropagation()
 
         ###### Xiran's code:
-        self.node_hashings_table, self.cards = self._init_feat(self, num_nodes, edge_index)
+        self.node_hashings_table, self.cards = self._init_feat(num_nodes, edge_index)
 
     ###### Xiran's code:
     def get_link_heuristic(self, links):
+        '''
+            links: tensor [n_edges, 2]
+        '''
         return self.get_subgraph_features(links, self.node_hashings_table, self.cards)
 
     ###### from official elph.py:
@@ -97,9 +101,8 @@ class ElphHashes(object):
         """
         @param edge_index: edge index tensor [2, num_links]
         """
-        hash_edge_index, _ = add_self_loops(edge_index)  # unnormalised, but with self-loops
-        
         edge_index = edge_index.to(self.device)
+        hash_edge_index, _ = add_self_loops(edge_index)  # unnormalised, but with self-loops
         init_hashes = self.initialise_minhash(num_nodes).to(self.device)
         init_hll = self.initialise_hll(num_nodes).to(self.device)
         cards = torch.zeros((num_nodes, self.config['max_hash_hops'])).to(self.device)
@@ -317,8 +320,8 @@ class ElphHashes(object):
         if links.dim() == 1:
             links = links.unsqueeze(0)
         intersections = self._get_intersections(links, hash_table)
-        cards1, cards2 = cards.to(links.device)[links[:, 0]], cards.to(links.device)[links[:, 1]]
-        features = torch.zeros((len(links), self.max_hops * (self.max_hops + 2)), dtype=float, device=links.device)
+        cards1, cards2 = cards.to(self.device)[links[:, 0]], cards.to(self.device)[links[:, 1]]
+        features = torch.zeros((len(links), self.max_hops * (self.max_hops + 2)), dtype=float, device=self.device)
         features[:, 0] = intersections[(1, 1)]
         if self.max_hops == 1:
             features[:, 1] = cards2[:, 0] - features[:, 0]

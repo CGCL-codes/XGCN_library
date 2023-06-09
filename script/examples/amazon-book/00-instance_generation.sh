@@ -1,7 +1,7 @@
 # set to your own path:
 all_data_root="/home/sxr/code/XGCN_and_data/XGCN_data"
 
-dataset='amazon-book'
+dataset='yelp2018'
 
 ###### process graph for training
 file_input_graph=$all_data_root"/dataset/raw_${dataset}/train.txt"
@@ -35,4 +35,4 @@ python -m XGCN.data.process.process_evaluation_set \
 python sample_from_test_set_for_validation.py \
     --file_input $all_data_root"/dataset/instance_${dataset}/test.pkl" \
     --file_output $all_data_root"/dataset/instance_${dataset}/val.pkl" \
-    --num_sample 3000 \
+    --num_sample 1000 \
