@@ -7,14 +7,14 @@ epochs: 200
 use_validation_for_early_stop: 1
 val_freq: 1
 key_score_metric: r100
-convergence_threshold: 50
+convergence_threshold: 10
 val_method: ""
-val_batch_size: 4
+val_batch_size: 8
 file_val_set: ""
 
 # Testing configuration
 test_method: ""
-test_batch_size: 4
+test_batch_size: 8
 file_test_set: ""
 
 # DataLoader configuration
@@ -36,8 +36,9 @@ seed: 1999
 device: "cuda:0"
 
 dnn_arch: "[nn.Linear(64, 1024), nn.Tanh(), nn.Linear(1024, 1024), nn.Tanh(), nn.Linear(1024, 64)]"
+# p_drop: 0.5
 dnn_lr: 0.001
-loss_type: bpr
+loss_type: bce
 
 max_hash_hops: 2  # available: 1, 2, 3
 minhash_num_perm: 128

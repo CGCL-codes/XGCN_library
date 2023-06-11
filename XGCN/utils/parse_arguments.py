@@ -128,7 +128,7 @@ def _parse_arguments():
     parser.add_argument("--minhash_num_perm", type=int)
     parser.add_argument("--hll_p", type=int)
     parser.add_argument("--use_zero_one", type=int)
-
+    parser.add_argument("--p_drop", type=float)
 
     (args, unknown) = parser.parse_known_args()
     parsed_results = {}

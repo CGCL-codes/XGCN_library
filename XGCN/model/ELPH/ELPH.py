@@ -8,8 +8,80 @@ from .hashing import ElphHashes
 
 import torch
 from torch import nn
+import torch.nn.functional as F
+from torch.nn import Linear
 import numpy as np
 import os.path as osp
+
+
+class LinkPredictor(torch.nn.Module):
+
+    def __init__(self, config, input_dim):
+        super(LinkPredictor, self).__init__()
+        # self.use_embedding = use_embedding
+        # self.use_feature = args.use_feature
+        # self.feature_dropout = args.feature_dropout
+        # self.label_dropout = args.label_dropout
+        # self.dim = args.max_hash_hops * (args.max_hash_hops + 2)
+        self.label_lin_layer = Linear(input_dim, input_dim)
+        # if args.use_feature:
+        #     self.bn_feats = torch.nn.BatchNorm1d(args.hidden_channels)
+        # if self.use_embedding:
+        #     self.bn_embs = torch.nn.BatchNorm1d(args.hidden_channels)
+        self.bn_labels = torch.nn.BatchNorm1d(input_dim)
+        # if args.use_feature:
+        #     self.lin_feat = Linear(args.hidden_channels,
+        #                            args.hidden_channels)
+        #     self.lin_out = Linear(args.hidden_channels, args.hidden_channels)
+        # out_channels = self.dim + args.hidden_channels if self.use_feature else self.dim
+        # if self.use_embedding:
+        #     self.lin_emb = Linear(args.hidden_channels,
+        #                           args.hidden_channels)
+        #     self.lin_emb_out = Linear(args.hidden_channels, args.hidden_channels)
+        #     out_channels += args.hidden_channels
+        # self.lin = Linear(out_channels, 1)
+        self.lin = Linear(input_dim, 1)
+        self.p_drop = config['p_drop']
+
+    # def feature_forward(self, x):
+    #     """
+    #     small neural network applied edgewise to hadamard product of node features
+    #     @param x: node features torch tensor [batch_size, 2, hidden_dim]
+    #     @return: torch tensor [batch_size, hidden_dim]
+    #     """
+    #     x = x[:, 0, :] * x[:, 1, :]
+    #     # mlp at the end
+    #     x = self.lin_out(x)
+    #     x = self.bn_feats(x)
+    #     x = F.relu(x)
+    #     x = F.dropout(x, p=self.feature_dropout, training=self.training)
+    #     return x
+
+    # def embedding_forward(self, x):
+    #     x = self.lin_emb(x)
+    #     x = x[:, 0, :] * x[:, 1, :]
+    #     # mlp at the end
+    #     x = self.lin_emb_out(x)
+    #     x = self.bn_embs(x)
+    #     x = F.relu(x)
+    #     # x = F.dropout(x, p=self.feature_dropout, training=self.training)
+
+    #     return x
+
+    def forward(self, sf, node_features=None, emb=None):
+        sf = self.label_lin_layer(sf)
+        sf = self.bn_labels(sf)
+        sf = F.relu(sf)
+        x = F.dropout(sf, p=self.p_drop, training=self.training)
+        # # process node features
+        # if self.use_feature:
+        #     node_features = self.feature_forward(node_features)
+        #     x = torch.cat([x, node_features.to(torch.float)], 1)
+        # if emb is not None:
+        #     node_embedding = self.embedding_forward(emb)
+        #     x = torch.cat([x, node_embedding.to(torch.float)], 1)
+        x = self.lin(x)
+        return x
 
 
 class ELPH(BaseModel):
@@ -55,6 +127,7 @@ class ELPH(BaseModel):
             self.all_target_nodes = torch.arange(self.info['num_nodes'])
 
         self.mlp = torch.nn.Sequential(*eval(self.config['dnn_arch'])).to(self.device)
+        # self.mlp = LinkPredictor(self.config, self.get_input_dim()).to(self.device)
         self.opt = torch.optim.Adam([
             {'params': self.mlp.parameters(), 'lr': self.config['dnn_lr']},
         ])
@@ -86,7 +159,7 @@ class ELPH(BaseModel):
         return results
 
     def forward_and_backward(self, batch_data):
-        src, pos, neg = batch_data
+        ((src, pos, neg), ) = batch_data
         
         pos_score = self.predict(src, pos)
         neg_score = self.predict(src, neg)
@@ -122,13 +195,15 @@ class ELPH(BaseModel):
     def get_edge_emb(self, u, v):
         heu_feat = self.heu.get_feat(u.numpy(), v.numpy())
         return heu_feat
+    
+    def on_epoch_begin(self):
+        self.mlp.train()
 
     @torch.no_grad()
     def infer_all_target_score(self, src, mask_nei=True):
-        src = torch.LongTensor(src)
         target = torch.Tensor.repeat(self.all_target_nodes, len(src))
-        src = torch.repeat_interleave(src, len(self.all_target_nodes))
-        links = torch.cat([src.reshape(-1, 1), target.reshape(-1, 1)], dim=-1)
+        _src = torch.repeat_interleave(torch.LongTensor(src), len(self.all_target_nodes))
+        links = torch.cat([_src.reshape(-1, 1), target.reshape(-1, 1)], dim=-1)
         
         x = self.get_link_heuristic(links)
         scores = self.mlp(x)
@@ -136,7 +211,7 @@ class ELPH(BaseModel):
         all_target_score = scores.cpu().numpy()
         
         if mask_nei:
-            self.mask_neighbor_score(src.numpy(), all_target_score)
+            self.mask_neighbor_score(src, all_target_score)
         
         return all_target_score
         
@@ -151,6 +226,7 @@ class ELPH(BaseModel):
             )
     
     def _eval_a_batch(self, batch_data, eval_type):
+        self.mlp.eval()
         return {
             'whole_graph_multi_pos': self._eval_whole_graph_multi_pos,
             'whole_graph_one_pos': self._eval_whole_graph_one_pos,
