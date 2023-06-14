@@ -124,6 +124,8 @@ def _parse_arguments():
     parser.add_argument("--T", type=int)
     parser.add_argument("--tolerance", type=int)
     
+    parser.add_argument("--only_use_heuristic", type=int)
+    parser.add_argument("--heuristic_type", type=str)
     parser.add_argument("--max_hash_hops", type=int)
     parser.add_argument("--minhash_num_perm", type=int)
     parser.add_argument("--hll_p", type=int)

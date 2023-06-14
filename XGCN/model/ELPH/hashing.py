@@ -239,7 +239,9 @@ class ElphHashes(object):
                 union_size = self.hll_count(unions)
                 intersection = jaccard * union_size
                 intersections[(k1, k2)] = intersection
-        return intersections
+                if k1 == 1 and k2 == 1:
+                    uv_jaccard = jaccard
+        return intersections, uv_jaccard
 
     def get_hashval(self, x):
         return x.hashvals
@@ -319,10 +321,22 @@ class ElphHashes(object):
         """
         if links.dim() == 1:
             links = links.unsqueeze(0)
-        intersections = self._get_intersections(links, hash_table)
+        intersections, uv_jaccard = self._get_intersections(links, hash_table)
         cards1, cards2 = cards.to(self.device)[links[:, 0]], cards.to(self.device)[links[:, 1]]
         features = torch.zeros((len(links), self.max_hops * (self.max_hops + 2)), dtype=float, device=self.device)
         features[:, 0] = intersections[(1, 1)]
+
+        if self.config['only_use_heuristic']:
+            heu_type = self.config['heuristic_type']
+            if heu_type == 'CN':
+                return intersections[(1, 1)]
+            elif heu_type == 'Jaccard':
+                return uv_jaccard
+            elif heu_type == 'ItemCF':
+                return intersections[(2, 1)] - features[:, 0]
+            else:
+                assert 0
+        
         if self.max_hops == 1:
             features[:, 1] = cards2[:, 0] - features[:, 0]
             features[:, 2] = cards1[:, 0] - features[:, 0]
@@ -333,8 +347,7 @@ class ElphHashes(object):
             features[:, 4] = cards2[:, 0] - torch.sum(features[:, 0:2], dim=1)  # (0, 1)
             features[:, 5] = cards1[:, 0] - features[:, 0] - features[:, 2]  # (1, 0)
             features[:, 6] = cards2[:, 1] - torch.sum(features[:, 0:5], dim=1)  # (0, 2)
-            features[:, 7] = cards1[:, 1] - features[:, 0] - torch.sum(features[:, 0:4], dim=1) - features[:,
-                                                                                                  5]  # (2, 0)
+            features[:, 7] = cards1[:, 1] - features[:, 0] - torch.sum(features[:, 0:4], dim=1) - features[:, 5]  # (2, 0)
         elif self.max_hops == 3:
             features[:, 1] = intersections[(2, 1)] - features[:, 0]  # (2,1)
             features[:, 2] = intersections[(1, 2)] - features[:, 0]  # (1,2)

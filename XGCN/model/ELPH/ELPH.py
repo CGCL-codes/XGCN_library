@@ -133,18 +133,21 @@ class ELPH(BaseModel):
         ])
 
     def fit(self):
-        config = self.config
-        data = self.data
-        model = self
-        train_dl = XGCN.create_DataLoader(config, data)
-        
-        self.trainer = XGCN.create_Trainer(
-            config, data, model, train_dl
-        )
-        self.trainer.train()
-        
-        if self.config['use_validation_for_early_stop']:
-            self.load()
+        if self.config['only_use_heuristic']:
+            return
+        else:
+            config = self.config
+            data = self.data
+            model = self
+            train_dl = XGCN.create_DataLoader(config, data)
+            
+            self.trainer = XGCN.create_Trainer(
+                config, data, model, train_dl
+            )
+            self.trainer.train()
+            
+            if self.config['use_validation_for_early_stop']:
+                self.load()
         
     def test(self, test_config=None):
         if test_config is None:
@@ -206,9 +209,13 @@ class ELPH(BaseModel):
         links = torch.cat([_src.reshape(-1, 1), target.reshape(-1, 1)], dim=-1)
         
         x = self.get_link_heuristic(links)
-        scores = self.mlp(x)
-        scores = scores.reshape(-1, len(self.all_target_nodes))
-        all_target_score = scores.cpu().numpy()
+
+        if self.config['only_use_heuristic']:
+            all_target_score = x.reshape(-1, len(self.all_target_nodes)).cpu().numpy()
+        else:
+            scores = self.mlp(x)
+            scores = scores.reshape(-1, len(self.all_target_nodes))
+            all_target_score = scores.cpu().numpy()
         
         if mask_nei:
             self.mask_neighbor_score(src, all_target_score)

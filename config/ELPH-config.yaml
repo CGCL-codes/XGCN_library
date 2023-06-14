@@ -40,6 +40,7 @@ dnn_arch: "[nn.Linear(64, 1024), nn.Tanh(), nn.Linear(1024, 1024), nn.Tanh(), nn
 dnn_lr: 0.001
 loss_type: bce
 
+only_use_heuristic: 0
 max_hash_hops: 2  # available: 1, 2, 3
 minhash_num_perm: 128
 hll_p: 8
