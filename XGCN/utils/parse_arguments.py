@@ -132,6 +132,9 @@ def _parse_arguments():
     parser.add_argument("--use_zero_one", type=int)
     parser.add_argument("--p_drop", type=float)
 
+    parser.add_argument("--use_degree_norm", type=int)
+    parser.add_argument("--use_jaccard", type=int)
+
     (args, unknown) = parser.parse_known_args()
     parsed_results = {}
     for arg in sorted(vars(args)):

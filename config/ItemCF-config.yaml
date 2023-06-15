@@ -1,0 +1,11 @@
+# Dataset/Results root
+data_root: ""
+results_root: ""
+
+# Testing configuration
+test_method: ""
+test_batch_size: 256
+file_test_set: ""
+
+# Model configration
+use_degree_norm: 1  # bool
