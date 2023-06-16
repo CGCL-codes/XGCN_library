@@ -26,4 +26,5 @@ python -m XGCN.main.run_model --seed $seed \
     --emb_table_device $emb_table_device \
     --forward_device $forward_device \
     --out_emb_table_device $out_emb_table_device \
+    --use_scale_net 0 \
     # --from_pretrained 1 --file_pretrained_emb $file_pretrained_emb \
