@@ -34,6 +34,9 @@ def from_edges_to_csr_with_info(E_src, E_dst, graph_type):
     print("## {} edges are removed".format(_num_edges - num_edges))
     info['num_edges'] = num_edges
 
+    print("# sort_indices ...")
+    sort_indices(indptr, indices)
+
     return info, indptr, indices
 
 
@@ -110,6 +113,15 @@ def get_reversed(indptr, indices):
     return rev_indptr, rev_indices
 
 
+@numba.jit(nopython=True, parallel=True)
+def sort_indices(indptr, indices):
+    num_nodes = len(indptr) - 1
+    for u in numba.prange(num_nodes):
+        st = indptr[u]
+        nd = indptr[u + 1]
+        indices[st : nd] = np.sort(indices[st : nd])
+
+
 def get_undirected(indptr, indices):
     num_nodes = len(indptr) - 1
     src_indices = get_src_indices(indptr)
@@ -117,7 +129,8 @@ def get_undirected(indptr, indices):
     undi_E_dst = np.concatenate([indices, src_indices])
     undi_indptr, undi_indices = from_edges_to_csr(undi_E_src, undi_E_dst, num_nodes)
     undi_indptr, undi_indices = remove_repeated_edges_in_csr(undi_indptr, undi_indices)
-    
+    sort_indices(undi_indptr, undi_indices)
+
     return undi_indptr, undi_indices
 
 
