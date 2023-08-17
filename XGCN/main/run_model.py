@@ -1,6 +1,7 @@
 import XGCN
 from XGCN.data import io
 from XGCN.utils.parse_arguments import parse_arguments
+from XGCN.utils.utils import set_random_seed
 
 import os.path as osp
 
@@ -8,6 +9,8 @@ import os.path as osp
 def main():
     
     config = parse_arguments()
+
+    set_random_seed(seed=config['seed'])
 
     model = XGCN.create_model(config)
     

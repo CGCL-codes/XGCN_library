@@ -1,6 +1,7 @@
 from XGCN.data import io
 
 import numpy as np
+from numba.typed import List 
 
 
 class MultiPosWholeGraph_EvalDataLoader:
@@ -28,7 +29,8 @@ class MultiPosWholeGraph_EvalDataLoader:
             raise StopIteration
         
         src = self.src[self.start : self.start + self.batch_size]
-        pos = self.pos_list[self.start : self.start + self.batch_size]
+        # pos = self.pos_list[self.start : self.start + self.batch_size]
+        pos = List(self.pos_list[self.start : self.start + self.batch_size])
         self.start += self.batch_size
         
         return src, pos

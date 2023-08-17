@@ -92,7 +92,7 @@ def multi_pos_whole_graph_metrics(pos: list, all_target_score):
     return results
 
 
-# @numba.jit(nopython=True)
+@numba.jit(nopython=True)
 def argtopk(a, k):
     if k == 1:
         return np.array([np.argmax(a)])
@@ -101,7 +101,7 @@ def argtopk(a, k):
         return ind[np.argsort(a[ind])][::-1]
 
 
-# @numba.jit(nopython=True, parallel=True)
+@numba.jit(nopython=True, parallel=True)
 def multi_pos_metrics(pos_list, all_target_score):
     results_dict_list = [
         Dict.empty(key_type=types.unicode_type, value_type=types.float32)
@@ -115,8 +115,7 @@ def multi_pos_metrics(pos_list, all_target_score):
     
     ndcg_weights = 1 / np.log2(np.arange(2, max_k + 2))
     
-    # for i in numba.prange(len(pos_list)):
-    for i in range(len(pos_list)):
+    for i in numba.prange(len(pos_list)):
         pos = pos_list[i]
         pos_set = set(list(pos))
         topk_id = argtopk(all_target_score[i], max_k)

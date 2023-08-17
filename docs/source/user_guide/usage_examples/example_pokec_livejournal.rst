@@ -4,17 +4,8 @@ Example: Pokec and LiveJournal
 We provide data and model running scripts of two large-scale social network datasets: Pokec and LiveJournal, 
 which are used in our paper: `xGCN: An Extreme Graph Convolutional Network for Large-scale Social Link Prediction <https://doi.org/10.1145/3543507.3583340>`_. (The Xbox dataset is an industrial one and is not able to be public.)
 
-All the scripts including dataset downloading & processing can be found in ``script/data_process/pokec_and_livejournal``. 
-For example, to download and process the dataset, you can run the following script: 
-
-.. code:: shell
-
-    # fill your path here:
-    all_data_root=''
-    cd script/data_process/pokec_and_livejournal
-
-    bash 00-download.sh $all_data_root
-    bash 00-instance_generation.sh $all_data_root
+The datasets can be downloaded from `here <https://drive.google.com/file/d/1lv-JkPmswYQ-YfKfRpNpoVh_N2XCiRQg/view?usp=drive_link>`_ (Google Drive).
+All the scripts including dataset processing and model running can be found in ``script/examples/pokec_and_livejournal``. 
 
 Once the dataset instance is generated, you can run all the models. 
 For example, run PPRGo and xGCN on the LiveJournal dataset (4.8 million nodes): 
