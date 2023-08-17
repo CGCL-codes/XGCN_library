@@ -1,5 +1,5 @@
 # set to your own path:
-all_data_root="home/sxr/MING_X/XGCN_library/XGCN_data"
+all_data_root="/home/sxr/code/XGCN_library/XGCN_data"
 
 dataset='amazon-book'
 

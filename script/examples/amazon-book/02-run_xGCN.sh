@@ -5,8 +5,8 @@
 # 'r' for 'Recall@', 'n' for 'NDCG@'
 
 # set to your own path:
-all_data_root='home/sxr/MING_X/XGCN_library/XGCN_data'
-config_file_root='home/sxr/MING_X/XGCN_library/config'
+all_data_root='/home/sxr/code/XGCN_library/XGCN_data'
+config_file_root='/home/sxr/code/XGCN_library/config'
 
 dataset=amazon-book
 model=xGCN
