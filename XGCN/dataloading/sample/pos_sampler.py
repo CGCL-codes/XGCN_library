@@ -52,7 +52,7 @@ class NodeBased_ObservedEdges_Sampler(BaseSampler):
         for u in src.numpy():
             nei = csr.get_neighbors(self.indptr, self.indices, u)
             if len(nei) == 0:
-                pos.append(src)
+                pos.append(u)
                 continue
             else:
                 idx = torch.randint(0, len(nei), (1,)).item()

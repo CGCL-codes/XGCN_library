@@ -69,3 +69,17 @@ def id_map(X: torch.tensor, mapping_dict: dict):
         Y_flatten[i] = mapping_dict[x.item()]
     Y = Y_flatten.reshape(X.shape)
     return Y
+
+
+def gram_schmidt(U):
+    
+    def normalize(X):
+        return X / torch.norm(X, p=2)
+    
+    V = torch.FloatTensor(size=U.shape)
+    V[0] = normalize(U[0])
+    for i in range(1, len(U)):
+        ui = U[i]
+        vs = V[:i]
+        V[i] = normalize(ui - (ui @ vs.T) @ vs)
+    return V

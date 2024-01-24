@@ -13,11 +13,13 @@ from XGCN.model.SSGC import SSGC, SSGC_learnable_emb
 from XGCN.model.SIGN import SIGN, SIGN_learnable_emb
 from XGCN.model.GBP import GBP
 from XGCN.model.GAMLP import GAMLP, GAMLP_learnable_emb
+from XGCN.model.RandNE import RandNE
 
 
 def create_model(config):
     model = {
         'xGCN': xGCN,
+        'RandNE': RandNE,
         'Node2vec': Node2vec,
         'GensimNode2vec': GensimNode2vec,
         'GraphSAGE': GraphSAGE,

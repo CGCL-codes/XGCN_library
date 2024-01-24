@@ -1,0 +1,24 @@
+# Dataset/Results root
+data_root: ""
+results_root: ""
+
+# Testing configuration
+test_method: ""
+test_batch_size: 256
+file_test_set: ""
+
+# Model configuration
+model: RandNE
+seed: 1999
+
+device: "cpu"
+from_pretrained: 0
+file_pretrained_emb: ""
+freeze_emb: 1
+emb_dim: 64 
+emb_init_std: 1.0
+
+use_lightgcn_coe: 0  # bool
+orthogonal: 1  # bool
+num_gcn_layers: 3
+alpha_list: "[1, 1, 1e-1, 1e-1]"

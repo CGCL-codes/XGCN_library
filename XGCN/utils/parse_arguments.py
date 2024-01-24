@@ -127,6 +127,10 @@ def _parse_arguments():
     parser.add_argument("--use_degree_norm", type=int)
     parser.add_argument("--use_jaccard", type=int)
 
+    parser.add_argument("--use_lightgcn_coe", type=int)
+    parser.add_argument("--orthogonal", type=int)
+    parser.add_argument("--alpha_list", type=str)
+
     (args, unknown) = parser.parse_known_args()
     parsed_results = {}
     for arg in sorted(vars(args)):
