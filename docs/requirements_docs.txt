@@ -4,4 +4,3 @@ sphinx-rtd-theme
 sphinx-copybutton
 sphinx-toggleprompt
 nbsphinx
-torchdata>=0.5.0

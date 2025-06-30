@@ -9,7 +9,7 @@ setup(
     # url='https://blog.godatadriven.com/setup-py',
     packages=find_packages(include=['XGCN']),
     install_requires=[
-        "dgl >= 0.9.1",
+        "dgl == 0.9.1",
         "gensim >= 4.2.0",
         "numba >= 0.55.1",
         "numpy >= 1.21.5",
@@ -17,7 +17,6 @@ setup(
         "torch >= 1.9.0",
         "torch_geometric >= 2.0.4",
         "tqdm >= 4.63.0",
-        "torchdata>=0.5.0",  # Added to resolve torchdata.datapipes dependency
     ],
     classifiers=["License :: OSI Approved :: MIT License"],
     # extras_require={'plotting': ['matplotlib>=2.2.0', 'jupyter']},
