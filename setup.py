@@ -5,7 +5,7 @@ setup(
     version='0.0.0',
     description='Setting up a python package',
     author='Xiran Song',
-    author_email='xiransong@hust.edu.cn',
+    author_email='xiransong@outlook.com',
     # url='https://blog.godatadriven.com/setup-py',
     packages=find_packages(include=['XGCN']),
     install_requires=[
@@ -17,6 +17,7 @@ setup(
         "torch >= 1.9.0",
         "torch_geometric >= 2.0.4",
         "tqdm >= 4.63.0",
+        "torchdata>=0.5.0",  # Added to resolve torchdata.datapipes dependency
     ],
     classifiers=["License :: OSI Approved :: MIT License"],
     # extras_require={'plotting': ['matplotlib>=2.2.0', 'jupyter']},
