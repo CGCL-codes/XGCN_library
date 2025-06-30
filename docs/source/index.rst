@@ -9,6 +9,7 @@ Welcome to XGCN's documentation!
 
 XGCN is a light-weight and easy-to-use library for large-scale Graph Neural Network (GNN) embedding, 
 aiming at helping researchers to quickly embed million-scale graphs in a single-machine environment. 
+The repository is available at: https://github.com/CGCL-codes/XGCN_library
 
 Paper describing this work has been published in **Frontiers of Computer Science** (FCS) special column **"Code & Data"**. 
 **Cited as**: Xiran SONG, Hong HUANG, Jianxun LIAN, Hai JIN. XGCN: a library for large-scale graph neural network recommendations. Front. Comput. Sci., 2024, 18(3): 183343 https://doi.org/10.1007/s11704-024-3803-z
@@ -16,7 +17,6 @@ Paper describing this work has been published in **Frontiers of Computer Science
 XGCN includes **xGCN** - an implementation for the TheWebConf 2023 paper: 
 `xGCN: An Extreme Graph Convolutional Network for Large-scale Social Link Prediction <https://doi.org/10.1145/3543507.3583340>`_
 (a 3-minute video introduction for the paper: `video <https://www.youtube.com/watch?v=8yedOmd_3Fw>`_). 
-XGCN's repository is available at: https://github.com/xiransong/XGCN_library
 
 We now focus on embedding models for **social link prediction** (also known as friend recommendation) 
 and **user-item link prediction** (i.e. the classic recommendation task), 
